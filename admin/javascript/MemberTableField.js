@@ -88,24 +88,24 @@ AjaxMemberLookup = {
  * Class: MemberTableField
  */
 MemberTableField = Class.create();
-MemberTableField.applyTo('#Form_EditForm div.MemberTableField');
+MemberTableField.applyTo('.edit-form div.MemberTableField');
 MemberTableField.prototype = {
 	
 	initialize: function() {
 		Behaviour.register({
-			'#Form_EditForm div.MemberFilter input' : {
+			'.edit-form div.MemberFilter input' : {
 				onkeypress : this.prepareSearch.bind(this)
 			},
 
-			'#Form_EditForm div.MemberTableField table.data tr.addtogrouprow input' : {
+			'.edit-form div.MemberTableField table.data tr.addtogrouprow input' : {
 				onkeypress : this.prepareAddToGroup.bind(this)
 			},
 
-			'#Form_EditForm div.MemberTableField table.data tr.addtogrouprow #Form_AddRecordForm_action_addtogroup' : {
+			'.edit-form div.MemberTableField table.data tr.addtogrouprow #Form_AddRecordForm_action_addtogroup' : {
 				onclick : this.prepareAddToGroup.bind(this)
 			},
 
-			'#Form_EditForm div.MemberTableField table.data tr.addtogrouprow td.actions input' : {
+			'.edit-form div.MemberTableField table.data tr.addtogrouprow td.actions input' : {
 				initialise: function() {
 					data = this.parentNode.parentNode.getElementsByTagName('input');
 					var i,item,error = [];
@@ -116,9 +116,9 @@ MemberTableField.prototype = {
 				onclick : this.addToGroup.bind(this)
 			},
 			
-			//'#Form_EditForm div.MemberTableField input' : AjaxMemberLookup,
+			//'.edit-form div.MemberTableField input' : AjaxMemberLookup,
 			
-			'#Form_EditForm' : {
+			'.edit-form' : {
 				changeDetection_fieldsToIgnore : {
 					'ctf[start]' : true,
 					'ctf[ID]' : true,
@@ -325,7 +325,7 @@ MemberFilterButton.prototype = {
 
 // has to be external from initialize() because otherwise request will double on each reload - WTF
 Behaviour.register({
-	'#Form_EditForm div.MemberTableField table.data input.text' : AjaxMemberLookup
+	'.edit-form div.MemberTableField table.data input.text' : AjaxMemberLookup
 });
 
 /**

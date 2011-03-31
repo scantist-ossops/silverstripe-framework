@@ -116,7 +116,7 @@
 					this.trigger('historyGoBack', {url:previousPage});
 				
 					// load new location
-					$('#Form_EditForm').loadForm(previousPage);
+					$('.edit-form').loadForm(previousPage);
 				
 					this.redraw();
 				}
@@ -136,7 +136,7 @@
 					this.trigger('historyGoForward', {url:nextPage});
 				
 					// load new location
-					$('#Form_EditForm').loadForm(nextPage);
+					$('.edit-form').loadForm(nextPage);
 				
 					this.redraw();
 				}
