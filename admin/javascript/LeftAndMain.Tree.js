@@ -71,7 +71,8 @@
 								"drag_target" : false
 							},
 							'themes': {
-								'theme': 'apple'
+								'theme': 'apple',
+								'url': 'sapphire/thirdparty/jstree/themes/apple/style.css'
 							},
 							// 'plugins': ['html_data', 'ui', 'dnd', 'crrm', 'themeroller']
 							'plugins': [
