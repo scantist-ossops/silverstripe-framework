@@ -275,7 +275,7 @@
 		 */
 		getSelectedIDs: function() {
 			return $.map($(this).jstree('get_checked'), function(el, i) {return $(el).data('id');});
-		},
+		}
 	});
 	
 	$('#sitetree li').entwine({
