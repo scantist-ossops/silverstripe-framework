@@ -1,7 +1,7 @@
 @import "compass/reset";
-@import "tree.scss";
-@import "forms.scss";
 @import "compass/css3/gradient";
+@import "compass/css3/box-shadow";
+@import "compass/css3/text-shadow";
 
 html, body {	
 	width: 100%;
@@ -25,45 +25,29 @@ body .ui-widget {
 	font-size: 1em;
 }
 
-// layout
+@import "layout.scss";
+@import "tree.scss";
+@import "forms.scss";
 
-.cms-container {
-	height: 100%
-}
-
-.cms-menu {
-	width: 250px;
-	overflow: auto;
-}
-
-.cms-content {
-}
-
-.center, .east, .west, .north, .south {
-	display: inline-block;
-}
-
-.cms-content-tools {
-	width: 250px;
-	overflow: auto;
-}
-
-.cms-content-form {
-	overflow: auto;
-}
-
-.cms-content-header {
-
-}
 
 // main styles
 
-.cms-menu {
-	background-color: #b0bfc6;
-}
-
 .cms-content-header {
-	background-color: #a0b2be
+	height: 40px;
+	overflow: hidden;
+	background-color: #a0b2be;
+	@include linear-gradient(color-stops(#abbbc4, #93a8b6));
+	
+	h2 {
+		float: left;
+		padding: 10px;
+		font-size: 14px;
+		font-weight: bold;
+	}
+	
+	.ui-tabs {
+		margin-top: 8px; // TODO Ingo is too dumb to do bottom vertical position
+	}
 }
 
 .cms-content {
@@ -74,40 +58,110 @@ body .ui-widget {
 	background-color: #c6d7df;
 }
 
-.cms-logo {
+// header and logo
+
+.cms-header {
+	padding: 10px;
 	background-color: #002a43;
+	@include linear-gradient(color-stops(#002236, #003050, #002236));
+	
+	* {
+		color: white;
+	}
+}
+
+.cms-logo {
+	height: 30px;
+	overflow: hidden;
+	vertical-align: middle;
 	
 	.version {
 		display: none; 
 	} 
-}
-
-// logo
-
-.cms-logo {
+	
 	* {
 		color: #3ebae0;
 	}
 	
 	a {
-		display: block;
-		height: 20px;
+		display: inline-block;
+		height: 25px;
+		width: 25px;
+		float: left;
+		margin-right: 10px;
+		background: url(../images/logo_small.png) no-repeat;
+		text-indent: -9999em;
+	}
+}
+
+.cms-login-status {
+	height: 30px;
+	overflow: hidden;
+	vertical-align: middle;
+	
+	.logout-link {
+		display: inline-block;
+		height: 25px;
+		width: 25px;
+		float: left;
+		margin-right: 10px;
+		background: url(../images/logout.png) no-repeat;
+		text-indent: -9999em;
 	}
 }
 
 // menu
 
 .cms-menu {
+	z-index: 10;
+	background-color: #b0bfc6;
+	@include box-shadow(#aaa, 3px, 0, 3px);
+	
+	a {
+		text-decoration: none;
+	}
+}
+
+.cms-menu-list {
 	li {
-		display: block;
-		height: 50px;
-		background-color: #afbdc6;
-		@include linear-gradient(color-stops(#afbdc6, #8ea4b2));
 		
-		&.current {
-			background-color: #409dc9;
-			@include linear-gradient(color-stops(#409dc9, #1f78b0));
+		a {
+			display: block;
+			height: 20px;
+			padding: 10px;
+			background-color: #afbdc6;
+			@include linear-gradient(color-stops(#afbdc6, #8ea4b2));
+			vertical-align: middle;
+			font-size: 14px;
+			@include text-shadow(#ddd);
+			color: #333;
+			border-bottom: 1px solid #aaa;
 		}
+		
+		&.current a {
+			z-index: 999;
+			background-color: #338dc1;
+			@include linear-gradient(color-stops(#338dc1, #338dc1));
+			color: white;
+			@include text-shadow(#333);
+			@include box-shadow(#333, 0, 4px, 4px);
+		}
+		
+		li {
+			a {
+				font-size: 12px;
+				@include text-shadow(#333);
+				padding-left: 30px;
+				background-color: #1d76ae;
+				@include linear-gradient(color-stops(#1d76ae, #1d76ae));
+				color: white;
+			}
+			
+			&.current a {
+				font-weight: bold;
+			}
+		}
+		
 	}
 }
 
@@ -163,5 +217,25 @@ body .ui-widget {
 		position: absolute;
 		left: 49%;
 		top: 75%;
+	}
+}
+
+// jquery ui overrides
+.LeftAndMain {
+	.ui-widget-content {
+		border: 0;
+	}
+	
+	.cms-content-header .ui-widget-content {
+		background: none;
+	}
+	
+	.cms-content-form .ui-widget-content {
+		background-color: #eef2f3;
+	}
+	
+	.ui-widget-header {
+		background: none;
+		border: 0;
 	}
 }

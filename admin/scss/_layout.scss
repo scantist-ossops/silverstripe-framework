@@ -1,0 +1,33 @@
+// layout
+
+.cms-container {
+	height: 100%
+}
+
+.cms-menu {
+	width: 250px;
+	overflow: auto;
+}
+
+.cms-content {
+}
+
+.cms-menu,
+.cms-content,
+.cms-content-tools,
+.cms-content-form {
+	display: inline-block;
+}
+
+.cms-content-tools {
+	width: 250px;
+	overflow: auto;
+}
+
+.cms-content-form {
+	overflow: auto;
+}
+
+.cms-content-header {
+
+}

@@ -1,1 +1,20 @@
+.edit-form {
+	
+	padding-bottom: 20px;
+	
+	// Hide first level tabs for CMS, see CMSEditForm.ss
+	& > fieldset > .ss-tabset > ul {
+		display: none;
+	} 
+	
+	// TODO Unclear if "button bar" concept is edit form specific
+	.Actions {
+		text-align: right;
+	}
+}
 
+.LeftAndMain {
+	input, textarea {
+		background-color: #f9f9f9;
+	}
+}
