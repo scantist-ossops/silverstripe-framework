@@ -113,6 +113,29 @@
 				}, this.getPingIntervalSeconds() * 1000);
 			}
 		});
+		
+		/**
+		 * Class: .LeftAndMain .cms-content-header .ui-tabs-nav li
+		 * 
+		 * Tabs are removed from tabset
+		 */
+		$('.LeftAndMain .cms-content-header .ss-ui-tabs-nav li').entwine({
+		  /**
+		   * Function: getTabset
+		   * 
+		   * Returns first tabset found in content area
+		   */
+		  getTabset: function() {
+		    return $('.cms-content-form .ui-tabs:first');
+		  },
+		  
+		  onclick: function(e) {
+		    console.debug(this);
+		    this.getTabset().tabs('select', this.index());
+		    
+		    return false;
+		  }
+		});
 
 		/**
 		 * Class: .LeftAndMain :submit, .LeftAndMain button, .LeftAndMain :reset
@@ -122,38 +145,8 @@
 		 * a new 'clickedButton' property on the form DOM element.
 		 */
 		$('.LeftAndMain :submit, .LeftAndMain button, .LeftAndMain :reset').entwine({
-			
-			/**
-			 * Constructor: onmatch
-			 */
 			onmatch: function() {
-				this.addClass(
-					'ui-state-default ' +
-					'ui-corner-all'
-				)
-				.hover(
-					function() {
-						$(this).addClass('ui-state-hover');
-					},
-					function() {
-						$(this).removeClass('ui-state-hover');
-					}
-				)
-				.focus(function() {
-					$(this).addClass('ui-state-focus');
-				})
-				.blur(function() {
-					$(this).removeClass('ui-state-focus');
-				})
-				.click(function() {
-					var form = this.form;
-					// forms don't natively store the button they've been triggered with
-					form.clickedButton = this;
-					// Reset the clicked button shortly after the onsubmit handlers
-					// have fired on the form
-					setTimeout(function() {form.clickedButton = null;}, 10);
-				});
-
+				this.addClass('ss-ui-button');
 				this._super();
 			}
 		});
@@ -320,6 +313,7 @@
 				return false;
 			}
 		});
+		
 	});
 }(jQuery));
 

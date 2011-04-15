@@ -207,12 +207,12 @@ class LeftAndMain extends Controller {
 		Requirements::javascript(SAPPHIRE_DIR . '/thirdparty/jquery-metadata/jquery.metadata.js');
 		Requirements::javascript(SAPPHIRE_ADMIN_DIR . '/javascript/jquery-fitheighttoparent/jquery.fitheighttoparent.js');
 		
+		// entwine
+		Requirements::javascript(SAPPHIRE_DIR . '/thirdparty/jquery-entwine/dist/jquery.entwine-dist.js');
+		
 		Requirements::javascript(SAPPHIRE_ADMIN_DIR . '/javascript/ssui.core.js');
 		// @todo Load separately so the CSS files can be inlined
 		Requirements::css(SAPPHIRE_DIR . '/thirdparty/jquery-ui-themes/smoothness/jquery.ui.all.css');
-		
-		// entwine
-		Requirements::javascript(SAPPHIRE_DIR . '/thirdparty/jquery-entwine/dist/jquery.entwine-dist.js');
 		
 		// Required for TreeTools panel above tree
 		Requirements::javascript(SAPPHIRE_DIR . '/javascript/TabSet.js');
@@ -718,7 +718,7 @@ class LeftAndMain extends Controller {
 	 * @return Form
 	 */
 	function EditForm($request = null) {
-		return $this->getEditForm();
+		return $this->getEditForm()->renderWith('CMSEditForm');
 	}
 
 	public function getEditForm($id = null) {

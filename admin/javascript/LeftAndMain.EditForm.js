@@ -308,8 +308,8 @@
 						this.removeForm();
 					}
 				
-					// @todo Coupling to avoid FOUC (entwine applies to late)
-					this.find('.ss-tabset').tabs();
+					// // @todo Coupling to avoid FOUC (entwine applies to late)
+					// this.find('.ss-tabset').tabs();
 				
 					this._setupChangeTracker();
 			

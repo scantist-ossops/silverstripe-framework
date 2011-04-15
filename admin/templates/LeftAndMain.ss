@@ -18,23 +18,8 @@
 		</div>
 
 		<div class="cms-content center {layout: {type: 'border'}}" id="right">
-
-			<div class="cms-content-header north">
-				<h2>Section title</h2>
-				<ul>
-					<li>Tab 1</li>
-					<li>Tab 2</li>
-				</ul>
-				<div class="cms-content-search"></div>
-			</div>
-
-			<div class="cms-content-tools west">
-				$Left
-			</div>
-			
-			<div class="cms-content-form center">
-				$Right
-			</div>
+		
+			$EditForm
 
 		</div>
 
