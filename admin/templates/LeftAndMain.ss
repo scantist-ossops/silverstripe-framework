@@ -14,7 +14,7 @@
 	<div class="cms-container {layout: {type: 'border'}}">
 
 		<div class="cms-menu west">
-			$CMSTopMenu
+			$CMSMenu
 		</div>
 
 		<div class="cms-content center {layout: {type: 'border'}}" id="right">

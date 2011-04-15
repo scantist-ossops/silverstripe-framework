@@ -430,8 +430,8 @@ class LeftAndMain extends Controller {
 		return $menu;
 	}
 
-	public function CMSTopMenu() {
-		return $this->renderWith(array('CMSTopMenu_alternative','CMSTopMenu'));
+	public function CMSMenu() {
+		return $this->renderWith(array('CMSMenu'));
 	}
 
 	/**
