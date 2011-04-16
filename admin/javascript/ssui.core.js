@@ -1,7 +1,7 @@
 (function($) {
-  
-  $('.ss-ui-button').entwine({
-    /**
+	
+	$('.ss-ui-button').entwine({
+		/**
 		 * Constructor: onmatch
 		 */
 		onmatch: function() {
@@ -34,30 +34,33 @@
 
 			this._super();
 		}
-  });
-  
-  $('.ss-ui-tabs-nav').entwine({
-   onmatch: function() {
-     this.addClass('ui-tabs ui-widget ui-widget-content ui-corner-all ui-tabs-panel ui-corner-bottom');
-     this.find('ul').addClass('ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all');
-     this.find('li').addClass('ui-state-default ui-corner-top');
-     // TODO Figure out selected tab
-     this.find('li:first').selectIt();
-  
-     this._super();
-   }
-  });
+	});
+	
+	/**
+	 * Creates a jQuery UI tab navigation bar, detached from the container DOM structure.
+	 */
+	$('.ss-ui-tabs-nav').entwine({
+	 onmatch: function() {
+		 this.addClass('ui-tabs ui-widget ui-widget-content ui-corner-all ui-tabs-panel ui-corner-bottom');
+		 this.find('ul').addClass('ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all');
+		 this.find('li').addClass('ui-state-default ui-corner-top');
+		 // TODO Figure out selected tab
+		 this.find('li:first').selectIt();
+	
+		 this._super();
+	 }
+	});
 	
 	$('.ss-ui-tabs-nav li').entwine({
-	  onclick: function() {
-	    this.selectIt();
-	  },
-	  selectIt: function() {
-	    var cls = 'ui-tabs-selected ui-state-active';
-	    this.addClass(cls).siblings().not(this).removeClass(cls);
-	  }
+		onclick: function() {
+			this.selectIt();
+		},
+		selectIt: function() {
+			var cls = 'ui-tabs-selected ui-state-active';
+			this.addClass(cls).siblings().not(this).removeClass(cls);
+		}
 	});
-  
+	
 	$.widget("ssui.titlebar", {
 		_create: function() {
 			this.originalTitle = this.element.attr('title');

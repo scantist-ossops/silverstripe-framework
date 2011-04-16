@@ -430,7 +430,7 @@ class LeftAndMain extends Controller {
 		return $menu;
 	}
 
-	public function CMSMenu() {
+	public function Menu() {
 		return $this->renderWith(array('CMSMenu'));
 	}
 
@@ -446,12 +446,8 @@ class LeftAndMain extends Controller {
 		return $templates;
 	}
 
-	public function Left() {
-		return $this->renderWith($this->getTemplatesWithSuffix('_left'));
-	}
-
-	public function Right() {
-		return $this->renderWith($this->getTemplatesWithSuffix('_right'));
+	public function Content() {
+		return $this->renderWith($this->getTemplatesWithSuffix('_Content'));
 	}
 
 	public function getRecord($id) {
@@ -718,10 +714,17 @@ class LeftAndMain extends Controller {
 	 * @return Form
 	 */
 	function EditForm($request = null) {
-		return $this->getEditForm()->renderWith('CMSEditForm');
+		return $this->getEditForm();
 	}
 
-	public function getEditForm($id = null) {
+	/**
+	 * Calls {@link SiteTree->getCMSFields()}
+	 * 
+	 * @param Int $id
+	 * @param FieldSet $fields
+	 * @return Form
+	 */
+	public function getEditForm($id = null, $fields = null) {
 		if(!$id) $id = $this->currentPageID();
 		
 		if(is_object($id)) {
@@ -732,7 +735,7 @@ class LeftAndMain extends Controller {
 		}
 
 		if($record) {
-			$fields = $record->getCMSFields();
+			$fields = ($fields) ? $fields : $record->getCMSFields();
 			if ($fields == null) {
 				user_error(
 					"getCMSFields() returned null  - it should return a FieldSet object. 

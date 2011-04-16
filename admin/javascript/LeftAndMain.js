@@ -1,9 +1,12 @@
 /**
  * File: LeftAndMain.js
  */
-
 (function($) {
+
+	$.metadata.setType('html5');
+	
 	$.entwine('ss', function($){
+		
 		/**
 		 * Position the loading spinner animation below the ss logo
 		 */ 
@@ -52,13 +55,12 @@
 				var self = this;
 				
 				// Initialize layouts, inner to outer
-				$('.cms-content').layout();
+				var doInnerLayout = function() {$('.cms-content').layout();}
 				var outer = $('.cms-container');
-				var layout = function() {
-					outer.layout({resize: false});
-				}
-				layout();
-				$(window).resize(layout);
+				var doOuterLayout = function() {outer.layout({resize: false});}
+				doInnerLayout();
+				doOuterLayout();
+				$(window).resize(doOuterLayout);
 				
 				// Remove loading screen
 				$('.ss-loading-screen').hide();
@@ -67,18 +69,9 @@
 
 				this._setupPinging();
 
-				// If tab has no nested tabs, set overflow to auto
-				$(this).find('.tab').not(':has(.tab)').css('overflow', 'auto');
-
-				// @todo Doesn't resize properly if the response doesn't contain a tabset (see above)
-				$('.edit-form').bind('loadnewpage', function() {
-					// HACK Delay resizing to give jquery-ui tabs a change their dimensions
-					// through dynamically added css classes
-					var timerID = "timerLeftAndMainResize";
-					if (window[timerID]) clearTimeout(window[timerID]);
-					window[timerID] = setTimeout(function() {
-						layout();
-					}, 200);
+				$('.edit-form').live('loadnewpage', function() {
+					doInnerLayout();
+					doOuterLayout();
 				});
 
 				this._super();
@@ -113,29 +106,6 @@
 				}, this.getPingIntervalSeconds() * 1000);
 			}
 		});
-		
-		/**
-		 * Class: .LeftAndMain .cms-content-header .ui-tabs-nav li
-		 * 
-		 * Tabs are removed from tabset
-		 */
-		$('.LeftAndMain .cms-content-header .ss-ui-tabs-nav li').entwine({
-		  /**
-		   * Function: getTabset
-		   * 
-		   * Returns first tabset found in content area
-		   */
-		  getTabset: function() {
-		    return $('.cms-content-form .ui-tabs:first');
-		  },
-		  
-		  onclick: function(e) {
-		    console.debug(this);
-		    this.getTabset().tabs('select', this.index());
-		    
-		    return false;
-		  }
-		});
 
 		/**
 		 * Class: .LeftAndMain :submit, .LeftAndMain button, .LeftAndMain :reset
@@ -146,7 +116,10 @@
 		 */
 		$('.LeftAndMain :submit, .LeftAndMain button, .LeftAndMain :reset').entwine({
 			onmatch: function() {
-				this.addClass('ss-ui-button');
+				// TODO Adding classes in onmatch confuses entwine
+				var self = this;
+				setTimeout(function() {self.addClass('ss-ui-button');}, 10);
+				
 				this._super();
 			}
 		});

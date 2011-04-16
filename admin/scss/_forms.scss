@@ -17,4 +17,9 @@
 	input, textarea {
 		background-color: #f9f9f9;
 	}
+	
+	input.loading {
+		padding-left: 16px;
+		background: #fff url(../../images/network-save.gif) no-repeat center left;
+	}
 }
