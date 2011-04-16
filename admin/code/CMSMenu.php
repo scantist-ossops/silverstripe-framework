@@ -62,6 +62,8 @@ class CMSMenu extends Object implements IteratorAggregate, i18nEntityProvider
 		$urlBase      = Object::get_static($controllerClass, 'url_base');
 		$urlSegment   = Object::get_static($controllerClass, 'url_segment');
 		$menuPriority = Object::get_static($controllerClass, 'menu_priority');
+		$menuGroup = Object::get_static($controllerClass, 'menu_group');
+		$menuGroupPriority = Object::get_static($controllerClass, 'menu_group_priority');
 		
 		// Don't add menu items defined the old way
 		if($urlSegment === null && $controllerClass != "CMSMain") return;
@@ -74,7 +76,7 @@ class CMSMenu extends Object implements IteratorAggregate, i18nEntityProvider
 		$defaultTitle = LeftAndMain::menu_title_for_class($controllerClass);
 		$menuTitle = _t("{$controllerClass}.MENUTITLE", $defaultTitle);
 
-		return new CMSMenuItem($menuTitle, $link, $controllerClass, $menuPriority);
+		return new CMSMenuItem($menuTitle, $link, $controllerClass, $menuPriority, $menuGroup, $menuGroupPriority);
 	}
 	
 	/**
@@ -123,9 +125,12 @@ class CMSMenu extends Object implements IteratorAggregate, i18nEntityProvider
 	 * @param string $controllerClass The controller class for this menu, used to check permisssions.  
 	 * 					If blank, it's assumed that this is public, and always shown to users who 
 	 * 					have the rights to access some other part of the admin area.
+	 * @param Int $priority
+	 * @param string $group Title of a group
+	 * @param int $groupPriority Numerical priority of a group
 	 * @return boolean Success
 	 */
-	public static function add_menu_item($code, $menuTitle, $url, $controllerClass = null, $priority = -1) {
+	public static function add_menu_item($code, $menuTitle, $url, $controllerClass = null, $priority = -1, $group = null, $groupPriority = null) {
 		// If a class is defined, then force the use of that as a code.  This helps prevent menu item duplication
 		if($controllerClass) $code = $controllerClass;
 		
@@ -190,6 +195,19 @@ class CMSMenu extends Object implements IteratorAggregate, i18nEntityProvider
 	}
 	
 	/**
+	 * Returns all menu items
+	 * 
+	 * @param Boolean
+	 * @param Member
+	 * @return array Mixed set of {@link CMSMenuItem} and {@link CMSMenuGroup}
+	 */
+	public static function get_grouped_menu_items($viewableOnly = false, $member = null) {
+		$items = ($viewableOnly) ? self::get_viewable_menu_items($member) : self::get_menu_items();
+		$groupedItems = new DataObjectSet();
+		
+	}
+	
+	/**
 	 * Get all menu items that the passed member can view.
 	 * Defaults to {@link Member::currentUser()}.
 	 * 
@@ -240,17 +258,9 @@ class CMSMenu extends Object implements IteratorAggregate, i18nEntityProvider
 	/**
 	 * Replace a navigation item to the main administration menu showing in the top bar.
 	 *
-	 * @param string $code Unique identifier for this menu item (e.g. used by {@link replace_menu_item()} and
-	 * 					{@link remove_menu_item}. Also used as a CSS-class for icon customization.
-	 * @param string $menuTitle Localized title showing in the menu bar 
-	 * @param string $url A relative URL that will be linked in the menu bar.
-	 * 					Make sure to add a matching route via {@link Director::addRules()} to this url.
-	 * @param string $controllerClass The controller class for this menu, used to check permisssions.  
-	 * 					If blank, it's assumed that this is public, and always shown to users who 
-	 * 					have the rights to access some other part of the admin area.
-	 * @return boolean Success
+	 * See {@link add_menu_item}
 	 */
-	public static function replace_menu_item($code, $menuTitle, $url, $controllerClass = null, $priority = -1) {
+	public static function replace_menu_item($code, $menuTitle, $url, $controllerClass = null, $priority = -1, $group = null, $groupPriority = null) {
 		self::$menu_item_changes[] = array(
 			'type' => 'add',
 			'code' => $code,

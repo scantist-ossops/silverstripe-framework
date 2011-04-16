@@ -28,6 +28,11 @@ class LeftAndMain extends Controller {
 	
 	static $menu_priority = 0;
 	
+	/**
+	 * @var String Identifier for a 
+	 */
+	static $menu_group;
+	
 	static $url_priority = 50;
 
 	/**

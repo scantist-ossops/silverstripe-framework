@@ -32,17 +32,30 @@ class CMSMenuItem extends Object
 	public $priority;
 	
 	/**
+	 * @var String
+	 */
+	public $group;
+	
+	/**
+	 * @var integer
+	 */
+	public $groupPriority;
+	
+	/**
 	 * Create a new CMS Menu Item
 	 * @param string $title
 	 * @param string $url
 	 * @param string $controller Controller class name
 	 * @param integer $priority The sort priority of the item
 	 */
-	public function __construct($title, $url, $controller = null, $priority = -1) {
+	public function __construct($title, $url, $controller = null, $priority = -1, $group = null, $groupPriority = null) {
 		$this->title = $title;
 		$this->url = $url;
 		$this->controller = $controller;
 		$this->priority = $priority;
+		$this->group = $group;
+		$this->groupPriority = $groupPriority;
+		
 		parent::__construct();
 	}
 	

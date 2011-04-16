@@ -75,11 +75,77 @@ class CMSMenuTest extends SapphireTest implements TestOnly {
 			$this->assertLessThanOrEqual($priority, $menuItem->priority, 'Menu item is of lower or equal priority');
 		}
 	}
+	
+	function testGetGroupedMenuItems() {
+		// Clear existing menu
+		CMSMenu::clear_menu();
+		CMSMenu::add_controller('CMSMenuTest_Group1Item1');
+		CMSMenu::add_controller('CMSMenuTest_Group1Item2');
+		CMSMenu::add_controller('CMSMenuTest_Group2Item1');
+		CMSMenu::add_controller('CMSMenuTest_Ungrouped');
+
+		$items = CMSMenu::get_grouped_menu_items();
+
+		$this->assertEquals(3, count($items));
+
+		$group1 = $items->offsetGet(0);
+		$this->assertType('CMSMenuGroup', $group1);
+		$this->assertEquals('Group 1', $group1->title);
+		$this->assertEquals(2, $group1->getItems()->Count());
+		$this->assertEquals(
+			array('CMSMenuTest_Group1Item1', 'CMSMenuTest_Group1Item2'), 
+			$group1->getItems()->column('title')
+		);
+
+		$group2 = $items->offsetGet(1);
+		$this->assertType('CMSMenuGroup', $group2);
+		$this->assertEquals(1, $group2->getItems()->Count());
+		$this->assertEquals(
+			array('CMSMenuTest_Group2Item1'),
+			$group2->getItems()->column('title')
+		);
+		
+		$this->assertType('CMSMenuItem', $items->offsetGet(2));
+	}
 
 }
 
 class CMSMenuTest_LeftAndMainController extends LeftAndMain implements TestOnly {
 	static $url_segment = 'CMSMenuTest_LeftAndMainController';
 	static $menu_title = 'CMSMenuTest_LeftAndMainController';
+	static $menu_priority = 50;
+}
+
+class CMSMenuTest_Group1Item1 extends LeftAndMain implements TestOnly {
+	static $url_segment = 'CMSMenuTest_Group1Item1';
+	static $menu_title = 'CMSMenuTest_Group1Item1';
+	static $menu_priority = 50;
+	static $menu_group = 'Group 1';
+	static $menu_group_priority = 50;
+}
+
+class CMSMenuTest_Group1Item2 extends LeftAndMain implements TestOnly {
+	static $url_segment = 'CMSMenuTest_Group1Item2';
+	static $menu_title = 'CMSMenuTest_Group1Item2';
+	static $menu_priority = 50;
+	static $menu_group = 'Group 1';
+	
+	function canView($member = null) {
+		if(!$member) $member = Member::currentUser();
+		return Permission::checkMember($member, 'ADMIN');
+	}
+}
+
+class CMSMenuTest_Group2Item1 extends LeftAndMain implements TestOnly {
+	static $url_segment = 'CMSMenuTest_Group2Item1';
+	static $menu_title = 'CMSMenuTest_Group2Item1';
+	static $menu_priority = 50;
+	static $menu_group = 'Group 2';
+	static $menu_group_priority = 20;
+}
+
+class CMSMenuTest_UngroupedItem extends LeftAndMain implements TestOnly {
+	static $url_segment = 'CMSMenuTest_UngroupedItem';
+	static $menu_title = 'CMSMenuTest_UngroupedItem';
 	static $menu_priority = 50;
 }
