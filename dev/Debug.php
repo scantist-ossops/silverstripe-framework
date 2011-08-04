@@ -480,7 +480,7 @@ class Debug {
 	
 	/**
 	 * Log the given error, if self::$log_errors is set.
-	 * Uses the native error_log() funtion in PHP.
+	 * Uses the native error_log() funtion in PHP (through {@link SS_LogFileWriter}.
 	 * 
 	 * Format: [d-M-Y h:i:s] <type> at <file> line <line>: <errormessage> <url>
 	 * 
