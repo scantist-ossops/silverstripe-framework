@@ -305,6 +305,7 @@ class RestfulServerTest extends SapphireTest {
 	}
 	
 	public function testApiAccessFieldRestrictions() {
+		$author1 = $this->objFromFixture('RestfulServerTest_Author','author1');
 		$rating1 = $this->objFromFixture('RestfulServerTest_AuthorRating','rating1');
 		
 		$url = "/api/v1/RestfulServerTest_AuthorRating/" . $rating1->ID;
@@ -332,15 +333,40 @@ class RestfulServerTest extends SapphireTest {
 		$this->assertNotContains('<SecretRelation>', $response->getBody(),
 			'"fields" URL parameter filters out disallowed relations from $api_access'
 		);
+		
+		$url = "/api/v1/RestfulServerTest_Author/" . $author1->ID . '/Ratings';
+		$response = Director::test($url, null, null, 'GET');
+		$this->assertContains('<Rating>', $response->getBody(),
+			'Relation viewer shows fields allowed through $api_access'
+		);
+		$this->assertNotContains('<SecretField>', $response->getBody(),
+			'Relation viewer on has-many filters out disallowed fields from $api_access'
+		);
 	}
 	
-	public function testApiAccessRelationRestrictions() {
+	public function testApiAccessRelationRestrictionsInline() {
 		$author1 = $this->objFromFixture('RestfulServerTest_Author','author1');
 		
 		$url = "/api/v1/RestfulServerTest_Author/" . $author1->ID;
 		$response = Director::test($url, null, null, 'GET');
-		$this->assertNotContains('<RelatedPages', $response->getBody());
-		$this->assertNotContains('<PublishedPages', $response->getBody());
+		$this->assertNotContains('<RelatedPages', $response->getBody(), 'Restricts many-many with api_access=false');
+		$this->assertNotContains('<PublishedPages', $response->getBody(), 'Restricts has-many with api_access=false');
+	}
+	
+	public function testApiAccessRelationRestrictionsOnEndpoint() {
+		$author1 = $this->objFromFixture('RestfulServerTest_Author','author1');
+		
+		$url = "/api/v1/RestfulServerTest_Author/" . $author1->ID . "/ProfilePage";
+		$response = Director::test($url, null, null, 'GET');
+		$this->assertEquals(404, $response->getStatusCode(), 'Restricts has-one with api_access=false');
+		
+		$url = "/api/v1/RestfulServerTest_Author/" . $author1->ID . "/RelatedPages";
+		$response = Director::test($url, null, null, 'GET');
+		$this->assertEquals(404, $response->getStatusCode(), 'Restricts many-many with api_access=false');
+		
+		$url = "/api/v1/RestfulServerTest_Author/" . $author1->ID . "/PublishedPages";
+		$response = Director::test($url, null, null, 'GET');
+		$this->assertEquals(404, $response->getStatusCode(), 'Restricts has-many with api_access=false');
 	}
 	
 	public function testApiAccessWithPUT() {
@@ -466,14 +492,18 @@ class RestfulServerTest_Author extends DataObject implements TestOnly {
 	static $db = array(
 		'Name' => 'Text',
 	);
+	
+	static $has_one = array(
+		'ProfilePage' => 'RestfulServerTest_Page', // api_access = false
+	);
 		
 	static $many_many = array(
-		'RelatedPages' => 'RestfulServerTest_Page', 
+		'RelatedPages' => 'RestfulServerTest_Page', // api_access = false
 		'RelatedAuthors' => 'RestfulServerTest_Author', 
 	);
 	
 	static $has_many = array(
-		'PublishedPages' => 'RestfulServerTest_Page',
+		'PublishedPages' => 'RestfulServerTest_Page', // api_access = false
 		'Ratings' => 'RestfulServerTest_AuthorRating', 
 	);
 	

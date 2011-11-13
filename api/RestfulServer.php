@@ -81,7 +81,6 @@
  * @todo Make SearchContext specification customizeable for each class
  * @todo Allow for range-searches (e.g. on Created column)
  * @todo Allow other authentication methods (currently only HTTP BasicAuth)
- * @todo Filter relation listings by $api_access and canView() permissions
  * @todo Exclude relations when "fields" are specified through URL (they should be explicitly requested in this case)
  * @todo Custom filters per DataObject subclass, e.g. to disallow showing unpublished pages in SiteTree/Versioned/Hierarchy
  * @todo URL parameter namespacing for search-fields, limit, fields, add_fields (might all be valid dataobject properties)
@@ -210,11 +209,10 @@ class RestfulServer extends Controller {
 		
 		$params = $this->request->getVars();
 		
-		$responseFormatter = $this->getResponseDataFormatter();
+		$responseFormatter = $this->getResponseDataFormatter($className);
 		if(!$responseFormatter) return $this->unsupportedMediaType();
 		
-		// $obj can be either a DataObject or a DataObjectSet,
-		// depending on the request
+		// $obj can be either a DataObject or a DataObjectSet, depending on the request
 		if($id) {
 			// Format: /api/v1/<MyClass>/<ID>
 			$query = $this->getObjectQuery($className, $id, $params);
@@ -226,8 +224,15 @@ class RestfulServer extends Controller {
 			// Format: /api/v1/<MyClass>/<ID>/<Relation>
 			if($relationName) {
 				$query = $this->getObjectRelationQuery($obj, $params, $sort, $limit, $relationName);
+				// TODO: Differenciate between "Not Allowed" and "Not Found"
 				if($query === false) return $this->notFound();
-				$obj = singleton($className)->buildDataObjectSet($query->execute());
+				
+				// TODO Avoid creating data formatter again for relation class (see above)
+				$relationClass = $this->getObjectRelationClass($obj, $relationName);
+				$responseFormatter = $this->getResponseDataFormatter($relationClass);
+				
+				// Overwrite original object with relation set
+				$obj = singleton($relationClass)->buildDataObjectSet($query->execute());
 			} 
 			
 		} else {
@@ -238,7 +243,7 @@ class RestfulServer extends Controller {
 			// show empty serialized result when no records are present
 			if(!$obj) $obj = new DataObjectSet();
 		}
-		
+
 		$this->getResponse()->addHeader('Content-Type', $responseFormatter->getOutputContentType());
 		
 		$rawFields = $this->request->getVar('fields');
@@ -283,15 +288,17 @@ class RestfulServer extends Controller {
 	 * extension or mimetype. Falls back to {@link self::$default_extension}.
 	 * 
 	 * @param boolean $includeAcceptHeader Determines wether to inspect and prioritize any HTTP Accept headers 
+	 * @param String Classname of a DataObject
 	 * @return DataFormatter
 	 */
-	protected function getDataFormatter($includeAcceptHeader = false) {
+	protected function getDataFormatter($includeAcceptHeader = false, $className = null) {
 		$extension = $this->request->getExtension();
 		$contentTypeWithEncoding = $this->request->getHeader('Content-Type');
 		preg_match('/([^;]*)/',$contentTypeWithEncoding, $contentTypeMatches);
 		$contentType = $contentTypeMatches[0];
 		$accept = $this->request->getHeader('Accept');
 		$mimetypes = $this->request->getAcceptMimetypes();
+		if(!$className) $className = $this->urlParams['ClassName'];
 
 		// get formatter
 		if(!empty($extension)) {
@@ -310,9 +317,9 @@ class RestfulServer extends Controller {
 		// set custom fields
 		if($customAddFields = $this->request->getVar('add_fields')) $formatter->setCustomAddFields(explode(',',$customAddFields));
 		if($customFields = $this->request->getVar('fields')) $formatter->setCustomFields(explode(',',$customFields));
-		$formatter->setCustomRelations($this->getAllowedRelations($this->urlParams['ClassName']));
+		$formatter->setCustomRelations($this->getAllowedRelations($className));
 		
-		$apiAccess = singleton($this->urlParams['ClassName'])->stat('api_access');
+		$apiAccess = singleton($className)->stat('api_access');
 		if(is_array($apiAccess)) {
 			$formatter->setCustomAddFields(array_intersect((array)$formatter->getCustomAddFields(), (array)$apiAccess['view']));
 			if($formatter->getCustomFields()) {
@@ -335,12 +342,20 @@ class RestfulServer extends Controller {
 		return $formatter;		
 	}
 	
-	protected function getRequestDataFormatter() {
-		return $this->getDataFormatter(false);
+	/**
+	 * @param String Classname of a DataObject
+	 * @return DataFormatter
+	 */
+	protected function getRequestDataFormatter($className = null) {
+		return $this->getDataFormatter(false, $className);
 	}
 	
-	protected function getResponseDataFormatter() {
-		return $this->getDataFormatter(true);
+	/**
+	 * @param String Classname of a DataObject
+	 * @return DataFormatter
+	 */
+	protected function getResponseDataFormatter($className = null) {
+		return $this->getDataFormatter(true, $className);
 	}
 	
 	/**
@@ -365,10 +380,10 @@ class RestfulServer extends Controller {
 		if(!$obj) return $this->notFound();
 		if(!$obj->canEdit()) return $this->permissionFailure();
 		
-		$reqFormatter = $this->getRequestDataFormatter();
+		$reqFormatter = $this->getRequestDataFormatter($className);
 		if(!$reqFormatter) return $this->unsupportedMediaType();
 		
-		$responseFormatter = $this->getResponseDataFormatter();
+		$responseFormatter = $this->getResponseDataFormatter($className);
 		if(!$responseFormatter) return $this->unsupportedMediaType();
 		
 		$obj = $this->updateDataObject($obj, $reqFormatter);
@@ -423,10 +438,10 @@ class RestfulServer extends Controller {
 			if(!singleton($className)->canCreate()) return $this->permissionFailure();
 			$obj = new $className();
 		
-			$reqFormatter = $this->getRequestDataFormatter();
+			$reqFormatter = $this->getRequestDataFormatter($className);
 			if(!$reqFormatter) return $this->unsupportedMediaType();
 		
-			$responseFormatter = $this->getResponseDataFormatter();
+			$responseFormatter = $this->getResponseDataFormatter($className);
 		
 			$obj = $this->updateDataObject($obj, $reqFormatter);
 		
@@ -525,24 +540,47 @@ class RestfulServer extends Controller {
 	 * @return SQLQuery|boolean
 	 */
 	protected function getObjectRelationQuery($obj, $params, $sort, $limit, $relationName) {
+		$relationClass = $this->getObjectRelationClass($obj, $relationName);
+		
 		if($obj->hasMethod("{$relationName}Query")) {
 			// @todo HACK Switch to ComponentSet->getQuery() once we implement it (and lazy loading)
 			$query = $obj->{"{$relationName}Query"}(null, $sort, null, $limit);
-			$relationClass = $obj->{"{$relationName}Class"}();
-		} elseif($relationClass = $obj->many_many($relationName)) {
-			// many_many() returns different notation
-			$relationClass = $relationClass[1];
+		} elseif($obj->many_many($relationName)) {
 			$query = $obj->getManyManyComponentsQuery($relationName);
-		} elseif($relationClass = $obj->has_many($relationName)) {
+		} elseif($obj->has_many($relationName)) {
 			$query = $obj->getComponentsQuery($relationName);
-		} elseif($relationClass = $obj->has_one($relationName)) {
-			$query = null;
+		} elseif($obj->has_one($relationName)) {
+			$query = singleton($relationClass)->buildSQL(sprintf('"ID" = %d', (int)$obj->{"{$relationName}ID"}));
 		} else {
 			return false;
 		}
+		
+		// if api access is disabled, don't proceed
+		$apiAccess = singleton($relationClass)->stat('api_access');
+		if(!$apiAccess) return false;
 
 		// get all results
  		return $this->getSearchQuery($relationClass, $params, $sort, $limit, $query);
+	}
+	
+	/**
+	 * @param DataObject
+	 * @param String
+	 * @return String
+	 */
+	protected function getObjectRelationClass($obj, $relationName) {
+		if($obj->hasMethod("{$relationName}Query")) {
+			return $obj->{"{$relationName}Class"}();
+		} elseif($relationClass = $obj->many_many($relationName)) {
+			// many_many() returns different notation
+			return $relationClass[1];
+		} elseif($relationClass = $obj->has_many($relationName)) {
+			return $relationClass;
+		} elseif($relationClass = $obj->has_one($relationName)) {
+			return $relationClass;
+		} else {
+			return false;
+		}
 	}
 	
 	protected function permissionFailure() {
