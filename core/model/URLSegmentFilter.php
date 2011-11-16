@@ -17,6 +17,11 @@
 class URLSegmentFilter {
 	
 	/**
+	 * Necessary to support {@link Object::create()}
+	 */
+	function __construct() {}
+	
+	/**
 	 * @var Boolean
 	 */
 	static $default_use_transliterator = true;
