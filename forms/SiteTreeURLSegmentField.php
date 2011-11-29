@@ -43,5 +43,3 @@ class SiteTreeURLSegmentField extends TextField {
 		return ($idField && $idField->Value()) ? DataObject::get_by_id('SiteTree', $idField->Value()) : singleton('SiteTree');
 	}
 }
-
-URLSegmentFilter::$default_allow_multibyte = true;
