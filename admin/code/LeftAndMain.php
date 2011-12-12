@@ -187,6 +187,9 @@ class LeftAndMain extends Controller {
 		if(empty($_REQUEST['executeForm']) && !$this->isAjax()) $this->extend('accessedCMS');
 		
 		// Requirements
+
+		// Suppress behaviour/prototype validation instructions in CMS, not compatible with ajax loading of forms.
+		Validator::set_javascript_validation_handler('none');
 		
 		Requirements::combine_files(
 			'lib.js',
