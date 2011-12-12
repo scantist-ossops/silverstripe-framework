@@ -277,8 +277,8 @@ class HtmlEditorConfig {
 	 * @return string - the javascript
 	 */
 	function generateJS() {
-		$config = $this->settings;
-		
+		$config = $this->getConfigArray();
+
 		// plugins
 		$internalPlugins = array();
 		$externalPluginsJS = '';
@@ -294,11 +294,6 @@ class HtmlEditorConfig {
 				);
 			}
 		}
-		$config['plugins'] = implode(',', $internalPlugins);
-		
-		foreach ($this->buttons as $i=>$buttons) {
-			$config['theme_advanced_buttons'.$i] = implode(',', $buttons);
-		}
 		
 		return "
 if((typeof tinyMCE != 'undefined')) {
@@ -306,5 +301,18 @@ if((typeof tinyMCE != 'undefined')) {
 	tinyMCE.init(" . Convert::raw2json($config) . ");
 }
 ";
+	}
+
+	/**
+	 * @return Array
+	 */
+	function getConfigArray() {
+		$config = $this->settings;
+		$config['_plugins'] = $this->plugins;
+		foreach ($this->buttons as $i=>$buttons) {
+			$config['theme_advanced_buttons'.$i] = implode(',', $buttons);
+		}
+
+		return $config;
 	}
 }

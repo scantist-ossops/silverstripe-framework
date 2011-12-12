@@ -23,8 +23,6 @@ class HtmlEditorField extends TextareaField {
 		parent::__construct($name, $title, $rows, $cols, $value, $form);
 		
 		$this->addExtraClass('htmleditor');
-		
-		self::include_js();
 	}
 	
 	/**
@@ -54,7 +52,7 @@ class HtmlEditorField extends TextareaField {
 				'style'   => 'width: 97%; height: ' . ($this->rows * 16) . 'px', // prevents horizontal scrollbars
 				'tinymce' => 'true',
 				'id'      => $this->id(),
-				'name'    => $this->name
+				'name'    => $this->name,
 			),
 			htmlentities($value->getContent(), ENT_COMPAT, 'UTF-8')
 		);

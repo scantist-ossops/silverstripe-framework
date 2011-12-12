@@ -197,6 +197,26 @@
 			 * Constructor: onmatch
 			 */
 			onmatch : function() {
+				// Globally init TinyMCE (if its the first call to it)
+				if(!tinyMCE.editors.length) {
+					var config = ssTinyMceConfig; // global variable
+						// process plugins
+					var plugins = [];
+					$.each(ssTinyMceConfig._plugins, function(plugin, path) {
+						console.debug(plugin, path);
+						if(path) {
+							tinymce.PluginManager.load(plugin, path);	
+							plugins.push('-' + plugin);
+						} else {
+							plugins.push(plugin);
+						}
+					});
+					config.plugins = plugins.join(',');
+
+					tinyMCE.init(config);
+				}
+				
+				// Set up the specific text area as TinyMCE
 				tinyMCE.execCommand("mceAddControl", true, this.attr('id'));
 				this.isChanged = function() {
 					return tinyMCE.getInstanceById(this.attr('id')).isDirty();

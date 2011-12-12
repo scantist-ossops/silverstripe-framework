@@ -190,6 +190,9 @@ class LeftAndMain extends Controller {
 
 		// Suppress behaviour/prototype validation instructions in CMS, not compatible with ajax loading of forms.
 		Validator::set_javascript_validation_handler('none');
+
+		// Needs to be loaded before entwine to ensure correct initialization order
+		HtmlEditorField::include_js();
 		
 		Requirements::combine_files(
 			'lib.js',
@@ -302,6 +305,12 @@ class LeftAndMain extends Controller {
 		foreach (self::$extra_requirements['themedcss'] as $file) {
 			Requirements::themedCSS($file[0], $file[1]);
 		}
+
+		Requirements::javascript(MCE_ROOT . 'tiny_mce_src.js');
+		Requirements::customScript(
+			sprintf("var ssTinyMceConfig = %s;", Convert::raw2json($htmlEditorConfig->getConfigArray())),
+			'htmlEditorConfig'
+		);
 
 		$dummy = null;
 		$this->extend('init', $dummy);
