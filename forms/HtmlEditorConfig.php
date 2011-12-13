@@ -280,13 +280,8 @@ class HtmlEditorConfig {
 		$config = $this->getConfigArray();
 
 		// plugins
-		$internalPlugins = array();
-		$externalPluginsJS = '';
 		foreach($this->plugins as $plugin => $path) {
-			if(!$path) {
-				$internalPlugins[] = $plugin;
-			} else {
-				$internalPlugins[] = '-' . $plugin;
+			if($path) {
 				$externalPluginsJS .= sprintf(
 					'tinymce.PluginManager.load("%s", "%s");' . "\n",
 					$plugin,
@@ -308,7 +303,15 @@ if((typeof tinyMCE != 'undefined')) {
 	 */
 	function getConfigArray() {
 		$config = $this->settings;
-		$config['_plugins'] = $this->plugins;
+
+		// Plugins
+		$plugins = array();
+		foreach($this->plugins as $plugin => $path) {
+			$plugins[] = ($path) ? '-' . $plugin : $plugin;
+		}
+		$config['plugins'] = implode(',', $plugins);
+
+		// Buttons
 		foreach ($this->buttons as $i=>$buttons) {
 			$config['theme_advanced_buttons'.$i] = implode(',', $buttons);
 		}
