@@ -1,6 +1,3 @@
-GB_OpenerObj = {};
-GB_RefreshLink = "";
-
 ComplexTableField = Class.create();
 ComplexTableField.prototype = {
 	
@@ -115,29 +112,35 @@ ComplexTableField.prototype = {
 			}
 		}
 		
-		if(this.GB_Caption) {
-			var title = this.GB_Caption;
-		} else {
-			// Getting the title from the URL is pretty ugly, but it works for now
-			type = popupLink.match(/[0-9]+\/([^\/?&]*)([?&]|$)/);
-			var title = (type && type[1]) ? type[1].ucfirst() : "";
-		}
-		
-		// reset internal greybox callbacks, they are not properly unregistered
-		// and fire multiple times on each subsequent popup close action otherwise
-		if(GB_ONLY_ONE) GB_ONLY_ONE.callback_fn = [];
-		
-		GB_show(
-			title, 
-			popupLink, 
-			this.popupHeight, 
-			this.popupWidth,
-			this.refresh.bind(this)
-		);
-		
-		if(e) {
-			Event.stop(e);
-		}
+		// Getting the title from the URL is pretty ugly, but it works for now
+		var type = popupLink.match(/[0-9]+\/([^\/?&]*)([?&]|$)/);
+		var title = jQuery(table).data('popupCaption');
+
+		// Create dialog and load iframe
+		var dialogId = 'ctf-dialog-' + this.id, dialog = jQuery('#' + dialogId), 
+			iframe = jQuery('<iframe src="' + popupLink + '" marginWidth="0" marginHeight="0" frameBorder="0" scrolling="auto" />');
+		if(!dialog.length) dialog = jQuery('<div class="ctf-dialog" id="' + dialogId + '" />');
+		iframe.bind('load', this.refresh.bind($(this.id)));
+		var adjustDimensions = function() { 
+			iframe.width(dialog.width()).height(dialog.height()); 
+		};
+		dialog.html(iframe).dialog({
+			title: title,
+			height: this.popupHeight, 
+			width: this.popupWidth,
+			modal: true,
+			open: function(e, ui) {
+				adjustDimensions();
+			},
+			close: function(e, ui) {
+				iframe.remove();
+			},
+			resize: function(e, ui) {
+				adjustDimensions();
+			}
+		}).css('overflow', 'hidden');
+				
+		if(e) Event.stop(e);
 		return false;
 	}
 }

@@ -1,4 +1,4 @@
-<div id="$id" class="$CSSClasses $extraClass field" href="$CurrentLink">
+<div id="$id" class="$CSSClasses $extraClass field" href="$CurrentLink" data-popup-width="$PopupWidth" data-popup-height="$PopupHeight" data-popup-caption="$PopupCaption">
   <div class="middleColumn">
 		<% if Markable %>
 			<% include TableListField_SelectOptions %>

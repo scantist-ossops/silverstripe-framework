@@ -291,15 +291,10 @@ class MemberTableField extends ComplexTableField {
 			return Director::redirectBack();
 		}
 		
-		$closeLink = sprintf(
-			'<small><a href="' . $_SERVER['HTTP_REFERER'] . '" onclick="javascript:window.top.GB_hide(); return false;">(%s)</a></small>',
-			_t('ComplexTableField.CLOSEPOPUP', 'Close Popup')
-		);
 		$message = sprintf(
-			_t('ComplexTableField.SUCCESSADD', 'Added %s %s %s'),
+			_t('ComplexTableField.SUCCESSADD', 'Added %s %s'),
 			$childData->singular_name(),
-			'<a href="' . $this->Link() . '">' . htmlspecialchars($childData->Title, ENT_QUOTES, 'UTF-8') . '</a>',
-			$closeLink
+			'<a href="' . $this->Link() . '">' . htmlspecialchars($childData->Title, ENT_QUOTES, 'UTF-8') . '</a>'
 		);
 		$form->sessionMessage($message, 'good');
 

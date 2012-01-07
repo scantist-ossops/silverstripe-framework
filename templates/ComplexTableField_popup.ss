@@ -6,8 +6,10 @@
 		<% base_tag %>
 	</head>
 	<body>
-		<div class="right $PopupClasses">
-			$DetailForm
+		<div class="cms cms-dialog $PopupClasses">
+			<div class="cms-dialog-content">
+				$DetailForm
+			</div>
 		</div>
 
 		<% if ShowPagination %>

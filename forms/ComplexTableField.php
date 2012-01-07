@@ -1,7 +1,7 @@
 <?php
 /**
  * Provides a tabuar list in your form with view, edit and add links to edit records
- * with a "has-one"-relationship. Detail-views are shown in a greybox-iframe.
+ * with a "has-one"-relationship. Detail-views are shown in an iframe.
  * Features pagination in the overview as well as the detail-views.
  *
  * CAUTION: You need to make sure that the original form-call to the main controller (e.g. EditForm())
@@ -103,7 +103,7 @@ class ComplexTableField extends TableListField {
 
 	/**
 	 * @var string Caption the popup will show (defaults to the selected action).
-	 * This is set by javascript and used by greybox.
+	 * This is set by javascript and used by the popup.
 	 */
 	protected $popupCaption = null;
 	
@@ -212,30 +212,11 @@ class ComplexTableField extends TableListField {
 	function FieldHolder() {
 		Requirements::javascript(THIRDPARTY_DIR . "/prototype/prototype.js");
 		Requirements::javascript(SAPPHIRE_DIR . "/javascript/prototype_improvements.js");
-		Requirements::javascript(THIRDPARTY_DIR . "/greybox/AmiJS.js");
-		Requirements::javascript(THIRDPARTY_DIR . "/greybox/greybox.js");
 		Requirements::add_i18n_javascript(SAPPHIRE_DIR . '/javascript/lang');
 		Requirements::javascript(SAPPHIRE_DIR . '/javascript/TableListField.js');
 		Requirements::javascript(SAPPHIRE_DIR . "/javascript/ComplexTableField.js");
-		Requirements::css(THIRDPARTY_DIR . "/greybox/greybox.css");
 		Requirements::css(SAPPHIRE_DIR . "/css/TableListField.css");
 		Requirements::css(SAPPHIRE_DIR . "/css/ComplexTableField.css");
-		
-		// set caption if required
-		if($this->popupCaption) {
-			$id = $this->id();
-			if(Director::is_ajax()) {
-			$js = <<<JS
-$('$id').GB_Caption = '$this->popupCaption';
-JS;
-				FormResponse::add($js);
-			} else {
-			$js = <<<JS
-Event.observe(window, 'load', function() { \$('$id').GB_Caption = '$this->popupCaption'; });
-JS;
-				Requirements::customScript($js);
-			}
-		}
 
 		// compute sourceItems here instead of Items() to ensure that
 		// pagination and filters are respected on template accessors
@@ -271,6 +252,13 @@ JS;
 	 */
 	function setPopupCaption($caption) {
 		$this->popupCaption = Convert::raw2js($caption);
+	}
+
+	/**
+	 * @return String
+	 */
+	function PopupCaption() {
+		return $this->popupCaption;
 	}
 
 	/**
@@ -476,20 +464,13 @@ JS;
 		$this->getDataList()->add($childData);
 		
 		$referrer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null;
-		
-		$closeLink = sprintf(
-			'<small><a href="%s" onclick="javascript:window.top.GB_hide(); return false;">(%s)</a></small>',
-			$referrer,
-			_t('ComplexTableField.CLOSEPOPUP', 'Close Popup')
-		);
-		
+				
 		$editLink = Controller::join_links($this->Link(), 'item/' . $childData->ID . '/edit');
 		
 		$message = sprintf(
-			_t('ComplexTableField.SUCCESSADD', 'Added %s %s %s'),
+			_t('ComplexTableField.SUCCESSADD', 'Added %s %s'),
 			$childData->singular_name(),
 			'<a href="' . $editLink . '">' . $childData->Title . '</a>',
-			$closeLink
 		);
 		
 		$form->sessionMessage($message, 'good');
@@ -649,16 +630,10 @@ class ComplexTableField_ItemRequest extends TableListField_ItemRequest {
 		
 		$referrer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null;
 		
-		$closeLink = sprintf(
-			'<small><a href="%s" onclick="javascript:window.top.GB_hide(); return false;">(%s)</a></small>',
-			$referrer,
-			_t('ComplexTableField.CLOSEPOPUP', 'Close Popup')
-		);
 		$message = sprintf(
-			_t('ComplexTableField.SUCCESSEDIT', 'Saved %s %s %s'),
+			_t('ComplexTableField.SUCCESSEDIT', 'Saved %s %s'),
 			$dataObject->singular_name(),
-			'<a href="' . $this->Link('edit') . '">"' . htmlspecialchars($dataObject->Title, ENT_QUOTES) . '"</a>',
-			$closeLink
+			'<a href="' . $this->Link('edit') . '">"' . htmlspecialchars($dataObject->Title, ENT_QUOTES) . '"</a>'
 		);
 		
 		$form->sessionMessage($message, 'good');
@@ -823,7 +798,7 @@ class ComplexTableField_Popup extends Form {
 					_t('CMSMain.SAVE', 'Save')
 				)
 			);	
-			$saveAction->addExtraClass('save');
+			$saveAction->addExtraClass('save ss-ui-button ss-ui-action-constructive');
 		}
 		
 		parent::__construct($controller, $name, $fields, $actions, $validator);
@@ -838,10 +813,8 @@ class ComplexTableField_Popup extends Form {
 		 * WARNING: DO NOT CHANGE THE ORDER OF THESE JS FILES
 		 * Some have special requirements.
 		 */
-		Requirements::css(SAPPHIRE_DIR . '/css/Form.css');
+		Requirements::css(SAPPHIRE_DIR . '/admin/css/screen.css');
 		Requirements::css(SAPPHIRE_DIR . '/css/ComplexTableField_popup.css');
-		Requirements::css(CMS_DIR . '/css/typography.css');
-		Requirements::css(CMS_DIR . '/css/cms_right.css');
 		Requirements::javascript(SAPPHIRE_DIR . "/thirdparty/prototype/prototype.js");
 		Requirements::javascript(SAPPHIRE_DIR . "/thirdparty/behaviour/behaviour.js");
 		Requirements::javascript(SAPPHIRE_DIR . "/javascript/prototype_improvements.js");
