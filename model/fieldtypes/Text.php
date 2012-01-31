@@ -19,18 +19,7 @@
 class Text extends StringField {
 
 	static $casting = array(
-		"AbsoluteLinks" => "Text",
-		"BigSummary" => "Text",
-		"ContextSummary" => "Text",
-		"FirstParagraph" => "Text",
-		"FirstSentence" => "Text",
-		"LimitCharacters" => "Text",
-		"LimitSentences" => "Text",
-		"Summary" => "Text",
-		'EscapeXML' => 'Text',
-		'LimitWordCount' => 'Text',
 		'LimitWordCountXML' => 'HTMLText',
-		'NoHTML' => 'Text',
 	);
 	
  	/**
@@ -67,7 +56,10 @@ class Text extends StringField {
 	}
 	
 	/**
-	 * Return the value of the field stripped of html tags
+	 * Return the value of the field stripped of html tags.
+	 * Note that any return values of other methods on this object
+	 * are escaped for safe HTML insertion automatically when used in SilverStripe templates (see {@link $default_cast}).
+	 * 
 	 * @return string
 	 */
 	function NoHTML() {

@@ -33,21 +33,28 @@ class ViewableDataTest extends SapphireTest {
 	public function testCastingXMLVal() {
 		$caster = new ViewableDataTest_Castable();
 		
-		$this->assertEquals('casted', $caster->XML_val('alwaysCasted'));
-		$this->assertEquals('noCastingInformation', $caster->XML_val('noCastingInformation'));
+		$this->assertEquals('casted', $caster->XML_val('alwaysCasted'),
+			'Respects explicit casting'
+		);
+		$this->assertEquals('casted', $caster->XML_val('noCastingInformation'),
+			'Falls back to $default_cast if no casting info is provided'
+		);
 		
 		// test automatic escaping is only applied by casted classes
-		$this->assertEquals('<foo>', $caster->XML_val('unsafeXML'));
+		$this->assertEquals('casted', $caster->XML_val('unsafeXML'));
 		$this->assertEquals('&lt;foo&gt;', $caster->XML_val('castedUnsafeXML'));
 	}
 	
 	public function testUncastedXMLVal() {
 		$caster = new ViewableDataTest_Castable();
+		$this->assertEquals($caster->XML_val('uncastedZeroValue'), 'casted');
+
+		$caster = new ViewableDataTest_CastableNoDefaults();
 		$this->assertEquals($caster->XML_val('uncastedZeroValue'), 0);
 	}
 	
 	public function testArrayCustomise() {
-		$viewableData    = new ViewableDataTest_Castable();
+		$viewableData    = new ViewableDataTest_CastableNoDefaults();
 		$newViewableData = $viewableData->customise(array (
 			'test'         => 'overwritten',
 			'alwaysCasted' => 'overwritten'
@@ -128,11 +135,44 @@ class ViewableDataTest extends SapphireTest {
 		$this->assertEquals('first last', $vd->FirstLast());
 	}
 
+	function testTemplateCastingOnTextDbField() {
+		$field = DBField::create('Text', '<script>');
+
+		$tests = array(
+			'$MyField' => '<script>',
+			'$MyField.LimitCharacters(100)' => '<script>',
+			'$MyField.XML' => '<script>',
+			'$MyField.RAW' => '<script>',
+		);
+		foreach($tests as $template => $expected) {
+			$viewer = SSViewer::fromString('');
+			$actual = $viewer->process(new ArrayData(array('MyField' => $field)));
+			$this->assertEquals(
+				$expected, 
+				$actual,
+				sprintf('Correctly casts Text value for template "%s"', $template)
+			);	
+		}
+	}
+
+	function testTemplateCastingWithUnescapedInput() {
+		foreach(array('LimitCharacters(100)', 'LimitWordCount(100)') as $method) {
+			$viewer = SSViewer::fromString('$MyField.' . $method);
+			$html = $viewer->process(new ArrayData(array('MyField' => DBField::create('Text', '<script>'))));
+			$this->assertEquals(
+				$html, 
+				'&lt;script&gt;', 
+				'Correctly escapes HTML entities for method: ' . $method
+			);			
+		}
+	}
+
 }
 
 /**#@+
  * @ignore
  */
+
 class ViewableDataTest_Castable extends ViewableData {
 	
 	public static $default_cast = 'ViewableData_Caster';
@@ -162,6 +202,10 @@ class ViewableDataTest_Castable extends ViewableData {
 		return $this->unsafeXML();
 	}
 	
+}
+
+class ViewableDataTest_CastableNoDefaults extends ViewableDataTest_Castable {
+	public static $default_cast = null;
 }
 
 class ViewableDataTest_RequiresCasting extends ViewableData {

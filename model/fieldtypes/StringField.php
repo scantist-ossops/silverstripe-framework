@@ -7,6 +7,9 @@
  *
  */
 abstract class StringField extends DBField {
+
+	public static $default_cast = 'Text';
+	
 	protected $nullifyEmpty = true;
 
 	static $casting = array(
