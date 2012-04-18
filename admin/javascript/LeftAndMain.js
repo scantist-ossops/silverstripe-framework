@@ -343,6 +343,31 @@ jQuery.noConflict();
 		});
 
 		/**
+		 * Determines if table cells are wider/narrower than they should be based on their percentage-based widths.
+		 * Relies on CSS declarations being present, and matching a "data-ratio" float on the cell element
+		 * (duplicated, as we can't read out the original CSS declarations).
+		 * If the cell is too wide/narrow, it means the elements contained in the cell are wider than
+		 * the cell "allowance", forcing the browser to adjust. 
+		 * 
+		 * To counteract this effect, ensure the cell children adapt to the available parent width,
+		 * in this case through setting table-display: fixed on the nested table.
+		 * 
+		 * Specific example: CMS top bar with breadcrumbs in one cell, and tabs in another cell.
+		 */
+		$('.cms .cms-flextable').entwine({
+			redraw: function() {
+				var table = this, tableWidth = this.width(), tolerance = 10 /* px */;
+				this.find('.cms-flextable-cell').each(function() {
+					var $this = $(this), contentEl = $this.find('.cms-flextable-content'),
+						ratio = parseFloat($this.data('ratio'))
+						isTooWide = (ratio && Math.abs($this.width() - ratio*tableWidth) > tolerance);
+
+					contentEl.css('table-layout', isTooWide ? 'fixed' : 'auto');
+				});
+			}
+		});
+
+		/**
 		 * Does an ajax loads of the link's 'href' attribute via ajax and displays any FormResponse messages from the CMS.
 		 * Little helper to avoid repetition, and make it easy to trigger actions via a link,
 		 * without reloading the page, changing the URL, or loading in any new panel content.

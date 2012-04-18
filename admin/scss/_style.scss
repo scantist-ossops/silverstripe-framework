@@ -115,20 +115,25 @@ body.cms {
 		text-shadow: darken($color-widget-bg, 15%) 1px 1px 0;
 		margin: 0;
 		display:table-cell;
+		width: 50%;
 		vertical-align:top;
-		width:60%;
 		.breadcrumbs-wrapper {
-			// display:table;
-			.crumb {
-				// display:table-cell;
-				display: inline;
+			display:table;
+			// changes to fixed through JS, see $('.cms-flextable')
+			table-layout: auto; 
+			width: 100%;
+			.crumb-wrapper {
+				display:table-cell;
 				line-height:26px;
 				padding:0 5px;
+				text-overflow: ellipsis;
+					white-space: nowrap;
+  				overflow: hidden;
 			}
-			.crumb:first-child {
+			.crumb-wrapper:first-child {
 				padding-left:0px;
 			}
-			.crumb:last-child {
+			.crumb-wrapper:last-child {
 				padding-right:0px;
 			}
 		}
@@ -147,11 +152,13 @@ body.cms {
 	.cms-content-header-tabs {
 		display:table-cell;
 		white-space:nowrap;
-		width:40%;
+		width:50%;
 		.ui-tabs-nav {
+			display: table;
 			float:right;
 			margin-right:$grid-x*4;
 			li {
+				display: table-cell;
 				a {
 					font-weight: bold;
 					line-height: $grid-y * 2;
