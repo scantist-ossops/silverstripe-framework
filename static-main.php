@@ -79,10 +79,12 @@ if (
 		include_once $homepageMapLocation;
 		$file = isset($homepageMap[$_SERVER['HTTP_HOST']]) ? $homepageMap[$_SERVER['HTTP_HOST']] : $file;
 	}
-	
-	// Find file by extension (either *.html or *.php)
-	$file = preg_replace('/[^a-zA-Z0-9\/\-_]/si', '-', $file);
 
+	// Encode each part of the path individually, in order to support multibyte paths.
+	// SiteTree.URLSegment and hence the static folder and filenames are stored in encoded form,
+	// to avoid filesystem incompatibilities.
+	$file = implode('/', array_map('rawurlencode', explode('/', $file)));
+	// Find file by extension (either *.html or *.php)
 	if (file_exists($cacheBaseDir . $cacheDir . $file . '.html')) {
 		header('X-SilverStripe-Cache: hit at '.@date('r'));
 		echo file_get_contents($cacheBaseDir . $cacheDir . $file . '.html');
