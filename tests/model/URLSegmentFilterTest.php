@@ -1,6 +1,6 @@
 <?php
 /**
- * @package sapphire
+ * @package framework
  * @subpackage tests
  */
 class URLSegmentFilterTest extends SapphireTest {
@@ -27,8 +27,25 @@ class URLSegmentFilterTest extends SapphireTest {
 		$f = new URLSegmentFilter();
 		$f->setAllowMultibyte(true);
 		$this->assertEquals(
-			'brötchen', 
+			urlencode('brötchen'), 
 			$f->filter('Brötchen')
+		);
+	}
+
+	function testReplacements() {
+		$f = new URLSegmentFilter();
+		$this->assertEquals(
+			'tim-and-struppi', 
+			$f->filter('Tim&Struppi')
+		);
+
+		// Customize replacements
+		$rs = $f->getReplacements();
+		$rs['/&/u'] = '-und-';
+		$f->setReplacements($rs);
+		$this->assertEquals(
+			'tim-und-struppi', 
+			$f->filter('Tim&Struppi')
 		);
 	}
 	
