@@ -93,7 +93,7 @@ class ModelAsController extends Controller implements NestedController {
 			'SiteTree', 
 			sprintf(
 				'"URLSegment" = \'%s\' %s', 
-				Convert::raw2sql($URLSegment), 
+				Convert::raw2sql(rawurlencode($URLSegment)), 
 				(SiteTree::nested_urls() ? 'AND "ParentID" = 0' : null)
 			)
 		);
@@ -148,7 +148,7 @@ class ModelAsController extends Controller implements NestedController {
 	 * @return SiteTree
 	 */
 	static function find_old_page($URLSegment,$parentID = 0, $ignoreNestedURLs = false) {
-		$URLSegment = Convert::raw2sql($URLSegment);
+		$URLSegment = Convert::raw2sql(rawurlencode($URLSegment));
 		
 		$useParentIDFilter = SiteTree::nested_urls() && $parentID;
 				

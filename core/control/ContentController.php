@@ -146,7 +146,7 @@ class ContentController extends Controller {
 			Translatable::disable_locale_filter();
 			// look for a page with this URLSegment
 			$child = DataObject::get_one('SiteTree', sprintf (
-				"\"ParentID\" = %s AND \"URLSegment\" = '%s'", $this->ID, Convert::raw2sql($action)
+				"\"ParentID\" = %s AND \"URLSegment\" = '%s'", $this->ID, Convert::raw2sql(rawurlencode($action))
 			));
 			Translatable::enable_locale_filter();
 			
