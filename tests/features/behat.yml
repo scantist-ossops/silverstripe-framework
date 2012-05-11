@@ -1,0 +1,6 @@
+default:
+  context:
+    parameters:
+      base_url: http://localhost/ss/
+      default_session: webdriver
+      javascript_session: webdriver
