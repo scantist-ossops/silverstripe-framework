@@ -86,7 +86,13 @@ if (
 	// Encode each part of the path individually, in order to support multibyte paths.
 	// SiteTree.URLSegment and hence the static folder and filenames are stored in encoded form,
 	// to avoid filesystem incompatibilities.
-	$file = implode('/', array_map('rawurlencode', explode('/', $file)));
+	$parts = array_map('rawurlencode', explode('/', $file));
+	foreach($parts as $i => $part) {
+		// Avoid filesystem length limits by shortening the path through hashing instead
+		if(strlen($part) > 250) $parts[$i] = md5($part);
+	}
+	$file = implode('/', $parts);
+
 	// Find file by extension (either *.html or *.php)
 	if (file_exists($cacheBaseDir . $cacheDir . $file . '.html')) {
 		header('X-SilverStripe-Cache: hit at '.@date('r'));
