@@ -1,0 +1,30 @@
+{
+	"name": "silverstripe/framework",
+	"description": "The SilverStripe framework",
+	"homepage": "http://silverstripe.org",
+	"license": "BSD-3-Clause",
+	"keywords": ["silverstripe", "framework"],
+	"authors": [
+		{
+			"name": "SilverStripe",
+			"homepage": "http://silverstripe.com"
+		},
+		{
+			"name": "The SilverStripe Community",
+			"homepage": "http://silverstripe.org"
+		}
+	],
+	"require": {
+		"php": ">=5.3.2",
+		"zendframework/zend-cache": "2.*",
+		"zendframework/zend-eventmanager": "2.*",
+		"zendframework/zend-loader": "2.*",
+		"zendframework/zend-servicemanager": "2.*",
+		"zendframework/zend-stdlib": "2.*"
+	},
+	"autoload": {
+		"psr-0": {
+			"SilverStripe": "src/"
+		}
+	}
+}
