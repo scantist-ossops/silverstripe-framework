@@ -1,21 +1,31 @@
 <?php
 /**
- * Tests for the {@link SS_FileFinder} class.
+ * @package framework
+ * @subpackage tests
+ */
+
+namespace SilverStripe\Framework\Tests\Filesystem;
+
+use SilverStripe\Framework\Filesystem\FileFinder;
+use SilverStripe\Framework\Testing\TestCase;
+
+/**
+ * Tests for the {@link PhpParser} class.
  *
  * @package framework
  * @subpackage tests
  */
-class FileFinderTest extends SapphireTest {
+class FileFinderTest extends TestCase {
 
 	protected $base;
 
 	public function __construct() {
-		$this->base = dirname(__FILE__) . '/fixtures/filefinder';
+		$this->base = __DIR__ . '/fixtures/filefinder';
 		parent::__construct();
 	}
 
 	public function testBasicOperation() {
-		$this->assertFinderFinds(new SS_FileFinder(), array(
+		$this->assertFinderFinds(new FileFinder(), array(
 			'file1.txt',
 			'file2.txt',
 			'dir1/dir1file1.txt',
@@ -29,12 +39,12 @@ class FileFinderTest extends SapphireTest {
 	 * @expectedException InvalidArgumentException
 	 */
 	public function testInvalidOptionThrowsException() {
-		$finder = new SS_FileFinder();
+		$finder = new FileFinder();
 		$finder->setOption('this_doesnt_exist', 'ok');
 	}
 
 	public function testFilenameRegex() {
-		$finder = new SS_FileFinder();
+		$finder = new FileFinder();
 		$finder->setOption('name_regex', '/file2\.txt$/');
 
 		$this->assertFinderFinds(
@@ -46,7 +56,7 @@ class FileFinderTest extends SapphireTest {
 	}
 
 	public function testIgnoreFiles() {
-		$finder = new SS_FileFinder();
+		$finder = new FileFinder();
 		$finder->setOption('ignore_files', array('file1.txt', 'dir1file1.txt', 'dir2file1.txt'));
 
 		$this->assertFinderFinds(
@@ -59,7 +69,7 @@ class FileFinderTest extends SapphireTest {
 	}
 
 	public function testIgnoreDirs() {
-		$finder = new SS_FileFinder();
+		$finder = new FileFinder();
 		$finder->setOption('ignore_dirs', array('dir2'));
 
 		$this->assertFinderFinds(
@@ -73,7 +83,7 @@ class FileFinderTest extends SapphireTest {
 	}
 
 	public function testMinDepth() {
-		$finder = new SS_FileFinder();
+		$finder = new FileFinder();
 		$finder->setOption('min_depth', 2);
 
 		$this->assertFinderFinds(
@@ -85,7 +95,7 @@ class FileFinderTest extends SapphireTest {
 	}
 
 	public function testMaxDepth() {
-		$finder = new SS_FileFinder();
+		$finder = new FileFinder();
 		$finder->setOption('max_depth', 1);
 
 		$this->assertFinderFinds(
