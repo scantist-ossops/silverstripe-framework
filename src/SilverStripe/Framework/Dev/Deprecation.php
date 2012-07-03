@@ -1,4 +1,12 @@
 <?php
+/**
+ * @package framework
+ * @subpackage dev
+ */
+
+namespace SilverStripe\Framework\Dev;
+
+use SilverStripe\Framework\Core\Application;
 
 /**
  * Handles raising an notice when accessing a deprecated method
@@ -87,9 +95,8 @@ class Deprecation {
 
 		$callingfile = $backtrace[1]['file'];
 
-		global $manifest;
-		foreach ($manifest->getModules() as $name => $path) {
-			if (strpos($callingfile, $path) === 0) {
+		foreach(Application::curr()->getModules() as $name => $module) {
+			if (strpos($callingfile, $module->getPath()) === 0) {
 				return $name;
 			}
 		}
@@ -128,7 +135,7 @@ class Deprecation {
 	 */
 	public static function notice($atVersion, $string = '', $scope = Deprecation::SCOPE_METHOD) {
 		// Never raise deprecation notices in a live environment
-		if(Director::isLive()) return;
+		if(\Director::isLive()) return;
 
 		// If you pass #.#, assume #.#.0
 		if(preg_match('/^[0-9]+\.[0-9]+$/', $atVersion)) $atVersion .= '.0';
@@ -145,10 +152,10 @@ class Deprecation {
 		// Check the version against the notice version
 		if ($checkVersion && version_compare($checkVersion, $atVersion, '>=')) {
 			// Get the calling scope
-			if($scope == Deprecation::SCOPE_METHOD) {
+			if($scope == self::SCOPE_METHOD) {
 				if (!$backtrace) $backtrace = debug_backtrace(0);
 				$caller = self::get_called_method_from_trace($backtrace);
-			} elseif($scope == Deprecation::SCOPE_CLASS) {
+			} elseif($scope == self::SCOPE_CLASS) {
 				if (!$backtrace) $backtrace = debug_backtrace(0);
 				$caller = isset($backtrace[1]['class']) ? $backtrace[1]['class'] : '(unknown)';
 			} else {

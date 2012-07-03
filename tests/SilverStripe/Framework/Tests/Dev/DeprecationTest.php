@@ -1,16 +1,15 @@
 <?php
+/**
+ * @package framework
+ * @subpackage tests
+ */
 
-class DeprecationTest_Deprecation extends Deprecation {
-	public static function get_module() {
-		return self::get_calling_module_from_trace(debug_backtrace(0));
-	}
+namespace SilverStripe\Framework\Tests\Dev;
 
-	public static function get_method() {
-		return self::get_called_method_from_trace(debug_backtrace(0));
-	}
-}
+use SilverStripe\Framework\Dev\Deprecation;
+use SilverStripe\Framework\Testing\TestCase;
 
-class DeprecationTest extends SapphireTest {
+class DeprecationTest extends TestCase {
 
 	static $originalVersionInfo;
 
@@ -67,7 +66,10 @@ class DeprecationTest extends SapphireTest {
 	}
 
 	function testMethodNameCalculation() {
-		$this->assertEquals(DeprecationTest_Deprecation::get_method(), 'DeprecationTest->testMethodNameCalculation');
+		$this->assertEquals(
+			__CLASS__ . '->testMethodNameCalculation',
+			DeprecationTest_Deprecation::get_method()
+		);
 	}
 
 	/**
@@ -102,4 +104,17 @@ class DeprecationTest extends SapphireTest {
 		Deprecation::notice('2.0', 'Deprecation test passed');
 	}
 
+}
+
+/**
+ * @ignore
+ */
+class DeprecationTest_Deprecation extends Deprecation {
+	public static function get_module() {
+		return self::get_calling_module_from_trace(debug_backtrace(0));
+	}
+
+	public static function get_method() {
+		return self::get_called_method_from_trace(debug_backtrace(0));
+	}
 }
