@@ -1,0 +1,24 @@
+except: { envvarset: ENV }
+---
+Config:
+  array: [envexcept]
+---
+only: { constantdefined: CONSTANT }
+---
+Config:
+  array: [constonly]
+---
+only: { environment: dev }
+---
+Config:
+  array: [devonly]
+---
+only: { moduleexists: moduleb }
+---
+Config:
+  array: [modulebonly]
+---
+only: { moduleexists: moduled }
+---
+Config:
+  array: [moduledonly]

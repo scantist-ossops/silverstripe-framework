@@ -1,0 +1,5 @@
+name: modulea
+after: moduleb/moduleb#moduleb
+---
+Config:
+  priority: [modulea]

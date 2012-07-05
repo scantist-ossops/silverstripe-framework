@@ -1,0 +1,5 @@
+name: modulec
+before: moduleb/moduleb#moduleb
+---
+Config:
+  priority: [modulec]
