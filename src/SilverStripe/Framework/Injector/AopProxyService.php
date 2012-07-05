@@ -1,4 +1,10 @@
 <?php
+/**
+ * @package framework
+ * @subpackage injector
+ */
+
+namespace SilverStripe\Framework\Injector;
 
 /**
  * A class that proxies another, allowing various functionality to be
@@ -36,6 +42,6 @@ class AopProxyService {
 
 				return $result;
 			}
-        }
+		}
 	}
 }

@@ -1,4 +1,13 @@
 <?php
+/**
+ * @package framework
+ * @subpackage injector
+ */
+
+namespace SilverStripe\Framework\Injector;
+
+use SilverStripe\Framework\Core\Application;
+use SilverStripe\Framework\Dev\Deprecation;
 
 /**
  * A simple injection manager that manages creating objects and injecting
@@ -9,7 +18,7 @@
  * In its simplest form, the dependency injector can be used as a mechanism to
  * instantiate objects. Simply call
  * 
- * Injector::inst()->get('ClassName')
+ * $injector->get('ClassName')
  * 
  * and a new instance of ClassName will be created and returned to you. 
  * 
@@ -104,7 +113,7 @@
  * 
  * will have setPermissionService called if
  * 
- * * Injector::inst()->setAutoScanProperties(true) is called and
+ * * $injector->setAutoScanProperties(true) is called and
  * * A service named 'PermissionService' has been configured 
  * 
  * @author marcus@silverstripe.com.au
@@ -164,9 +173,14 @@ class Injector {
 	 * which simply creates a new class via 'new', however this could be overridden
 	 * to use, for example, SilverStripe's Object::create() method.
 	 *
-	 * @var InjectionCreator
+	 * @var InjectionCreatorInterface
 	 */
 	protected $objectCreator;
+
+	/**
+	 * @var ServiceConfigurationLocatorInterface
+	 */
+	protected $configLocator;
 
 	/**
 	 * Create a new injector. 
@@ -198,25 +212,13 @@ class Injector {
 	}
 
 	/**
-	 * If a user wants to use the injector as a static reference
-	 *
-	 * @param array $config
-	 * @return Injector
+	 * @deprecated 3.1 Use {@link Application::getInjector()}
 	 */
-	public static function inst($config=null) {
-		if (!self::$instance) {
-			self::$instance = new Injector($config);
-		}
-		return self::$instance;
+	public static function inst() {
+		Deprecation::notice('3.1',' Use Application->getInjector()');
+		return Application::curr()->getInjector();
 	}
-
-	/**
-	 * @param Injector $inst
-	 */
-	public static function set_inst(Injector $inst) {
-		self::$instance = $inst;
-	}
-
+	
 	/**
 	 * Indicate whether we auto scan injected objects for properties to set. 
 	 *
@@ -229,15 +231,15 @@ class Injector {
 	/**
 	 * Sets the object to use for creating new objects
 	 *
-	 * @param InjectionCreator $obj 
+	 * @param InjectionCreatorInterface $obj 
 	 */
-	public function setObjectCreator($obj) {
+	public function setObjectCreator(InjectionCreatorInterface $obj) {
 		$this->objectCreator = $obj;
 	}
 	
 	/**
 	 * Accessor (for testing purposes)
-	 * @return InjectionCreator
+	 * @return InjectionCreatorInterface
 	 */
 	public function getObjectCreator() {
 		return $this->objectCreator;
@@ -245,15 +247,15 @@ class Injector {
 	
 	/**
 	 * Set the configuration locator 
-	 * @param ServiceConfigurationLocator $configLocator 
+	 * @param ServiceConfigurationLocatorInterface $configLocator 
 	 */
-	public function setConfigLocator($configLocator) {
+	public function setConfigLocator(ServiceConfigurationLocatorInterface$configLocator) {
 		$this->configLocator = $configLocator;
 	}
 	
 	/**
 	 * Retrieve the configuration locator 
-	 * @return ServiceConfigurationLocator 
+	 * @return ServiceConfigurationLocatorInterface 
 	 */
 	public function getConfigLocator() {
 		return $this->configLocator;
@@ -530,10 +532,10 @@ class Injector {
 		if (!$mapping) {
 			if ($this->autoScanProperties) {
 				// we use an object to prevent array copies if/when passed around
-				$mapping = new ArrayObject();
+				$mapping = new \ArrayObject();
 
 				// This performs public variable based injection
-				$robj = new ReflectionObject($object);
+				$robj = new \ReflectionObject($object);
 				$properties = $robj->getProperties();
 
 				foreach ($properties as $propertyObject) {
@@ -551,7 +553,7 @@ class Injector {
 				}
 
 				// and this performs setter based injection
-				$methods = $robj->getMethods(ReflectionMethod::IS_PUBLIC);
+				$methods = $robj->getMethods(\ReflectionMethod::IS_PUBLIC);
 
 				foreach ($methods as $methodObj) {
 					/* @var $methodObj ReflectionMethod */
@@ -584,7 +586,7 @@ class Injector {
 			}
 		}
 
-		$injections = Config::inst()->get(get_class($object), 'dependencies');
+		$injections = $this->get('Config')->get(get_class($object), 'dependencies');
 		// If the type defines some injections, set them here
 		if ($injections && count($injections)) {
 			foreach ($injections as $property => $value) {
@@ -672,7 +674,8 @@ class Injector {
 		if ($replace != null) {
 			$registerAt = $replace;
 		}
-		
+
+		$this->specs[$registerAt] = array('class' => get_class($service));
 		$this->serviceCache[$registerAt] = $service;
 		$this->inject($service);
 	}
@@ -681,7 +684,7 @@ class Injector {
 	 * Register a service with an explicit name
 	 */
 	public function registerNamedService($name, $service) {
-		$this->specs[$name] = array('class' => get_class($service));
+		$this->specs[$registerAt] = array('class' => get_class($service));
 		$this->serviceCache[$name] = $service;
 		$this->inject($service);
 	}
@@ -759,13 +762,15 @@ class Injector {
 				return $this->serviceCache[$serviceName];
 			}
 		}
-		
-		$config = $this->configLocator->locateConfigFor($name);
-		if ($config) {
-			$this->load(array($name => $config));
-			if (isset($this->specs[$name])) {
-				$spec = $this->specs[$name];
-				return $this->instantiate($spec, $name);
+
+		if($locator = $this->getConfigLocator()) {
+			$config = $locator->locateConfigFor($name);
+			if ($config) {
+				$this->load(array($name => $config));
+				if (isset($this->specs[$name])) {
+					$spec = $this->specs[$name];
+					return $this->instantiate($spec, $name);
+				}
 			}
 		}
 
@@ -817,95 +822,5 @@ class Injector {
 	 */
 	public function createWithArgs($name, $constructorArgs) {
 		return $this->get($name, false, $constructorArgs);
-	}
-}
-
-/**
- * A class for creating new objects by the injector
- */
-class InjectionCreator {
-	/**
-	 *
-	 * @param string $object
-	 *					A string representation of the class to create
-	 * @param array $params
-	 *					An array of parameters to be passed to the constructor
-	 */
-	public function create(Injector $injector, $class, $params = array()) {
-		$reflector = new ReflectionClass($class);
-		if (count($params)) {
-			return $reflector->newInstanceArgs($injector->convertServiceProperty($params));
-		}
-		return $reflector->newInstance();
-	}
-}
-
-class SilverStripeInjectionCreator {
-	/**
-	 *
-	 * @param string $object
-	 *					A string representation of the class to create
-	 * @param array $params
-	 *					An array of parameters to be passed to the constructor
-	 */
-	public function create(Injector $injector, $class, $params = array()) {
-		$class = Object::getCustomClass($class);
-		$reflector = new ReflectionClass($class);
-		return $reflector->newInstanceArgs($injector->convertServiceProperty($params));
-	}
-}
-
-/**
- * Used to locate configuration for a particular named service. 
- * 
- * If it isn't found, return null 
- */
-class ServiceConfigurationLocator {
-	public function locateConfigFor($name) {
-		
-	}
-}
-
-/**
- * Use the SilverStripe configuration system to lookup config for a particular service
- */
-class SilverStripeServiceConfigurationLocator {
-	
-	private $configs = array();
-	
-	public function locateConfigFor($name) {
-		
-		if (isset($this->configs[$name])) {
-			return $this->configs[$name];
-		}
-		
-		$config = Config::inst()->get('Injector', $name);
-		if ($config) {
-			$this->configs[$name] = $config;
-			return $config;
-		}
-		
-		// do parent lookup if it's a class
-		if (class_exists($name)) {
-			$parents = array_reverse(array_keys(ClassInfo::ancestry($name)));
-			array_shift($parents);
-			foreach ($parents as $parent) {
-				// have we already got for this? 
-				if (isset($this->configs[$parent])) {
-					return $this->configs[$parent];
-				}
-				$config = Config::inst()->get('Injector', $parent);
-				if ($config) {
-					$this->configs[$name] = $config;
-					return $config;
-				} else {
-					$this->configs[$parent] = false;
-				}
-			}
-			
-			// there is no parent config, so we'll record that as false so we don't do the expensive
-			// lookup through parents again
-			$this->configs[$name] = false;
-		}
 	}
 }

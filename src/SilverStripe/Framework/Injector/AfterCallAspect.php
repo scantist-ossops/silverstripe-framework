@@ -1,4 +1,10 @@
 <?php
+/**
+ * @package framework
+ * @subpackage injector
+ */
+
+namespace SilverStripe\Framework\Injector;
 
 /**
  * An AfterCallAspect is run after a method is executed

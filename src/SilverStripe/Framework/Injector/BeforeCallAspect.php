@@ -1,4 +1,10 @@
 <?php
+/**
+ * @package framework
+ * @subpackage injector
+ */
+
+namespace SilverStripe\Framework\Injector;
 
 /**
  * A BeforeCallAspect is run before a method is executed
@@ -25,3 +31,4 @@ interface BeforeCallAspect {
 	 */
 	public function beforeCall($proxied, $method, $args);
 }
+

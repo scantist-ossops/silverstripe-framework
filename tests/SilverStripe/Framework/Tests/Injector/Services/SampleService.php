@@ -1,5 +1,7 @@
 <?php
-
+/**
+ * @ignore
+ */
 class SampleService
 {
     public $constructorVarOne;
