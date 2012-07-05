@@ -157,21 +157,24 @@ abstract class Object {
 	 */
 	static function parse_class_spec($classSpec) {
 		$tokens = token_get_all("<?php $classSpec");
-		$class = null;
+		$class = '';
 		$args = array();
 		$passedBracket = false;
 		
 		// Keep track of the current bucket that we're putting data into
 		$bucket = &$args;
 		$bucketStack = array();
-		
+
+		array_shift($tokens);
+
+		while($tokens && is_array($tokens[0]) && ($tokens[0][0] == T_STRING || $tokens[0][0] == T_NS_SEPARATOR)) {
+			$token = array_shift($tokens);
+			$class .= $token[1];
+		}
+
 		foreach($tokens as $token) {
 			$tName = is_array($token) ? $token[0] : $token;
-			// Get the class naem
-			if($class == null && is_array($token) && $token[0] == T_STRING) {
-				$class = $token[1];
-			// Get arguments
-			} else if(is_array($token)) {
+			if(is_array($token)) {
 				switch($token[0]) {
 				case T_CONSTANT_ENCAPSED_STRING:
 					$argString = $token[1];
@@ -195,6 +198,7 @@ abstract class Object {
 					switch($token[1]) {
 						case 'true': $args[] = true; break;
 						case 'false': $args[] = false; break;
+						case 'null': $args[] = null; break;
 						default: throw new Exception("Bad T_STRING arg '{$token[1]}'");
 					}
 				

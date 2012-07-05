@@ -348,6 +348,10 @@ class ObjectTest extends SapphireTest {
 			array('Enum',array(array('Accepted', 'Pending', 'Declined', array('UnsubmittedA','UnsubmittedB')), 'Unsubmitted')),
 			Object::parse_class_spec("Enum(array('Accepted', 'Pending', 'Declined', array('UnsubmittedA','UnsubmittedB')), 'Unsubmitted')")
 		);
+		// Namespace
+		$this->assertEquals(
+			array('Foo\\Bar', array()), Object::parse_class_spec('Foo\\Bar')
+		);
 	}
 }
 
