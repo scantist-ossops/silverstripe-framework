@@ -511,7 +511,7 @@ class DateField_View_JQuery extends Object {
 	function onAfterRender($html) {
 		if($this->getField()->getConfig('showcalendar')) {
 			Requirements::javascript(THIRDPARTY_DIR . '/jquery/jquery.js');
-			Requirements::css(THIRDPARTY_DIR . '/jquery-ui-themes/smoothness/jquery-ui.css');
+			Requirements::css(THIRDPARTY_DIR . '/jquery-ui-themes/base/jquery-ui.css');
 			Requirements::javascript(FRAMEWORK_DIR . '/thirdparty/jquery-ui/jquery-ui.js');
 			
 			// Include language files (if required)

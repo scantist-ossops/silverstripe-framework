@@ -341,7 +341,7 @@ class UploadField extends FileField {
 			FRAMEWORK_DIR . '/javascript/UploadField_downloadtemplate.js',
 			FRAMEWORK_DIR . '/javascript/UploadField.js',
 		));
-		Requirements::css(THIRDPARTY_DIR . '/jquery-ui-themes/smoothness/jquery-ui.css'); // TODO hmmm, remove it?
+		Requirements::css(THIRDPARTY_DIR . '/jquery-ui-themes/base/jquery-ui.css'); // TODO hmmm, remove it?
 		Requirements::css(FRAMEWORK_DIR . '/css/UploadField.css');
 
 		$config = array(

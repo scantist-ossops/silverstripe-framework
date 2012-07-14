@@ -61,7 +61,7 @@ class FileIFrameField extends FileField {
 	public function Field($properties = array()) {
 		Deprecation::notice('3.0', 'Use UploadField');
 
-		Requirements::css(FRAMEWORK_DIR . '/thirdparty/jquery-ui-themes/smoothness/jquery-ui.css');
+		Requirements::css(FRAMEWORK_DIR . '/thirdparty/jquery-ui-themes/base/jquery-ui.css');
 		Requirements::add_i18n_javascript(FRAMEWORK_DIR . '/javascript/lang');
 		Requirements::javascript(FRAMEWORK_DIR . '/thirdparty/jquery/jquery.js');
 		Requirements::javascript(FRAMEWORK_DIR . '/thirdparty/jquery-ui/jquery-ui.js');

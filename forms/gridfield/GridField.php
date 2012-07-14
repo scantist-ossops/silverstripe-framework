@@ -212,7 +212,7 @@ class GridField extends FormField {
 	 * @return string
 	 */
 	public function FieldHolder($properties = array()) {
-		Requirements::css(THIRDPARTY_DIR . '/jquery-ui-themes/smoothness/jquery-ui.css');
+		Requirements::css(THIRDPARTY_DIR . '/jquery-ui-themes/base/jquery-ui.css');
 		Requirements::css(FRAMEWORK_DIR . '/css/GridField.css');
 
 		Requirements::javascript(THIRDPARTY_DIR . '/jquery/jquery.js');

@@ -368,7 +368,7 @@ class Security extends Controller {
 			
 			Requirements::javascript(FRAMEWORK_DIR . '/thirdparty/jquery-entwine/dist/jquery.entwine-dist.js');
 			
-			Requirements::css(THIRDPARTY_DIR . '/jquery-ui-themes/smoothness/jquery-ui.css');
+			Requirements::css(THIRDPARTY_DIR . '/jquery-ui-themes/base/jquery-ui.css');
 			
 			Requirements::css(FRAMEWORK_DIR . '/css/Security_login.css');
 			

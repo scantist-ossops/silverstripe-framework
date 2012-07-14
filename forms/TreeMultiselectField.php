@@ -86,7 +86,7 @@ class TreeMultiselectField extends TreeDropdownField {
 		Requirements::javascript(FRAMEWORK_DIR . '/thirdparty/jstree/jquery.jstree.js');
 		Requirements::javascript(FRAMEWORK_DIR . '/javascript/TreeDropdownField.js');
 		
-		Requirements::css(FRAMEWORK_DIR . '/thirdparty/jquery-ui-themes/smoothness/jquery-ui.css');
+		Requirements::css(FRAMEWORK_DIR . '/thirdparty/jquery-ui-themes/base/jquery-ui.css');
 		Requirements::css(FRAMEWORK_DIR . '/css/TreeDropdownField.css');
 	
 		$value = '';
