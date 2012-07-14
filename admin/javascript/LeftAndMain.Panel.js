@@ -36,8 +36,8 @@
 				// Create default controls unless they already exist.
 				if(!this.find('.cms-panel-toggle').length) {
 					var container = $("<div class='cms-panel-toggle south'></div>")
-						.append('<a class="toggle-expand" href="#"><span>&raquo;</span></a>')
-						.append('<a class="toggle-collapse" href="#"><span>&laquo;</span></a>');
+						.append('<a class="toggle-expand" href="#" title="' + ss.i18n._t('Panel.Expand', 'Expand Panel') + '"><span>&raquo;</span></a>')
+						.append('<a class="toggle-collapse" href="#" title="' + ss.i18n._t('Panel.Collapse', 'Collapse Panel') + '"><span>&laquo;</span></a>');
 						
 					this.append(container);
 				}
@@ -47,6 +47,7 @@
 				
 				// Assumes the collasped width is indicated by the toggle, or by an optional collapsed view
 				var collapsedContent = this.find('.cms-panel-content-collapsed');
+				collapsedContent.attr('role', 'link');
 				this.setWidthCollapsed(collapsedContent.length ? collapsedContent.innerWidth() : this.find('.toggle-expand').innerWidth());
 
 				// Set inital collapsed state, either from cookie or from default CSS classes
@@ -76,6 +77,8 @@
 				}
 
 				this.toggleClass('collapsed', !bool);
+				this.attr('aria-expanded', bool ? 'true' : 'false');
+
 				var newWidth = bool ? this.getWidthExpanded() : this.getWidthCollapsed();
 				
 				this.width(newWidth); // the content panel width always stays in "expanded state" to avoid floating elements
@@ -88,6 +91,9 @@
 					this.find('.cms-panel-content')[bool ? 'show' : 'hide']();
 					this.find('.cms-panel-content-collapsed')[bool ? 'hide' : 'show']();
 				}
+
+				// Focus first element if we're expanding the panel
+				if(bool && !silent) this.find(':input:visible:first').focus();
 
 				// Save collapsed state in cookie
 				if($.cookie && this.attr('id')) $.cookie('cms-panel-collapsed-' + this.attr('id'), !bool, {path: '/', expires: 31});

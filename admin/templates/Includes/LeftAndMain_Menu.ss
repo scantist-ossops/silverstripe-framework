@@ -1,8 +1,8 @@
 <div class="cms-menu cms-panel cms-panel-layout west" id="cms-menu" data-layout-type="border">
-	<div class="cms-logo-header north">
+	<div class="cms-logo-header north" role="banner">
 		<div class="cms-logo">
-			<a href="http://www.silverstripe.org/" target="_blank" title="SilverStripe (Version - $CMSVersion)">
-				SilverStripe <% if CMSVersion %><abbr class="version">$CMSVersion</abbr><% end_if %>
+			<a href="http://www.silverstripe.org/" target="_blank" title="SilverStripe (Version - $CMSVersion)" aria-hidden="true">
+				SilverStripe <% if CMSVersion %><abbr class="version" aria-hidden="true">$CMSVersion</abbr><% end_if %>
 			</a>
 			<span><% if SiteConfig %>$SiteConfig.Title<% else %>$ApplicationName<% end_if %></span>
 		</div>
@@ -12,7 +12,7 @@
 			<% with CurrentMember %>
 				<span>
 					<% _t('Hello','Hi') %>
-					<a href="{$AbsoluteBaseURL}admin/myprofile" class="profile-link ss-ui-dialog-link" data-popupclass="edit-profile-popup">
+					<a href="{$AbsoluteBaseURL}admin/myprofile" class="profile-link ss-ui-dialog-link" data-popupclass="edit-profile-popup" title="<% _t('CMSMenu.EditProfile', 'Edit your profile') %>">
 						<% if FirstName && Surname %>$FirstName $Surname<% else_if FirstName %>$FirstName<% else %>$Email<% end_if %>
 					</a>
 				</span>
@@ -21,7 +21,7 @@
 	</div>
 		
 	<div class="cms-panel-content center">
-		<ul class="cms-menu-list">
+		<ul class="cms-menu-list" role="navigation" aria-label="Main sections">
 		<% loop MainMenu %>
 			<li class="$LinkingMode $FirstLast <% if LinkingMode == 'link' %><% else %>opened<% end_if %>" id="Menu-$Code" title="$Title.ATT">
 				<a href="$Link" <% if Code == 'Help' %>target="_blank"<% end_if%>>
@@ -49,7 +49,7 @@
 	</div>
 		
 	<div class="cms-panel-toggle south">
-		<a class="toggle-expand" href="#"><span>&raquo;</span></a>
-		<a class="toggle-collapse" href="#"><span>&laquo;</span></a>
+		<a class="toggle-expand" href="#" title="<% _t('Panel.Collapse', 'Expand panel') %>"><span>&raquo;</span></a>
+		<a class="toggle-collapse" href="#" title="<% _t('Panel.Collapse', 'Collapse panel') %>"><span>&laquo;</span></a>
 	</div>
 </div>

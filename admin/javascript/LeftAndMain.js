@@ -304,13 +304,13 @@ jQuery.noConflict();
 				// is fired, so the server might decide to change it based on its own logic.
 				headers['X-Pjax'] = fragments;
 
-				contentEls.addClass('loading');
+				contentEls.addClass('loading').attr('aria-busy', 'true');
 				var xhr = $.ajax({
 					headers: headers,
 					url: state.url,
 					complete: function() {
 						// Remove loading indication from old content els (regardless of which are replaced)
-						contentEls.removeClass('loading');
+						contentEls.removeClass('loading').attr('aria-busy', 'false');
 					},
 					success: function(data, status, xhr) {
 						var els = self.handleAjaxResponse(data, status, xhr);
@@ -810,11 +810,11 @@ jQuery.noConflict();
 					if(!this.data('deferredNoCache') && typeof window._panelDeferredCache[url] !== 'undefined') {
 						this.html(window._panelDeferredCache[url]);
 					} else {
-						this.addClass('loading');
+						this.addClass('loading').attr('aria-busy', 'true');
 						$.ajax({
 							url: url,
 							complete: function() {
-								self.removeClass('loading');
+								self.removeClass('loading').attr('aria-busy', 'false');
 							},
 							success: function(data, status, xhr) {
 								self.html(data);
