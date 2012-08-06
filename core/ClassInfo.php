@@ -1,5 +1,12 @@
 <?php
 /**
+ * @package framework
+ * @subpackage core
+ */
+
+use SilverStripe\Framework\Core\Application;
+
+/**
  * Provides introspection information about the class tree.
  * It's a cached wrapper around the built-in class functions.  SilverStripe uses class introspection heavily
  * and without the caching it creates an unfortunate performance hit.
@@ -12,14 +19,14 @@ class ClassInfo {
 	 * Wrapper for classes getter.
 	 */
 	static function allClasses() {
-		return SS_ClassLoader::instance()->getManifest()->getClasses();
+		return Application::curr()->getManifest()->getPhpManifest()->getClasses();
 	}
 
 	/**
 	 * @todo Improve documentation
 	 */
 	static function exists($class) {
-		return SS_ClassLoader::instance()->classExists($class);
+		return (bool) Application::curr()->getManifest()->getPhpManifest()->getPath($class);
 	}
 
 	/**
@@ -130,11 +137,12 @@ class ClassInfo {
 	 * @return array Names of all subclasses as an associative array.
 	 */
 	public static function subclassesFor($class) {
-		$descendants = SS_ClassLoader::instance()->getManifest()->getDescendantsOf($class);
-		$result      = array($class => $class);
+		$result = array($class => $class);
+		$class = strtolower($class);
+		$desc = Application::curr()->getManifest()->getPhpManifest()->getDescendants();
 
-		if ($descendants) {
-			return $result + ArrayLib::valuekey($descendants);
+		if(isset($desc[$class])) {
+			return $result + ArrayLib::valuekey($desc[$class]);
 		} else {
 			return $result;
 		}
@@ -171,14 +179,17 @@ class ClassInfo {
 	 * classes and not built-in PHP classes.
 	 */
 	static function implementorsOf($interfaceName) {
-		return SS_ClassLoader::instance()->getManifest()->getImplementorsOf($interfaceName);
+		$name = strtolower($interfaceName);
+		$implementors = Application::curr()->getManifest()->getPhpManifest()->getImplementors();
+
+		if(isset($implementors[$name])) return $implementors[$name];
 	}
 
 	/**
 	 * Returns true if the given class implements the given interface
 	 */
 	static function classImplements($className, $interfaceName) {
-		return in_array($className, SS_ClassLoader::instance()->getManifest()->getImplementorsOf($interfaceName));
+		return in_array($className, self::implementorsOf($interfaceName));
 	}
 
 	/**
@@ -202,7 +213,7 @@ class ClassInfo {
 	static function classes_for_file($filePath) {
 		$absFilePath    = Director::getAbsFile($filePath);
 		$matchedClasses = array();
-		$manifest       = SS_ClassLoader::instance()->getManifest()->getClasses();
+		$manifest       = self::allClasses();
 
 		foreach($manifest as $class => $compareFilePath) {
 			if($absFilePath == $compareFilePath) $matchedClasses[] = $class;
@@ -223,7 +234,7 @@ class ClassInfo {
 	static function classes_for_folder($folderPath) {
 		$absFolderPath  = Director::getAbsFile($folderPath);
 		$matchedClasses = array();
-		$manifest       = SS_ClassLoader::instance()->getManifest()->getClasses();
+		$manifest       = self::allClasses();
 
 		foreach($manifest as $class => $compareFilePath) {
 			if(stripos($compareFilePath, $absFolderPath) === 0) $matchedClasses[] = $class;
