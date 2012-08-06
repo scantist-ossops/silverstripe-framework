@@ -26,6 +26,9 @@
 	"autoload": {
 		"psr-0": {
 			"SilverStripe": "src/"
-		}
+		},
+		"files": [
+			"src/SilverStripe/Framework/functions.php"
+		]
 	}
 }
