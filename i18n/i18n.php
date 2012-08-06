@@ -3,6 +3,8 @@ require_once 'Zend/Translate.php';
 require_once 'i18nRailsYamlAdapter.php';
 require_once 'i18nSSLegacyAdapter.php';
 
+use SilverStripe\Framework\Core\Application;
+
 /**
  * Base-class for storage and retrieval of translated entities.
  * 
@@ -1677,9 +1679,11 @@ class i18n extends Object implements TemplateGlobalProvider {
 		$locales = array();
 		
 		// TODO Inspect themes
-		$modules = SS_ClassLoader::instance()->getManifest()->getModules();
+		$modules = Application::curr()->getModules();
 		
 		foreach($modules as $module) {
+			$module = $module->getPath();
+
 			if(!file_exists("{$module}/lang/")) continue;
 			
 			$moduleLocales = scandir("{$module}/lang/");
@@ -1833,8 +1837,8 @@ class i18n extends Object implements TemplateGlobalProvider {
 	 * @return string
 	 */
 	public static function get_owner_module($name) {
-		$manifest = SS_ClassLoader::instance()->getManifest();
-		$path     = $manifest->getItemPath($name);
+		$manifest = Application::curr()->getManifest()->getPhpManifest();
+		$path     = $manifest->getPath($name);
 
 		if (!$path) {
 			return false;
@@ -1945,7 +1949,7 @@ class i18n extends Object implements TemplateGlobalProvider {
 		// Sort modules by inclusion priority, then alphabetically
 		// TODO Should be handled by priority flags within modules
 		$prios = array('sapphire' => 10, 'framework' => 10, 'admin' => 11, 'cms' => 12, 'mysite' => 90);
-		$modules = SS_ClassLoader::instance()->getManifest()->getModules();
+		$modules = Application::curr()->getModules();
 		ksort($modules);
 		uksort(
 			$modules,
@@ -1964,6 +1968,7 @@ class i18n extends Object implements TemplateGlobalProvider {
 
 				// Load translations from modules
 				foreach($modules as $module) {
+					$module = $module->getPath();
 					$filename = $adapter->getFilenameForLocale($locale);
 					$filepath = "{$module}/lang/" . $filename;
 
