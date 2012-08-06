@@ -86,7 +86,12 @@ function singleton($className) {
 	return Application::curr()->get($className);
 }
 
+/**
+ * @deprecated 3.1
+ */
 function project() {
+	Deprecation::notice('3.1', 'Use the application module');
+
 	global $project;
 	return $project;
 }
