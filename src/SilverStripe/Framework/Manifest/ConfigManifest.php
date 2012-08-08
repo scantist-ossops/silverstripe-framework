@@ -25,6 +25,7 @@ class ConfigManifest implements ManifestInterface {
 
 	protected $manifest;
 	protected $hash;
+	protected $regenerate;
 
 	protected $variantSpec = array();
 	protected $phpConfigs = array();
@@ -50,7 +51,11 @@ class ConfigManifest implements ManifestInterface {
 		$hash = $this->getVariantHash($env);
 
 		if(!$this->config || $hash != $this->hash) {
-			$config = $this->manifest->getCache()->getItem(sprintf(self::VARIANT_CACHE_KEY, $hash));
+			if($this->regenerate) {
+				$config = false;
+			} else {
+				$config = $this->manifest->getCache()->getItem(sprintf(self::VARIANT_CACHE_KEY, $hash));
+			}
 
 			if($config) {
 				$this->config = unserialize($config);
@@ -155,6 +160,7 @@ class ConfigManifest implements ManifestInterface {
 		$this->phpConfigs = array();
 		$this->fragments = array();
 		$this->variantSpec = array();
+		$this->regenerate = true;
 	}
 
 	public function finalise() {
@@ -464,7 +470,8 @@ class ConfigManifest implements ManifestInterface {
 		}
 
 		$this->config = array();
-		$this->hash   = $hash;
+		$this->hash = $hash;
+		$this->regenerate = false;
 
 		foreach($this->fragments as $fragment) {
 			if(
@@ -496,7 +503,7 @@ class ConfigManifest implements ManifestInterface {
 					break;
 
 				case 'environment':
-					if($v != 'dev' && $v != 'test' && $dev != 'live') {
+					if($v != 'dev' && $v != 'test' && $v != 'live') {
 						throw new \Exception(sprintf(
 							'Unknown environment type "%s"', $v
 						));
