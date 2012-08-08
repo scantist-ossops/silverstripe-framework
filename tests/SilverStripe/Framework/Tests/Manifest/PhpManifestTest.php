@@ -139,12 +139,12 @@ class PhpManifestTest extends TestCase {
 
 	public function testGetDescendants() {
 		$standard = array(
-			'test\\classa' => array('test\\classc', 'classd'),
-			'test\\classc' => array('classd')
+			'test\\classa' => array('Test\\ClassC', 'ClassD'),
+			'test\\classc' => array('ClassD')
 		);
 
 		$tests = $standard + array(
-			'rootclass' => array('testclass')
+			'rootclass' => array('TestClass')
 		);
 
 		$this->assertEquals($standard, self::$manifest->getDescendants());

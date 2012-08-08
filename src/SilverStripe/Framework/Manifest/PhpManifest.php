@@ -195,7 +195,8 @@ class PhpManifest implements ManifestInterface {
 	}
 
 	private function addClass($info, $path) {
-		$name = strtolower($info['name']);
+		$name = $info['name'];
+		$lower = strtolower($name);
 		$extends = strtolower($info['extends']);
 		$implements = $info['implements'];
 
@@ -208,7 +209,7 @@ class PhpManifest implements ManifestInterface {
 			));
 		}
 
-		$this->classes[$name] = $path;
+		$this->classes[$lower] = $path;
 
 		if($extends) {
 			if(array_key_exists($extends, $this->children)) {
@@ -217,7 +218,7 @@ class PhpManifest implements ManifestInterface {
 				$this->children[$extends] = array($name);
 			}
 		} else {
-			$this->roots[] = $name;
+			$this->roots[] = $lower;
 		}
 
 		if($implements) {
@@ -264,6 +265,8 @@ class PhpManifest implements ManifestInterface {
 	}
 
 	private function coalesceDescendants($class) {
+		$class = strtolower($class);
+
 		if(array_key_exists($class, $this->children)) {
 			$this->descendants[$class] = array();
 
