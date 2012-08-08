@@ -79,6 +79,10 @@ class PhpManifest implements ManifestInterface {
 	 * @return string
 	 */
 	public function getPath($name) {
+		if(!$name) {
+			return;
+		}
+
 		$name = strtolower($name);
 
 		if($name[0] == '\\') {
