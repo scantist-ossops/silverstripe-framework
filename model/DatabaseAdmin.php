@@ -91,7 +91,7 @@ class DatabaseAdmin extends Controller {
 		increase_time_limit_to(600);
 
 		// Get all our classes
-		SS_ClassLoader::instance()->getManifest()->regenerate();
+		Application::curr()->get('Manifest')->init(true);
 
 		if(isset($_GET['returnURL'])) {
 			echo "<p>Setting up the database; you will be returned to your site shortly....</p>";

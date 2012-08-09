@@ -621,7 +621,7 @@ class SSViewer {
 		if(!is_array($templateList) && substr((string) $templateList,-3) == '.ss') {
 			$this->chosenTemplates['main'] = $templateList;
 		} else {
-			$this->chosenTemplates = SS_TemplateLoader::instance()->findTemplates(
+			$this->chosenTemplates = Application::curr()->get('TemplateLoader')->getPaths(
 				$templateList, self::current_theme()
 			);
 		}
@@ -638,7 +638,7 @@ class SSViewer {
 	 * Returns true if at least one of the listed templates exists
 	 */
 	public static function hasTemplate($templates) {
-		$manifest = SS_TemplateLoader::instance()->getManifest();
+		$manifest = Application::curr()->get('TemplateManifest');
 
 		foreach ((array) $templates as $template) {
 			if ($manifest->getTemplate($template)) return true;
@@ -699,7 +699,7 @@ class SSViewer {
 	 * @return string Full system path to a template file
 	 */
 	public static function getTemplateFileByType($identifier, $type) {
-		$loader = SS_TemplateLoader::instance();
+		$loader = Application::curr()->get('TemplateLoader');
 		$found  = $loader->findTemplates("$type/$identifier", self::current_theme());
 
 		if ($found) {

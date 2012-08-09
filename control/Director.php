@@ -1,4 +1,8 @@
 <?php
+
+use SilverStripe\Framework\Http\Response;
+use SilverStripe\Framework\Http\ResponseException;
+
 /**
  * Director is responsible for processing URLs, and providing environment information.
  * 
@@ -106,7 +110,7 @@ class Director implements TemplateGlobalProvider {
 		
 		if ($output === false) {
 			// @TODO Need to NOT proceed with the request in an elegant manner
-			throw new SS_HTTPResponse_Exception(_t('Director.INVALID_REQUEST', 'Invalid request'), 400);
+			throw new ResponseException(_t('Director.INVALID_REQUEST', 'Invalid request'), 400);
 		}
 
 		$result = self::handleRequest($req, $session, $model);
@@ -114,8 +118,8 @@ class Director implements TemplateGlobalProvider {
 		// Save session data (and start/resume it if required)
 		$session->inst_save();
 
-		if(!($result instanceof SS_HTTPResponse)) {
-			$result = new SS_HTTPResponse($result);
+		if(!($result instanceof Response)) {
+			$result = new Response($result);
 		}
 
 		$post = $injector->get('RequestProcessor')->postRequest($req, $result, $model);
@@ -124,7 +128,7 @@ class Director implements TemplateGlobalProvider {
 			throw new \Exception('Invalid response');
 		}
 
-		$result->output();
+		return $result;
 	}
 	
 	/**
@@ -248,7 +252,7 @@ class Director implements TemplateGlobalProvider {
 			$opts = array_merge($opts, $request->getLatestParams());
 
 			if(isset($opts['Redirect'])) {
-				$response = new SS_HTTPResponse();
+				$response = new Response();
 				$response->redirect($opts['Redirect']);
 				return $response;
 			}
@@ -262,11 +266,11 @@ class Director implements TemplateGlobalProvider {
 
 			try {
 				$result = $controller->handleRequest($request, $model);
-			} catch(SS_HTTPResponse_Exception $ex) {
+			} catch(ResponseException $ex) {
 				$result = $ex->getResponse();
 			}
 
-			if(is_object($result) && !($result instanceof SS_HTTPResponse)) {
+			if(is_object($result) && !($result instanceof Response)) {
 				throw new \Exception('Invalid result returned from handler');
 			}
 

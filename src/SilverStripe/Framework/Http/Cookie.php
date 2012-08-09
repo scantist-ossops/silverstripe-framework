@@ -1,9 +1,18 @@
 <?php
 /**
+ * @package framework
+ * @subpackage http
+ */
+
+namespace SilverStripe\Framework\Http;
+
+use SilverStripe\Framework\Dev\Deprecation;
+
+/**
  * A set of static methods for manipulating cookies.
  *
  * @package framework
- * @subpackage misc
+ * @subpackage http
  */
 class Cookie {
 
@@ -99,7 +108,7 @@ class Cookie {
 	protected function inst_set($name, $value, $expiry = 90, $path = null, $domain = null, $secure = false, $httpOnly = false) {
 		if(!headers_sent($file, $line)) {
 			$expiry = $expiry > 0 ? time()+(86400*$expiry) : $expiry;
-			$path = ($path) ? $path : Director::baseURL();
+			$path = ($path) ? $path : \Director::baseURL();
 			setcookie($name, $value, $expiry, $path, $domain, $secure, $httpOnly);
 		} else {
 			if(self::$report_errors) {
