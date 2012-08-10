@@ -1,0 +1,6 @@
+name: dependencies
+---
+Injector:
+  TemplateLoader:
+    class: "SilverStripe\\Framework\\Manifest\\TemplateLoader"
+    constructor: ["%$TemplateManifest"]
