@@ -783,20 +783,27 @@ class Requirements_Backend {
 	protected function path_for_file($fileOrUrl) {
 		if(preg_match('/^http[s]?/', $fileOrUrl)) {
 			return $fileOrUrl;
-		} elseif(Director::fileExists($fileOrUrl)) {
-			$prefix = Director::baseURL();
-			$mtimesuffix = "";
-			$suffix = '';
-			if(strpos($fileOrUrl, '?') !== false) {
-				$suffix = '&' . substr($fileOrUrl, strpos($fileOrUrl, '?')+1);
-				$fileOrUrl = substr($fileOrUrl, 0, strpos($fileOrUrl, '?'));
-			}
-			if($this->suffix_requirements) {
-				$mtimesuffix = "?m=" . filemtime(Director::baseFolder() . '/' . $fileOrUrl);
-			}
-			return "{$prefix}{$fileOrUrl}{$mtimesuffix}{$suffix}";
 		} else {
-			return false;
+			$mtimesuffix = '';
+			$suffix = '';
+
+			if(($pos = strpos($fileOrUrl, '?')) !== false) {
+				$suffix = '&' . substr($fileOrUrl, $pos + 1);
+				$fileOrUrl = substr($fileOrUrl, 0, $pos);
+			}
+
+			$path = Application::curr()->getPublicPath() . '/' . $fileOrUrl;
+			$prefix = Director::baseURL();
+
+			if(!file_exists($path)) {
+				return false;
+			}
+
+			if($this->suffix_requirements) {
+				$mtimesuffix = "?m=" . filemtime($path);
+			}
+
+			return "{$prefix}{$fileOrUrl}{$mtimesuffix}{$suffix}";
 		}
 	}
 	
