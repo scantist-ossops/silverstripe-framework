@@ -4,6 +4,9 @@
  * @subpackage testing
  */
 
+use SilverStripe\Framework\Core\Application;
+use SilverStripe\Framework\Manifest\Manifest;
+
 /**
  * Controller that executes PHPUnit tests.
  * 
@@ -85,16 +88,18 @@ class TestRunner extends Controller {
 	 * top of the loader stacks.
 	 */
 	public static function use_test_manifest() {
-		$classManifest = new SS_ClassManifest(
-			BASE_PATH, true, isset($_GET['flush'])
-		);
-		
-		SS_ClassLoader::instance()->pushManifest($classManifest);
-		SapphireTest::set_test_class_manifest($classManifest);
+		$app = Application::curr();
 
-		SS_TemplateLoader::instance()->pushManifest(new SS_TemplateManifest(
-			BASE_PATH, true, isset($_GET['flush'])
-		));
+		$manifest = new Manifest($app, true);
+		$manifest->init(true);
+
+		$app->setManifest($manifest);
+		$app->getInjector()->registerNamedService('PhpManifest', $manifest->getPhpManifest());
+		$app->getInjector()->registerNamedService('TemplateManifest', $manifest->getTemplateManifest());
+		$app->get('ClassLoader')->pushManifest($manifest->getPhpManifest());
+		$app->get('TemplateLoader')->pushManifest($manifest->getTemplateManifest());
+
+		SapphireTest::set_test_class_manifest($manifest->getPhpManifest());
 	}
 
 	function init() {

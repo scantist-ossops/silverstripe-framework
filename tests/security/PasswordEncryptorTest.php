@@ -1,4 +1,7 @@
 <?php
+
+use SilverStripe\Framework\Core\Application;
+
 class PasswordEncryptorTest extends SapphireTest {
 
 	/**
@@ -9,12 +12,12 @@ class PasswordEncryptorTest extends SapphireTest {
 
 	public function setUp() {
 		parent::setUp();
-		$this->config = clone(Config::inst());
+		$this->config = clone Application::curr()->getConfig();
 	}
 
 	public function tearDown() {
 		parent::tearDown();
-		Config::set_instance($this->config);
+		Application::curr()->setConfig($this->config);
 		PasswordEncryptor_Blowfish::set_cost(10);
 	}
 

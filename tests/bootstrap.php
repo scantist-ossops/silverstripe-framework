@@ -1,73 +1,47 @@
 <?php
-
-/** 
- * This bootstraps the SilverStripe system so that phpunit can be run directly on SilverStripe tests.
+/**
+ * The bootstrap file for running unit tests. This assumes that the framework
+ * is installed in a standard composer layout, or has an alternate autoloader
+ * provided.
+ *
+ * @package framework
+ * @subpackage tests
  */
 
-// Make sure display_errors is on
-ini_set('display_errors', 1);
+$base = realpath(__DIR__ . '/../../../..');
 
-// Check we're using at least PHPUnit 3.5
-if(version_compare(PHPUnit_Runner_Version::id(), '3.5', '<')) {
-	echo 'PHPUnit 3.5 required to run tests using bootstrap.php';
-	die();
+// Allow defining a custom application class using an environment variable.
+if(!$appClass = getenv('SS_APPLICATION_CLASS')) {
+	$appClass = 'Application';
 }
 
-// Fake the script name and base
-global $_SERVER;
-if (!$_SERVER) $_SERVER = array();
-
-$frameworkPath = dirname(dirname(__FILE__));
-$frameworkDir = basename($frameworkPath);
-
-$_SERVER['SCRIPT_FILENAME'] = $frameworkPath . DIRECTORY_SEPARATOR . 'cli-script.php';
-$_SERVER['SCRIPT_NAME'] = '.' . DIRECTORY_SEPARATOR . $frameworkDir . DIRECTORY_SEPARATOR . 'cli-script.php'; 
-
-if(!defined('BASE_PATH')) define('BASE_PATH', dirname($frameworkPath));
-
-// Copied from cli-script.php, to enable same behaviour through phpunit runner.
-if(isset($_SERVER['argv'][2])) {
-    $args = array_slice($_SERVER['argv'],2);
-    if(!isset($_GET)) $_GET = array();
-    if(!isset($_REQUEST)) $_REQUEST = array();
-    foreach($args as $arg) {
-       if(strpos($arg,'=') == false) {
-           $_GET['args'][] = $arg;
-       } else {
-           $newItems = array();
-           parse_str( (substr($arg,0,2) == '--') ? substr($arg,2) : $arg, $newItems );
-           $_GET = array_merge($_GET, $newItems);
-       }
-    }
-	$_REQUEST = array_merge($_REQUEST, $_GET);
+// Attempt to load the composer autoloader.
+if(file_exists($loader = "$base/vendor/autoload.php")) {
+	require_once $loader;
 }
 
-// Connect to database
-require_once $frameworkPath . '/core/Core.php';
-require_once $frameworkPath . '/tests/FakeController.php';
+if(!class_exists($appClass)) {
+	printf("The application class '%s' does not exist.\n", $appClass);
+	die(1);
+}
 
-global $databaseConfig;
-DB::connect($databaseConfig);
+// Use the actual application class for testing so we have access to all
+// the modules.
+$application = new $appClass();
+$application->start();
 
-// Now set a fake REQUEST_URI
-$_SERVER['REQUEST_URI'] = BASE_URL . '/dev';
+// Fake a request.
+$request = RoutedRequest::create_from_cli('/dev');
+$request->setGlobals();
 
-// Fake a session 
-$_SESSION = null;
+$application->getInjector()->registerNamedService('Request', $request);
 
-// Prepare manifest autoloader
-$controller = new FakeController();
+/**
+ * @deprecated 3.1
+ */
+define('BASE_URL', rtrim($request->getBaseUrl(), '/'));
 
-// Get test manifest
 TestRunner::use_test_manifest();
 
-// Remove the error handler so that PHPUnit can add its own
+// Restore the error handler so PHPUnit can add its own.
 restore_error_handler();
-
-if(!isset($_GET['flush']) || !$_GET['flush']) {
-	Debug::message(
-		"WARNING: Manifest not flushed. " .
-		"Add flush=1 as an argument to discover new classes or files.\n",
-		false
-	);
-}

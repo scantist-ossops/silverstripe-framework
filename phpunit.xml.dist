@@ -1,0 +1,26 @@
+<phpunit bootstrap="./tests/bootstrap.php"
+         colors="true"
+         backupGlobals="false"
+         backupStaticAttributes="false"
+         convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true"
+         convertWarningsToExceptions="true"
+         processIsolation="false"
+         stopOnError="false"
+         stopOnFailure="false"
+         stopOnIncomplete="false"
+         stopOnSkipped="false"
+         syntaxCheck="false"
+         verbose="true"
+         strict="true"
+>
+    <testsuites>
+        <testsuite name="SilverStripe Framework Test Suite">
+            <directory>./tests</directory>
+        </testsuite>
+   </testsuites>
+
+    <listeners>
+        <listener class="SS_TestListener" file="./dev/TestListener.php" />
+    </listeners>
+</phpunit>
