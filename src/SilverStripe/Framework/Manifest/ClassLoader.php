@@ -6,6 +6,9 @@
 
 namespace SilverStripe\Framework\Manifest;
 
+use SilverStripe\Framework\Core\Application;
+use SilverStripe\Framework\Dev\Deprecation;
+
 /**
  * Loads classes, interfaces and traits from a stack of {@link PhpManifest}
  * instances.
@@ -15,7 +18,32 @@ namespace SilverStripe\Framework\Manifest;
  */
 class ClassLoader {
 
+	/**
+	 * A map of legacy class names to new class names.
+	 */
+	public static $legacy_classes = array(
+		'aftercallaspect' => 'SilverStripe\\Framework\\Injector\\AfterCallAspect',
+		'aopproxyservice' => 'SilverStripe\\Framework\\Injector\\',
+		'beforecallaspect' => 'SilverStripe\\Framework\\Injector\\',
+		'config' => 'SilverStripe\\Framework\\Core\\Config',
+		'config_forclass' => 'SilverStripe\\Framework\\Core\\ConfigForClass',
+		'deprecation' => 'SilverStripe\\Framework\\Dev\\Deprecation',
+		'injector' => 'SilverStripe\\Framework\\Injector\\Injector',
+		'ss_classloader' => 'SilverStripe\\Framework\\Manifest\\ClassLoader',
+		'ss_dag' => 'SilverStripe\\Framework\\Util\\Dag',
+		'ss_filefinder' => 'SilverStripe\\Framework\\Filesystem\\FileFinder',
+		'ss_templateloader' => 'SilverStripe\\Framework\\Manifest\\TemplateLoader',
+	);
+
 	protected $manifests = array();
+
+	/**
+	 * @deprecated 3.1 Use `Application::curr()->get('ClassLoader')`
+	 */
+	public static function instance() {
+		Deprecation::notice('3.1');
+		return Application::curr()->get('ClassLoader');
+	}
 
 	public function __construct(PhpManifest $manifest = null) {
 		if($manifest) $this->pushManifest($manifest);
@@ -62,8 +90,18 @@ class ClassLoader {
 	 * @param string $class
 	 */
 	public function loadClass($class) {
-		if($path = $this->getPath($class)) {
-			require_once $path;
+		$class = strtolower($class);
+
+		if(isset(self::$legacy_classes[$class])) {
+			$old = $class;
+			$new = self::$legacy_classes[$class];
+
+			Deprecation::notice('3.1.0', "$old has been renamed to $new");
+			class_alias($new, $old);
+		} else {
+			if($path = $this->getPath($class)) {
+				require_once $path;
+			}
 		}
 	}
 

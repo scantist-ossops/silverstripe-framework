@@ -198,13 +198,16 @@ class Injector {
 		);
 		
 		$this->autoProperties = array();
-		
 
-		$creatorClass = isset($config['creator']) ? $config['creator'] : 'InjectionCreator';
-		$locatorClass = isset($config['locator']) ? $config['locator'] : 'ServiceConfigurationLocator';
-		
-		$this->objectCreator = new $creatorClass;
-		$this->configLocator = new $locatorClass;
+		if(isset($config['creator'])) {
+			$this->objectCreator = new $config['creator']();
+		} else {
+			$this->objectCreator = new InjectionCreator();
+		}
+
+		if(isset($config['locator'])) {
+			$this->configLocator = new $config['locator']();
+		}
 		
 		if ($config) {
 			$this->load($config);
@@ -684,7 +687,7 @@ class Injector {
 	 * Register a service with an explicit name
 	 */
 	public function registerNamedService($name, $service) {
-		$this->specs[$registerAt] = array('class' => get_class($service));
+		$this->specs[$name] = array('class' => get_class($service));
 		$this->serviceCache[$name] = $service;
 		$this->inject($service);
 	}
