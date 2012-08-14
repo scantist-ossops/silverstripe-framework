@@ -80,16 +80,8 @@ class Request extends Message implements \ArrayAccess {
 	 *
 	 * @return SS_HTTPRequest
 	 */
-	public static function create_from_cli() {
+	public static function create_from_cli($url) {
 		global $_FILE_TO_URL_MAPPING;
-
-		// The first argument is compulsory and specifies the URL to run.
-		if(!isset($_SERVER['argv'][1])) {
-			echo "You must specify the URL to execute as the first argument.\n";
-			echo "For more information see:\n";
-			echo "http://doc.silverstripe.org/framework/en/topics/commandline\n";
-			exit(1);
-		}
 
 		// Process the remaining arguments and load them into the get array.
 		$get = array();
@@ -138,6 +130,7 @@ class Request extends Message implements \ArrayAccess {
 					$components = parse_url($url);
 
 					$server['HTTP_HOST'] = $components['host'];
+					$server['REQUEST_URI'] = $components['path'];
 					$server['SERVER_NAME'] = $components['host'];
 					$server['SCRIPT_NAME'] = $components['path'];
 					$server['SCRIPT_FILENAME'] = getcwd() . '/' . $_SERVER['PHP_SELF'];
@@ -156,7 +149,7 @@ class Request extends Message implements \ArrayAccess {
 
 		return static::create(
 			'GET',
-			$_SERVER['argv'][1],
+			$url,
 			$get,
 			array(),
 			array(),

@@ -89,7 +89,15 @@ class Director implements TemplateGlobalProvider {
 		$model = $injector->get('DataModel');
 
 		if(self::is_cli()) {
-			$req = RoutedRequest::create_from_cli();
+			// The first argument is compulsory and specifies the URL to run.
+			if(!isset($_SERVER['argv'][1])) {
+				echo "You must specify the URL to execute as the first argument.\n";
+				echo "For more information see:\n";
+				echo "http://doc.silverstripe.org/framework/en/topics/commandline\n";
+				exit(1);
+			}
+
+			$req = RoutedRequest::create_from_cli($_SERVER['argv'][1]);
 			$req->setGlobals();
 		} else {
 			$req = new RoutedRequest();
