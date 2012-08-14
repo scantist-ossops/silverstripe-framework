@@ -300,9 +300,11 @@ class SapphireTest extends PHPUnit_Framework_TestCase {
 
 		// clear singletons, they're caching old extension info 
 		// which is used in DatabaseAdmin->doBuild()
-		$request = Injector::inst()->get('Request');
-		Injector::inst()->unregisterAllObjects();
-		Injector::inst()->registerNamedService('Request', $request);
+		// clear singletons, they're caching old extension info
+		// which is used in DatabaseAdmin->doBuild()
+		foreach(ClassInfo::subclassesFor('DataObject') as $class) {
+			Application::curr()->getInjector()->unregister($class);
+		}
 
 		// Set default timezone consistently to avoid NZ-specific dependencies
 		date_default_timezone_set('UTC');
@@ -792,11 +794,12 @@ class SapphireTest extends PHPUnit_Framework_TestCase {
 		if(self::using_temp_db()) {
 			// clear singletons, they're caching old extension info 
 			// which is used in DatabaseAdmin->doBuild()
-			$request = Injector::inst()->get('Request');
-			Injector::inst()->unregisterAllObjects();
-			Injector::inst()->registerNamedService('Request', $request);
-
 			$dataClasses = ClassInfo::subclassesFor('DataObject');
+
+			foreach($dataClasses as $class) {
+				Application::curr()->getInjector()->unregister($class);
+			}
+
 			array_shift($dataClasses);
 
 			$conn = DB::getConn();

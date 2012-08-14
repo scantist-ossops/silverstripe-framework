@@ -8,12 +8,7 @@
  * @todo tests for setting statics through extensions (#2387)
  */
 class ObjectTest extends SapphireTest {
-	
-	function setUp() {
-		parent::setUp();
-		Injector::inst()->unregisterAllObjects();
-	}
-	
+
 	function testHasmethodBehaviour() {
 		$obj = new ObjectTest_ExtendTest();
 
