@@ -1,11 +1,18 @@
 <?php
 /**
+ * @package framework
+ * @subpackage http
+ */
+
+namespace SilverStripe\Framework\Http;
+
+/**
  * Represents a response returned by a controller.
  *
  * @package framework
- * @subpackage control
+ * @subpackage http
  */
-class SS_HTTPResponse extends SS_HttpMessage {
+class Response extends Message {
 	
 	/**
 	 * @var array
@@ -183,48 +190,3 @@ class SS_HTTPResponse extends SS_HttpMessage {
 	
 }
 
-/**
- * A {@link SS_HTTPResponse} encapsulated in an exception, which can interrupt the processing flow and be caught by the
- * {@link RequestHandler} and returned to the user.
- *
- * Example Usage:
- * <code>
- * throw new SS_HTTPResponse_Exception('This request was invalid.', 400);
- * throw new SS_HTTPResponse_Exception(new SS_HTTPResponse('There was an internal server error.', 500));
- * </code>
- *
- * @package framework
- * @subpackage control
- */
-class SS_HTTPResponse_Exception extends Exception {
-	
-	protected $response;
-	
-	/**
-	 * @see SS_HTTPResponse::__construct();
-	 */
-	 public function __construct($body = null, $statusCode = null, $statusDescription = null) {
-	 	if($body instanceof SS_HTTPResponse) {
-	 		$this->setResponse($body);
-	 	} else {
-	 		$this->setResponse(new SS_HTTPResponse($body, $statusCode, $statusDescription));
-	 	}
-	 	
-	 	parent::__construct($this->getResponse()->getBody(), $this->getResponse()->getStatusCode());
-	 }
-	 
-	 /**
-	  * @return SS_HTTPResponse
-	  */
-	 public function getResponse() {
-	 	return $this->response;
-	 }
-	 
-	 /**
-	  * @param SS_HTTPResponse $response
-	  */
-	 public function setResponse(SS_HTTPResponse $response) {
-	 	$this->response = $response;
-	 }
-	
-}

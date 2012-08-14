@@ -1,12 +1,24 @@
 <?php
 /**
+ * @package framework
+ * @subpackage http
+ */
+
+namespace SilverStripe\Framework\Http;
+
+use Director;
+use File;
+use SilverStripe\Framework\Core\Config;
+use SilverStripe\Framework\Dev\Deprecation;
+
+/**
  * A class with HTTP-related helpers.
  * Like Debug, this is more a bundle of methods than a class ;-)
- * 
+ *
  * @package framework
- * @subpackage misc
+ * @subpackage http
  */
-class HTTP {
+class Http {
 
 	protected static $cache_age = 0;
 
@@ -16,23 +28,23 @@ class HTTP {
 
 
 	/**
-	 * Construct an SS_HTTPResponse that will deliver a file to the client
+	 * Construct an response that will deliver a file to the client
 	 *
-	 * @return SS_HTTPResponse
+	 * @return Response
 	 */
 	public static function send_file($fileData, $fileName, $mimeType = null) {
 		if(!$mimeType) {
 			$mimeType = self::get_mime_type($fileName);
 		}
 
-		$response = new SS_HTTPResponse($fileData);
-		$response->addHeader("Content-Type", "$mimeType; name=\"" . addslashes($fileName) . "\"");
-		$response->addHeader("Content-disposition", "attachment; filename=" . addslashes($fileName));
-		$response->addHeader("Content-Length", strlen($fileData));
-		$response->addHeader("Pragma", ""); // Necessary because IE has issues sending files over SSL
+		$response = new Response($fileData);
+		$response->setHeader("Content-Type", "$mimeType; name=\"" . addslashes($fileName) . "\"");
+		$response->setHeader("Content-disposition", "attachment; filename=" . addslashes($fileName));
+		$response->setHeader("Content-Length", strlen($fileData));
+		$response->setHeader("Pragma", ""); // Necessary because IE has issues sending files over SSL
 
 		if(strstr($_SERVER["HTTP_USER_AGENT"],"MSIE") == true) {
-			$response->addHeader('Cache-Control', 'max-age=3, must-revalidate'); // Workaround for IE6 and 7
+			$response->setHeader('Cache-Control', 'max-age=3, must-revalidate'); // Workaround for IE6 and 7
 		}
 
 		return $response;
@@ -126,15 +138,15 @@ class HTTP {
 
 		$isRelative = false;
 		// We need absolute URLs for parse_url()
-		if(Director::is_relative_url($uri)) {
-			$uri = Director::absoluteBaseURL() . $uri;
+		if(\Director::is_relative_url($uri)) {
+			$uri = \Director::absoluteBaseURL() . $uri;
 			$isRelative = true;
 		}
 
 		// try to parse uri
 		$parts = parse_url($uri);
 		if(!$parts) {
-			throw new InvalidArgumentException("Can't parse URL: " . $uri);
+			throw new \InvalidArgumentException("Can't parse URL: " . $uri);
 		}
 
 		// Parse params and add new variable
@@ -164,14 +176,14 @@ class HTTP {
 		// Recompile URI segments	
 		$newUri =  $scheme . '://' . $user . $host . $port . $path . $params . $fragment;
 
-		if($isRelative) return Director::makeRelative($newUri);
+		if($isRelative) return \Director::makeRelative($newUri);
 		
 		return $newUri;
 	}
 
 	static function RAW_setGetVar($varname, $varvalue, $currentURL = null) {
 		$url = self::setGetVar($varname, $varvalue, $currentURL);
-		return Convert::xml2raw($url);
+		return \Convert::xml2raw($url);
 	}
 	
 	/**
@@ -233,7 +245,7 @@ class HTTP {
 		// If the finfo module is compiled into PHP, use it.
 		$path = BASE_PATH . DIRECTORY_SEPARATOR . $filename;
 		if(class_exists('finfo') && file_exists($path)) {
-			$finfo = new finfo(FILEINFO_MIME_TYPE);
+			$finfo = new \finfo(FILEINFO_MIME_TYPE);
 			return $finfo->file($path);
 		}
 
@@ -276,19 +288,19 @@ class HTTP {
 	/**
 	 * Add the appropriate caching headers to the response, including If-Modified-Since / 304 handling.
 	 *
-	 * @param SS_HTTPResponse The SS_HTTPResponse object to augment.  Omitted the argument or passing a string is deprecated; in these
+	 * @param SS_HTTPResponse The response object to augment.  Omitted the argument or passing a string is deprecated; in these
 	 * cases, the headers are output directly.
 	 */
 	static function add_cache_headers($body = null) {
 		// Validate argument
-		if($body && !($body instanceof SS_HTTPResponse)) {
-			user_error("HTTP::add_cache_headers() must be passed an SS_HTTPResponse object", E_USER_WARNING);
+		if($body && !($body instanceof Response)) {
+			user_error("HTTP::add_cache_headers() must be passed an Response object", E_USER_WARNING);
 			$body = null;
 		}
 		
 		// Development sites have frequently changing templates; this can get stuffed up by the code
 		// below.
-		if(Director::isDev()) return;
+		if(\Director::isDev()) return;
 		
 		// The headers have been sent and we don't have an SS_HTTPResponse object to attach things to; no point in us trying.
 		if(headers_sent() && !$body) return;

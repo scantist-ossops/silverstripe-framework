@@ -27,12 +27,20 @@ class ClassLoader {
 		'beforecallaspect' => 'SilverStripe\\Framework\\Injector\\',
 		'config' => 'SilverStripe\\Framework\\Core\\Config',
 		'config_forclass' => 'SilverStripe\\Framework\\Core\\ConfigForClass',
+		'cookie' => 'SilverStripe\\Framework\\Http\\Cookie',
 		'deprecation' => 'SilverStripe\\Framework\\Dev\\Deprecation',
+		'http' => 'SilverStripe\\Framework\\Http\\Http',
 		'injector' => 'SilverStripe\\Framework\\Injector\\Injector',
 		'ss_classloader' => 'SilverStripe\\Framework\\Manifest\\ClassLoader',
 		'ss_dag' => 'SilverStripe\\Framework\\Util\\Dag',
 		'ss_filefinder' => 'SilverStripe\\Framework\\Filesystem\\FileFinder',
-		'ss_templateloader' => 'SilverStripe\\Framework\\Manifest\\TemplateLoader',
+		'session' => 'SilverStripe\\Framework\\Http\\Session',
+		'ss_dag' => 'SilverStripe\\Framework\\Util\\Dag',
+		'ss_filefinder' => 'SilverStripe\\Framework\\Filesystem\\FileFinder',
+		'ss_httprequest' => 'SilverStripe\\Framework\\Http\\Request',
+		'ss_httpresponse' => 'SilverStripe\\Framework\\Http\\Response',
+		'ss_httpresponse_exception' => 'SilverStripe\\Framework\\Http\\ResponseException',
+		'ss_templateloader' => 'SilverStripe\\Framework\\Manifest\\TemplateLoader'
 	);
 
 	protected $manifests = array();

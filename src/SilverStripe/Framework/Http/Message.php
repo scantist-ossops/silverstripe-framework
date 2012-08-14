@@ -1,11 +1,20 @@
 <?php
 /**
+ * @package framework
+ * @subpackage http
+ */
+
+namespace SilverStripe\Framework\Http;
+
+use SilverStripe\Framework\Dev\Deprecation;
+
+/**
  * A base class for http requests and responses.
  *
  * @package framework
- * @subpackage control
+ * @subpackage http
  */
-abstract class SS_HttpMessage {
+abstract class Message {
 
 	/**
 	 * @var string
@@ -78,7 +87,7 @@ abstract class SS_HttpMessage {
 	 * @deprecated 3.1 Please use {@link setHeader()}.
 	 */
 	public function addHeader($name, $value) {
-		Deprecation::notice('3.1', 'Use HttpMessage::setHeader()');
+		Deprecation::notice('3.1', 'Use Message::setHeader()');
 		$this->setHeader($name, $value);
 	}
 
@@ -86,7 +95,7 @@ abstract class SS_HttpMessage {
 	 * @deprecated 3.1 Please use {@link unsetHeader()}.
 	 */
 	public function removeHeader($header) {
-		Deprecation::notice('3.1', 'Use HttpMessage::unsetHeader()');
+		Deprecation::notice('3.1', 'Use Message::unsetHeader()');
 		$this->unsetHeader($header);
 	}
 

@@ -1,11 +1,20 @@
 <?php
 /**
+ * @package framework
+ * @subpackage http
+ */
+
+namespace SilverStripe\Framework\Http;
+
+use SilverStripe\Framework\Dev\Deprecation;
+
+/**
  * Represents a HTTP request which is handled by the framework.
  *
  * @package framework
- * @subpackage control
+ * @subpackage http
  */
-class SS_HTTPRequest extends SS_HttpMessage implements ArrayAccess {
+class Request extends Message implements \ArrayAccess {
 
 	protected $get;
 	protected $post;
@@ -412,7 +421,7 @@ class SS_HTTPRequest extends SS_HttpMessage implements ArrayAccess {
 	 * @return array
 	 */
 	public function requestVars() {
-		return ArrayLib::array_merge_recursive($this->getVars(), $this->postVars());
+		return \ArrayLib::array_merge_recursive($this->getVars(), $this->postVars());
 	}
 
 	/**
@@ -680,7 +689,7 @@ class SS_HTTPRequest extends SS_HttpMessage implements ArrayAccess {
 	 * @deprecated 3.1 Use {@link getMethod()}.
 	 */
 	public function httpMethod() {
-		Deprecation::notice('3.1', 'Use SS_HTTPRequest->getMethod().');
+		Deprecation::notice('3.1', 'Use Request->getMethod()');
 		return $this->getMethod();
 	}
 

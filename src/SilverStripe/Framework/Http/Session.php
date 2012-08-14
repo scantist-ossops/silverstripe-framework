@@ -1,5 +1,15 @@
 <?php
 /**
+ * @package framework
+ * @subpackage http
+ */
+
+namespace SilverStripe\Framework\Http;
+
+use Controller;
+use Director;
+
+/**
  * Handles all manipulation of the session.
  * 
  * The static methods are used to manipulate the currently active controller's session.
@@ -75,9 +85,8 @@
  * @todo This class is currently really basic and could do with a more well-thought-out implementation.
  *
  * @package framework
- * @subpackage control
+ * @subpackage http
  */
-
 class Session {
 
 	/**
