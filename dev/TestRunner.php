@@ -133,13 +133,16 @@ class TestRunner extends Controller {
 	 */
 	function all($request, $coverage = false) {
 		self::use_test_manifest();
-		$tests = ClassInfo::subclassesFor('SapphireTest');
-		array_shift($tests);
+
+		$tests = array_merge(
+			ClassInfo::subclassesFor('SapphireTest'),
+			ClassInfo::subclassesFor('SilverStripe\\Framework\\Testing\\TestCase')
+		);
+
+		unset($tests['SapphireTest']);
 		unset($tests['FunctionalTest']);
-		
-		// Remove tests that don't need to be executed every time
 		unset($tests['PhpSyntaxTest']);
-		
+
 		foreach($tests as $class => $v) {
 			$reflection = new ReflectionClass($class);
 			if(!$reflection->isInstantiable()) unset($tests[$class]);
@@ -171,8 +174,13 @@ class TestRunner extends Controller {
 		self::use_test_manifest();
 		self::$default_reporter->writeHeader();
 		self::$default_reporter->writeInfo('Available Tests', false);
+
+		$tests = array_merge(
+			ClassInfo::subclassesFor('SapphireTest'),
+			ClassInfo::subclassesFor('SilverStripe\\Framework\\Testing\\TestCase')
+		);
+
 		if(Director::is_cli()) {
-			$tests = ClassInfo::subclassesFor('SapphireTest');
 			$relativeLink = Director::makeRelative($this->Link());
 			echo "sake {$relativeLink}all: Run all " . count($tests) . " tests\n";
 			echo "sake {$relativeLink}coverage: Runs all tests and make test coverage report\n";
@@ -182,7 +190,6 @@ class TestRunner extends Controller {
 			}
 		} else {
 			echo '<div class="trace">';
-			$tests = ClassInfo::subclassesFor('SapphireTest');
 			asort($tests);
 			echo "<h3><a href=\"" . $this->Link() . "all\">Run all " . count($tests) . " tests</a></h3>";
 			echo "<h3><a href=\"" . $this->Link() . "coverage\">Runs all tests and make test coverage report</a></h3>";
