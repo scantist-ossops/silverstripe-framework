@@ -21,7 +21,7 @@ class AssetsInstallerTest extends TestCase {
 
 	public function testInstallation() {
 		$app = new TestApplication();
-		$app->registerModule(new Module('module', __DIR__ . '/fixtures/assetsinstaller'));
+		$app->getModules()->add(new Module('module', __DIR__ . '/fixtures/assetsinstaller'));
 
 		$path = $app->getTempPath() . '/assetsinstallertest';
 
