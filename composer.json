@@ -15,14 +15,7 @@
 		}
 	],
 	"require": {
-		"php": ">=5.3.2",
-		"symfony/filesystem": "2.1.*",
-		"symfony/yaml": "2.1.*",
-		"zendframework/zend-cache": "2.0.*",
-		"zendframework/zend-eventmanager": "2.0.*",
-		"zendframework/zend-loader": "2.0.*",
-		"zendframework/zend-servicemanager": "2.0.*",
-		"zendframework/zend-stdlib": "2.0.*"
+		"silverstripe/framework-deps": "self.version"
 	},
 	"autoload": {
 		"psr-0": {
