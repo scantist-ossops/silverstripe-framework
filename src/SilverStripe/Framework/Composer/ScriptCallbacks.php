@@ -6,6 +6,8 @@
 
 namespace SilverStripe\Framework\Composer;
 
+use DatabaseAdmin;
+use RoutedRequest;
 use SilverStripe\Framework\Core\ModuleSet;
 use SilverStripe\Framework\Filesystem\AssetsInstaller;
 use Symfony\Component\Yaml\Yaml;
@@ -81,6 +83,21 @@ class ScriptCallbacks {
 		$installer = new AssetsInstaller();
 		$installer->setApplication(self::get_application($event));
 		$installer->install();
+	}
+
+	public static function build_database($event) {
+		require_once __DIR__ . '/../functions.php';
+
+		$app = self::get_application($event);
+		$app->start();
+
+		$request = RoutedRequest::create();
+		$app->getInjector()->registerNamedService('Request', $request);
+
+		$builder = new DatabaseAdmin();
+		$builder->doBuild(!$event->getIO()->isVerbose());
+
+		$app->stop();
 	}
 
 	protected static function get_options($event) {
