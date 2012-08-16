@@ -11,7 +11,7 @@ class RequirementsTest extends SapphireTest {
 	static $html_template = '<html><head></head><body></body></html>';
 	
 	static $old_requirements = null;
-	
+
 	function testExternalUrls() {
 		$backend = new Requirements_Backend;
 		$backend->set_combined_files_enabled(true);
@@ -93,13 +93,13 @@ class RequirementsTest extends SapphireTest {
 
 		$this->setupCombinedRequirements($backend);
 		
-		$combinedFilePath = Director::baseFolder() . '/assets/' . 'RequirementsTest_bc.js';
+		$combinedFilePath = Application::curr()->getPublicPath() . '/assets/' . 'RequirementsTest_bc.js';
 
 		$html = $backend->includeInHTML(false, self::$html_template);
 
 		/* COMBINED JAVASCRIPT FILE IS INCLUDED IN HTML HEADER */
 		$this->assertTrue((bool)preg_match('/src=".*\/RequirementsTest_bc\.js/', $html), 'combined javascript file is included in html header');
-		
+
 		/* COMBINED JAVASCRIPT FILE EXISTS */
 		$this->assertTrue(file_exists($combinedFilePath), 'combined javascript file exists');
 		
@@ -123,7 +123,7 @@ class RequirementsTest extends SapphireTest {
 
 		$this->setupCombinedNonrequiredRequirements($backend);
 		
-		$combinedFilePath = Director::baseFolder() . '/assets/' . 'RequirementsTest_bc.js';
+		$combinedFilePath = Application::curr()->getPublicPath() . '/assets/' . 'RequirementsTest_bc.js';
 
 		$html = $backend->includeInHTML(false, self::$html_template);
 
@@ -150,7 +150,7 @@ class RequirementsTest extends SapphireTest {
 		$backend = new Requirements_Backend;
 		$backend->set_combined_files_enabled(true);
 		$backend->setCombinedFilesFolder('assets');
-		$combinedFilePath = Director::baseFolder() . '/assets/' . 'RequirementsTest_bc.js';
+		$combinedFilePath = Application::curr()->getPublicPath() . '/assets/' . 'RequirementsTest_bc.js';
 
 		/* BLOCKED COMBINED FILES ARE NOT INCLUDED */
 		$this->setupCombinedRequirements($backend);

@@ -1,9 +1,12 @@
 <?php
+
+use SilverStripe\Framework\Manifest\Manifest;
+use SilverStripe\Framework\Testing\TestApplication;
+
 /**
  * @package framework
  * @subpackage i18n
  */
-
 class i18nSSLegacyAdapterTest extends SapphireTest {
 
 	function setUp() {
@@ -14,15 +17,20 @@ class i18nSSLegacyAdapterTest extends SapphireTest {
 		FileSystem::makeFolder($this->alternateBaseSavePath);
 		Director::setBaseFolder($this->alternateBasePath);
 
-		// Push a template loader running from the fake webroot onto the stack.
-		$templateManifest = new SS_TemplateManifest($this->alternateBasePath, false, true);
-		$templateManifest->regenerate(false);
+		$app = new TestApplication();
+		$app->setBasePath($this->alternateBasePath);
+
+		$manifest = new Manifest($app);
+		$manifest->init();
+
+		$templateManifest = $manifest->getTemplateManifest();
+		$classManifest = $manifest->getPhpManifest();
+
+		SS_ClassLoader::instance()->pushManifest($classManifest);
 		SS_TemplateLoader::instance()->pushManifest($templateManifest);
+
 		$this->_oldTheme = SSViewer::current_theme();
 		SSViewer::set_theme('testtheme1');
-		
-		$classManifest = new SS_ClassManifest($this->alternateBasePath, true, true, false);
-		SS_ClassLoader::instance()->pushManifest($classManifest);
 
 		$this->originalLocale = i18n::get_locale();
 		

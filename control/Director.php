@@ -1,5 +1,6 @@
 <?php
 
+use SilverStripe\Framework\Core\Application;
 use SilverStripe\Framework\Http\Response;
 use SilverStripe\Framework\Http\ResponseException;
 
@@ -553,7 +554,7 @@ class Director implements TemplateGlobalProvider {
 	 * @return string
 	 */
 	public static function getAbsFile($file) {
-		return self::is_absolute($file) ? $file : Director::baseFolder() . '/' . $file;
+		return self::is_absolute($file) ? $file : Application::curr()->getPublicPath() . '/' . $file;
 	}
 	
 	/**

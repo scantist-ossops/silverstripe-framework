@@ -1949,7 +1949,7 @@ class i18n extends Object implements TemplateGlobalProvider {
 		// Sort modules by inclusion priority, then alphabetically
 		// TODO Should be handled by priority flags within modules
 		$prios = array('sapphire' => 10, 'framework' => 10, 'admin' => 11, 'cms' => 12, 'mysite' => 90);
-		$modules = Application::curr()->getModules();
+		$modules = Application::curr()->getModules()->toArray();
 		ksort($modules);
 		uksort(
 			$modules,

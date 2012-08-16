@@ -94,7 +94,8 @@ class MemberAuthenticator extends Authenticator {
 		}
 		
 		$attempt->Email = $RAW_data['Email'];
-		$attempt->IP = Controller::curr()->getRequest()->getIP();
+		$attempt->IP = Controller::has_curr() ? Controller::curr()->getRequest()->getIP() : null
+		;
 		$attempt->write();
 	}
 	

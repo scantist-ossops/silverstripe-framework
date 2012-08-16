@@ -1,5 +1,7 @@
 <?php
 
+use SilverStripe\Framework\Core\Application;
+
 /**
  * Field for uploading single or multiple files of all types, including images.
  * <b>NOTE: this Field will call write() on the supplied record</b>
@@ -284,7 +286,9 @@ class UploadField extends FileField {
 	 * @return string
 	 */
 	protected function getThumbnailURLForFile(File $file) {
-		if ($file && $file->exists() && file_exists(Director::baseFolder() . '/' . $file->getFilename())) {
+		$public = Application::curr()->getPublicPath();
+
+		if ($file && $file->exists() && file_exists($public . '/' . $file->getFilename())) {
 			if ($file->hasMethod('getThumbnail')) {
 				return $file->getThumbnail($this->getConfig('previewMaxWidth'), $this->getConfig('previewMaxHeight'))->getURL();
 			} elseif ($file->hasMethod('getThumbnailURL')) {

@@ -1,4 +1,8 @@
 <?php
+
+use SilverStripe\Framework\Manifest\Manifest;
+use SilverStripe\Framework\Testing\TestApplication;
+
 /**
  * @package framework
  * @subpackage tests
@@ -27,19 +31,22 @@ class i18nTextCollectorTest extends SapphireTest {
 		$this->alternateBaseSavePath = TEMP_FOLDER . '/i18nTextCollectorTest_webroot';
 		FileSystem::makeFolder($this->alternateBaseSavePath);
 
-		// Push a class and template loader running from the fake webroot onto
-		// the stack.
-		$this->manifest = new SS_ClassManifest(
-			$this->alternateBasePath, false, true, false
-		);
-		
-		$manifest = new SS_TemplateManifest($this->alternateBasePath, false, true);
-		$manifest->regenerate(false);
-		SS_TemplateLoader::instance()->pushManifest($manifest);
+		$app = new TestApplication();
+		$app->setBasePath($this->alternateBasePath);
+
+		$manifest = new Manifest($app);
+		$manifest->init();
+
+		$templateManifest = $manifest->getTemplateManifest();
+		$classManifest = $manifest->getPhpManifest();
+
+		SS_ClassLoader::instance()->pushManifest($classManifest);
+		SS_TemplateLoader::instance()->pushManifest($templateManifest);
 	}
 	
 	function tearDown() {
 		SS_TemplateLoader::instance()->popManifest();
+		SS_ClassLoader::instance()->popManifest();
 		parent::tearDown();
 	}
 

@@ -1,5 +1,7 @@
 <?php
 
+use SilverStripe\Framework\Core\Application;
+
 /**
  * Requirements tracker, for javascript and css.
  * @todo Document the requirements tracker, and discuss it with the others.
@@ -925,8 +927,10 @@ class Requirements_Backend {
 	 * @param string $combinedFileName If left blank, all combined files are deleted.
 	 */
 	function delete_combined_files($combinedFileName = null) {
+		$public = Application::curr()->getPublicPath();
+
 		$combinedFiles = ($combinedFileName) ? array($combinedFileName => null) : $this->combine_files;
-		$combinedFolder = ($this->getCombinedFilesFolder()) ? (Director::baseFolder() . '/' . $this->combinedFilesFolder) : Director::baseFolder();
+		$combinedFolder = ($this->getCombinedFilesFolder()) ? ($public . '/' . $this->combinedFilesFolder) : $public;
 		foreach($combinedFiles as $combinedFile => $sourceItems) {
 			$filePath = $combinedFolder . '/' . $combinedFile;
 			if(file_exists($filePath)) {
@@ -991,7 +995,7 @@ class Requirements_Backend {
 		}
 
 		// Process the combined files
-		$base = Director::baseFolder() . '/';
+		$base = Application::curr()->getPublicPath() . '/';
 		foreach(array_diff_key($combinedFiles, $this->blocked) as $combinedFile => $dummy) {
 			$fileList = $this->combine_files[$combinedFile];
 			$combinedFilePath = $base . $combinedFilesFolder . '/' . $combinedFile;
@@ -1079,7 +1083,7 @@ class Requirements_Backend {
 	 */
 	public function themedCSS($name, $module = null, $media = null) {
 		$path = SSViewer::get_theme_folder();
-		$abspath = BASE_PATH . DIRECTORY_SEPARATOR . $path;
+		$abspath = Application::curr()->getPublicPath() . DIRECTORY_SEPARATOR . $path;
 		$css = "/css/$name.css";
 
 		if ($module && file_exists($abspath.'_'.$module.$css)) {

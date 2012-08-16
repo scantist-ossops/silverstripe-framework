@@ -1,5 +1,7 @@
 <?php
 
+use SilverStripe\Framework\Core\Application;
+
 /**
  * This tracks the current scope for an SSViewer instance. It has three goals:
  *   - Handle entering & leaving sub-scopes in loops and withs
@@ -700,7 +702,7 @@ class SSViewer {
 	 */
 	public static function getTemplateFileByType($identifier, $type) {
 		$loader = Application::curr()->get('TemplateLoader');
-		$found  = $loader->findTemplates("$type/$identifier", self::current_theme());
+		$found  = $loader->getPaths("$type/$identifier", self::current_theme());
 
 		if ($found) {
 			return $found['main'];

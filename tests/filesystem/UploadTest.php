@@ -7,6 +7,8 @@ class UploadTest extends SapphireTest {
 	static $fixture_file = 'UploadTest.yml';
 
 	function testUpload() {
+		$public = Application::curr()->getPublicPath();
+
 		// create tmp file
 		$tmpFileName = 'UploadTest-testUpload.txt';
 		$tmpFilePath = TEMP_FOLDER . '/' . $tmpFileName;
@@ -36,7 +38,7 @@ class UploadTest extends SapphireTest {
 			'File upload to standard directory in /assets'
 		);
 		$this->assertTrue(
-			(strpos($file1->getFullPath(), Director::baseFolder() . '/assets/' . Upload::$uploads_folder) !== false),	
+			(strpos($file1->getFullPath(), $public . '/assets/' . Upload::$uploads_folder) !== false),
 			'File upload to standard directory in /assets'
 		);
 		$file1->delete();
@@ -51,13 +53,13 @@ class UploadTest extends SapphireTest {
 			'File upload to custom directory in /assets'
 		);
 		$this->assertTrue(
-			(strpos($file2->getFullPath(), Director::baseFolder() . '/assets/' . $customFolder) !== false),
+			(strpos($file2->getFullPath(), $public . '/assets/' . $customFolder) !== false),
 			'File upload to custom directory in /assets'
 		);
 		$file2->delete();
 		
 		unlink($tmpFilePath);
-		rmdir(Director::baseFolder() . '/assets/' . $customFolder);
+		rmdir($public . '/assets/' . $customFolder);
 	}
 	
 	function testAllowedFilesize() {

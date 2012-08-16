@@ -363,21 +363,23 @@ class FileTest extends SapphireTest {
 	
 	function setUp() {
 		parent::setUp();
-		
+
+		$public = Application::curr()->getPublicPath();
+
 		if(!file_exists(ASSETS_PATH)) mkdir(ASSETS_PATH);
 
 		/* Create a test folders for each of the fixture references */
 		$folderIDs = $this->allFixtureIDs('Folder');
 		foreach($folderIDs as $folderID) {
 			$folder = DataObject::get_by_id('Folder', $folderID);
-			if(!file_exists(BASE_PATH."/$folder->Filename")) mkdir(BASE_PATH."/$folder->Filename");
+			if(!file_exists($public."/$folder->Filename")) mkdir($public."/$folder->Filename");
 		}
-		
+
 		/* Create a test files for each of the fixture references */
 		$fileIDs = $this->allFixtureIDs('File');
 		foreach($fileIDs as $fileID) {
 			$file = DataObject::get_by_id('File', $fileID);
-			$fh = fopen(BASE_PATH."/$file->Filename", "w");
+			$fh = fopen($public."/$file->Filename", "w");
 			fwrite($fh, str_repeat('x',1000000));
 			fclose($fh);
 		}
@@ -396,18 +398,20 @@ class FileTest extends SapphireTest {
 	function tearDown() {
 		parent::tearDown();
 
+		$public = Application::curr()->getPublicPath();
+
 		/* Remove the test files that we've created */
 		$fileIDs = $this->allFixtureIDs('File');
 		foreach($fileIDs as $fileID) {
 			$file = DataObject::get_by_id('File', $fileID);
-			if($file && file_exists(BASE_PATH."/$file->Filename")) unlink(BASE_PATH."/$file->Filename");
+			if($file && file_exists($public."/$file->Filename")) unlink($public."/$file->Filename");
 		}
 
 		/* Remove the test folders that we've crated */
 		$folderIDs = $this->allFixtureIDs('Folder');
 		foreach($folderIDs as $folderID) {
 			$folder = DataObject::get_by_id('Folder', $folderID);
-			if($folder && file_exists(BASE_PATH."/$folder->Filename")) Filesystem::removeFolder(BASE_PATH."/$folder->Filename");
+			if($folder && file_exists($public."/$folder->Filename")) Filesystem::removeFolder($public."/$folder->Filename");
 		}
 
 		// Remove left over folders and any files that may exist

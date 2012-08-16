@@ -153,12 +153,12 @@ class PhpManifestTest extends TestCase {
 
 	public function testGetImplementors() {
 		$standard = array(
-			'rootinterface' => array('test\\classb'),
-			'test\\namespacedinterface' => array('test\\classc')
+			'rootinterface' => array('Test\\ClassB'),
+			'test\\namespacedinterface' => array('Test\\ClassC')
 		);
 
 		$tests = array_merge_recursive($standard, array(
-			'rootinterface' => array('testclass')
+			'rootinterface' => array('TestClass')
 		));
 
 		$this->assertEquals($standard, self::$manifest->getImplementors());

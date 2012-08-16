@@ -1,6 +1,6 @@
 <?php
-// Include the DB class
-require_once("model/DB.php");
+
+use SilverStripe\Framework\Core\Application;
 
 /**
  * DatabaseAdmin class

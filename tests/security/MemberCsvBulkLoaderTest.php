@@ -8,7 +8,7 @@ class MemberCsvBulkLoaderTest extends SapphireTest {
 	
 	function testNewImport() {
 		$loader = new MemberCsvBulkLoader();
-		$results = $loader->load($this->getCurrentRelativePath() . '/MemberCsvBulkLoaderTest.csv');
+		$results = $loader->load(__DIR__ . '/MemberCsvBulkLoaderTest.csv');
 		$created = $results->Created()->toArray();
 		$this->assertEquals(count($created), 2);
 		$this->assertEquals($created[0]->Email, 'author1@test.com');
@@ -22,7 +22,7 @@ class MemberCsvBulkLoaderTest extends SapphireTest {
 		$author1->write();
 		
 		$loader = new MemberCsvBulkLoader();
-		$results = $loader->load($this->getCurrentRelativePath() . '/MemberCsvBulkLoaderTest.csv');
+		$results = $loader->load(__DIR__ . '/MemberCsvBulkLoaderTest.csv');
 		$created = $results->Created()->toArray();
 		$this->assertEquals(count($created), 1);
 		$updated = $results->Updated()->toArray();
@@ -38,7 +38,7 @@ class MemberCsvBulkLoaderTest extends SapphireTest {
 		$loader = new MemberCsvBulkLoader();
 		$loader->setGroups(array($existinggroup));
 		
-		$results = $loader->load($this->getCurrentRelativePath() . '/MemberCsvBulkLoaderTest.csv');
+		$results = $loader->load(__DIR__ . '/MemberCsvBulkLoaderTest.csv');
 		
 		$created = $results->Created()->toArray();
 		$this->assertEquals($created[0]->Groups()->column('ID'), array($existinggroup->ID));
@@ -49,7 +49,7 @@ class MemberCsvBulkLoaderTest extends SapphireTest {
 		$existinggroup = $this->objFromFixture('Group', 'existinggroup');
 		
 		$loader = new MemberCsvBulkLoader();
-		$results = $loader->load($this->getCurrentRelativePath() . '/MemberCsvBulkLoaderTest_withGroups.csv');
+		$results = $loader->load(__DIR__ . '/MemberCsvBulkLoaderTest_withGroups.csv');
 		
 		$newgroup = DataObject::get_one('Group', sprintf('"Code" = \'%s\'', 'newgroup'));
 		$this->assertEquals($newgroup->Title, 'newgroup');
@@ -62,7 +62,7 @@ class MemberCsvBulkLoaderTest extends SapphireTest {
 	function testCleartextPasswordsAreHashedWithDefaultAlgo() {
 		$loader = new MemberCsvBulkLoader();
 		
-		$results = $loader->load($this->getCurrentRelativePath() . '/MemberCsvBulkLoaderTest_cleartextpws.csv');
+		$results = $loader->load(__DIR__ . '/MemberCsvBulkLoaderTest_cleartextpws.csv');
 		
 		$member = $results->Created()->First();
 		$memberID = $member->ID;

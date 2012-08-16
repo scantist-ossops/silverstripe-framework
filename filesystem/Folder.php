@@ -1,4 +1,7 @@
 <?php
+
+use SilverStripe\Framework\Core\Application;
+
 /**
  * Represents a folder in the assets/ directory.
  * The folder path is stored in the "Filename" property.
@@ -232,7 +235,7 @@ class Folder extends File {
 			return;
 		}
 		
-		$base = BASE_PATH;
+		$base = Application::curr()->getPublicPath();
 		// $parentFolder = Folder::findOrMake("Uploads");
 
 		// Generate default filename

@@ -1,5 +1,9 @@
 <?php
+
 require_once 'Zend/Translate.php';
+
+use SilverStripe\Framework\Manifest\Manifest;
+use SilverStripe\Framework\Testing\TestApplication;
 
 /**
  * @package framework
@@ -27,16 +31,24 @@ class i18nTest extends SapphireTest {
 	
 	function setUp() {
 		parent::setUp();
-		
+
 		$this->alternateBasePath = $this->getCurrentAbsolutePath() . "/_fakewebroot";
 		$this->alternateBaseSavePath = TEMP_FOLDER . '/i18nTextCollectorTest_webroot';
 		FileSystem::makeFolder($this->alternateBaseSavePath);
 		Director::setBaseFolder($this->alternateBasePath);
 
-		// Push a template loader running from the fake webroot onto the stack.
-		$templateManifest = new SS_TemplateManifest($this->alternateBasePath, false, true);
-		$templateManifest->regenerate(false);
+		$app = new TestApplication();
+		$app->setBasePath($this->alternateBasePath);
+
+		$manifest = new Manifest($app);
+		$manifest->init();
+
+		$templateManifest = $manifest->getTemplateManifest();
+		$classManifest = $manifest->getPhpManifest();
+
+		SS_ClassLoader::instance()->pushManifest($classManifest);
 		SS_TemplateLoader::instance()->pushManifest($templateManifest);
+
 		$this->_oldTheme = SSViewer::current_theme();
 		SSViewer::set_theme('testtheme1');
 
@@ -57,11 +69,13 @@ class i18nTest extends SapphireTest {
 	
 	function tearDown() {
 		SS_TemplateLoader::instance()->popManifest();
+		SS_ClassLoader::instance()->popManifest();
+
 		i18n::set_locale($this->originalLocale);
 		Director::setBaseFolder(null);
 		SSViewer::set_theme($this->_oldTheme);
 		i18n::register_translator($this->origAdapter, 'core');
-		
+
 		parent::tearDown();
 	}
 	
@@ -408,9 +422,6 @@ class i18nTest extends SapphireTest {
 	function testIncludeByLocale() {
 		// Looping through modules, so we can test the translation autoloading
 		// Load non-exclusive to retain core class autoloading
-		$classManifest = new SS_ClassManifest($this->alternateBasePath, true, true, false);
-		SS_ClassLoader::instance()->pushManifest($classManifest);
-		
 		$adapter = i18n::get_translator('core')->getAdapter();
 		$this->assertTrue($adapter->isAvailable('en'));
 		$this->assertFalse($adapter->isAvailable('de'));
@@ -428,14 +439,9 @@ class i18nTest extends SapphireTest {
 		$this->assertTrue($adapter->isTranslated('i18nTestModule.ENTITY', null, 'de'), 'Includes module files');
 		$this->assertTrue($adapter->isTranslated('i18nTestTheme1.LAYOUTTEMPLATE', null, 'de'), 'Includes theme files');
 		$this->assertTrue($adapter->isTranslated('i18nTestModule.OTHERENTITY', null, 'de'), 'Includes submodule files');
-		
-		SS_ClassLoader::instance()->popManifest();
 	}
 
 	function testIncludeByLocaleWithoutFallbackLanguage() {
-		$classManifest = new SS_ClassManifest($this->alternateBasePath, true, true, false);
-		SS_ClassLoader::instance()->pushManifest($classManifest);
-		
 		$adapter = i18n::get_translator('core')->getAdapter();
 		$this->assertTrue($adapter->isAvailable('en'));
 		$this->assertFalse($adapter->isAvailable('mi')); // not defined at all
@@ -452,8 +458,6 @@ class i18nTest extends SapphireTest {
 		$this->assertFalse($adapter->isAvailable('mi'));
 		$this->assertTrue($adapter->isAvailable('mi_NZ'));
 		$this->assertTrue($adapter->isTranslated('i18nTestModule.ENTITY', null, 'mi_NZ'), 'Includes module files');
-		
-		SS_ClassLoader::instance()->popManifest();
 	}
 	
 	function testRegisterTranslator() {
@@ -474,11 +478,6 @@ class i18nTest extends SapphireTest {
 	}
 	
 	function testMultipleTranslators() {
-		// Looping through modules, so we can test the translation autoloading
-		// Load non-exclusive to retain core class autoloading
-		$classManifest = new SS_ClassManifest($this->alternateBasePath, true, true, false);
-		SS_ClassLoader::instance()->pushManifest($classManifest);
-
 		// Changed manifest, so we also need to unset all previously collected messages.
 		// The easiest way to do this it to register a new adapter.
 		$adapter = new Zend_Translate(array(
@@ -546,8 +545,6 @@ class i18nTest extends SapphireTest {
 		i18n::unregister_translator('custom');
 		i18n::unregister_translator('othercustom_lower_prio');
 		i18n::unregister_translator('othercustom_higher_prio');
-		
-		SS_ClassLoader::instance()->popManifest();
 	}
 	
 }
