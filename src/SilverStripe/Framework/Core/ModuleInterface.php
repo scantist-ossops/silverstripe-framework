@@ -29,4 +29,15 @@ interface ModuleInterface {
 	 */
 	public function getPath();
 
+	/**
+	 * Returns an array of asset directories relative to the project root which
+	 * contain public asset files.
+	 *
+	 * These directories do not necessarily exist. If they do, they will be
+	 * copied to the web root.
+	 *
+	 * @return array
+	 */
+	public function getAssetDirs();
+
 }

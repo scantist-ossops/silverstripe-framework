@@ -35,4 +35,8 @@ class Theme implements ModuleInterface {
 		return $this->path;
 	}
 
+	public function getAssetDirs() {
+		return array('css', 'images', 'javascript');
+	}
+
 }
