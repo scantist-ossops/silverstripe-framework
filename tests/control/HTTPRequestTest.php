@@ -166,24 +166,6 @@ class HTTPRequestTest extends SapphireTest {
 		$this->assertEquals('https://example.com', $request->getSchemeAndHost());
 	}
 
-	public function testGetBaseUrl() {
-		$root = new SS_HTTPRequest(null, null, null, array(
-			'server' => array(
-				'SCRIPT_FILENAME' => BASE_PATH . '/framework/main.php',
-				'SCRIPT_NAME' => '/framework/main.php'
-			)
-		));
-		$this->assertEquals('/', $root->getBaseUrl());
-
-		$sub = new SS_HTTPRequest(null, null, null, array(
-			'server' => array(
-				'SCRIPT_FILENAME' => BASE_PATH . '/framework/main.php',
-				'SCRIPT_NAME' => '/subfolder/framework/main.php'
-			)
-		));
-		$this->assertEquals('/subfolder/', $sub->getBaseUrl());
-	}
-
 	public function testGetUrl() {
 		$req = SS_HTTPRequest::create('GET', '/');
 		$this->assertEquals('', $req->getURL());
