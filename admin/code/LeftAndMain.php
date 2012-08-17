@@ -1,4 +1,7 @@
 <?php
+
+use SilverStripe\Framework\Core\Application;
+
 /**
  * LeftAndMain is the parent class of all the two-pane views in the CMS.
  * If you are wanting to add more areas to the CMS, you can do it by subclassing LeftAndMain.
@@ -203,7 +206,7 @@ class LeftAndMain extends Controller implements PermissionProvider {
 		
 		// Set the members html editor config
 		HtmlEditorConfig::set_active(Member::currentUser()->getHtmlEditorConfigForCMS());
-		
+
 		// Set default values in the config if missing.  These things can't be defined in the config
 		// file because insufficient information exists when that is being processed
 		$htmlEditorConfig = HtmlEditorConfig::get_active();
@@ -226,7 +229,9 @@ class LeftAndMain extends Controller implements PermissionProvider {
 			
 			// Remove files that don't exist
 			foreach($cssFiles as $k => $cssFile) {
-				if(!file_exists(BASE_PATH . '/' . $cssFile)) unset($cssFiles[$k]);
+				if(!file_exists(Application::curr()->getPublicPath() . '/' . $cssFile)) {
+					unset($cssFiles[$k]);
+				}
 			}
 
 			$htmlEditorConfig->setOptions(array(
