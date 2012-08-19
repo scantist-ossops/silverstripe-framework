@@ -197,7 +197,7 @@ also another tool at your disposal: The `[api:Extension]` API.
 		}
 	}
 
-	// mysite/_config.php
+	// application/_config.php
 	Object::add_extension('MyAdmin', 'MyAdminExtension');
 
 The following extension points are available: `updateEditForm()`, `updateSearchContext()`,

@@ -2,7 +2,7 @@
 
 Functional tests test your controllers.  The core of these are the same as unit tests:
 
-*  Create a subclass of `[api:SapphireTest]` in the `mysite/tests` or `(module)/tests` folder.
+*  Create a subclass of `[api:SapphireTest]` in the `application/tests` or `(module)/tests` folder.
 *  Define static $fixture_file to point to a database YAML file.
 *  Create methods that start with "test" to create your tests.
 *  Assertions are used to work out if a test passed or failed.

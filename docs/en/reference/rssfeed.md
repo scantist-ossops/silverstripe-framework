@@ -31,8 +31,8 @@ your website, so its advisable to just create feeds from subclasses of `[api:Sit
 ### Example of showing the 10 most recently updated pages
 
 
-You can use `[api:RSSFeed]` to easily create a feed showing your latest Page updates. Just change mysite/code/Page.php to
-something like this:
+You can use `[api:RSSFeed]` to easily create a feed showing your latest Page
+updates. Just change application/src/Page.php to something like this:
 
 	:::php
 	<?php

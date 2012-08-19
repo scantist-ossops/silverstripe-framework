@@ -34,13 +34,13 @@ By default, a config named 'cms' is used in any field created throughout the CMS
 Example: Enable the "media" plugin:
 
 	:::php
-	// File: mysite/_config.php
+	// File: application/_config.php
 	HtmlEditorConfig::get('cms')->enablePlugins('media');
 
 Example: Remove some buttons for more advanced formatting
 
 	:::php
-	// File: mysite/_config.php
+	// File: application/_config.php
 	HtmlEditorConfig::get('cms')->removeButtons('tablecontrols', 'blockquote', 'hr');
 
 ## Image and Media Insertion
@@ -76,7 +76,7 @@ back and forth between a content representation the editor can understand, prese
 Example: Remove field for "image captions"
 
 	:::php
-	// File: mysite/code/MyToolbarExtension.php
+	// File: application/src/MyToolbarExtension.php
 	class MyToolbarExtension extends Extension {
 		public function updateFieldsForImage(&$fields, $url, $file) {
 			$fields->removeByName('Caption');
@@ -84,7 +84,7 @@ Example: Remove field for "image captions"
 	}
 
 	:::php
-	// File: mysite/_config.php
+	// File: application/_config.php
 	Object::add_extension('HtmlEditorField', 'MyToolbarExtension');
 
 Adding functionality is a bit more advanced, you'll most likely
@@ -111,7 +111,7 @@ In the CMS, those dialogs are automatically instanciated, but in your own interf
 of the CMS you have to take care of instanciation yourself:
 
 	:::php
-	// File: mysite/code/MyController.php
+	// File: application/src/MyController.php
 	class MyObjectController extends Controller {
 		public function EditorToolbar() {
 			return HtmlEditorField_Toolbar::create($this, "EditorToolbar");
@@ -119,7 +119,7 @@ of the CMS you have to take care of instanciation yourself:
 	}
 
 	:::ss
-	// File: mysite/templates/MyController.ss
+	// File: application/templates/MyController.ss
 	$Form
 	<% with EditorToolbar %>
 		$MediaForm
@@ -130,7 +130,7 @@ Note: The dialogs rely on CMS-access, e.g. for uploading and browsing files,
 so this is considered advanced usage of the field.
 
 	:::php
-	// File: mysite/_config.php
+	// File: application/_config.php
 	HtmlEditorConfig::get('cms')->disablePlugins('ssbuttons');
 	HtmlEditorConfig::get('cms')->removeButtons('sslink', 'ssmedia');
 	HtmlEditorConfig::get('cms')->addButtonsToLine(2, 'link', 'media');

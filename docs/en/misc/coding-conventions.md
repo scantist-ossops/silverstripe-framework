@@ -33,6 +33,11 @@ linefeed combination (CRLF) as is standard for the Windows OS (0x0D, 0x0A).
 
 Class, function, variable and constant names may only contain alphanumeric characters and underscores.
 
+### Namespaces
+
+Classes should be organised into namespaces. Namespaces should be in UpperCamelCase
+format, and be in the format `<VendorName>\<PackageName>`.
+
 ### Classes
 
 Class and filenames are in `UpperCamelCase` format:
@@ -96,11 +101,10 @@ Defining constants in the global scope with the `define` function is permitted b
 
 ### File Naming and Directory Structure
 
-Classes need to be in a file of the same name. Multiple classes are allowed to be contained in one file,
-as long as the prefix of the class equals the filename, and is separated by an underscore from the remaining name.
-For example `MyClass` and `MyClass_Controller` will both need to be placed into `MyClass.php`.
+Classes should be in a file of the same name. Files should be organised into
+directories by their namespaces, according to the PSR-0 standard.
 
-Example: `mysite/code/MyClass.php`
+Example: `application/src/MyClass.php`
 
 	:::php
 	<?php
@@ -383,6 +387,15 @@ and [tag overview](http://manual.phpdoc.org/HTMLSmartyConverter/HandS/phpDocumen
 Example:
 
 	:::php
+	/**
+	 * @package custom
+	 */
+
+	namespace MyNamespace;
+
+	use SilverStripe\Framework\DependencyOne;
+	use SilverStripe\Framework\DependencyTwo;
+
 	/** 
 	 * My short description for this class.
 	 * My longer description with

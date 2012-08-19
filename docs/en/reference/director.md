@@ -15,15 +15,15 @@ but in short
 
 * File uploads are first analysed to remove potentially harmful uploads (this 
 will likely change!)
-* The `[api:SS_HTTPRequest]` object is created
+* The `[api:RoutedRequest]` object is created
 * The session object is created
-* The `[api:Injector]` is first referenced, and asks the registered `[api:RequestProcessor]` 
-to pre-process the request object. This allows for analysis of the current 
-request, and allow filtering of parameters etc before any of the core of the 
-application executes.
+* The `[api:RequestProcessor]` pre-processes the request object. This allows for
+  analysis of the current
+  request, and allow filtering of parameters etc before any of the core of the
+  application executes.
 * The request is handled and response checked
 * The `[api:RequestProcessor]` is called to post-process the request to allow 
-further filtering before content is sent to the end user
+  further filtering before content is sent to the end user
 * The response is output
 
 The framework provides the ability to hook into the request both before and 
@@ -70,13 +70,6 @@ See:
 
 *  [framework/_config/routes.yml](https://github.com/silverstripe/sapphire/blob/master/_config/routes.yml)
 *  [cms/_config/routes.yml](https://github.com/silverstripe/silverstripe-cms/blob/master/_config/routes.yml)
-
-
-## Best Practices
-
-*  Checking for an Ajax-Request: Use Director::is_ajax() instead of checking 
-for $_REQUEST['ajax'].
-
 
 ## Links
 

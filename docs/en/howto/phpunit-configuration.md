@@ -14,8 +14,8 @@ a single test with `sake dev/tests/MyTestClass`, or tests for a module with `sak
 While the custom test runner a handy tool, its also more limited than using `phpunit` directly,
 particularly around formatting test output.
 
-The `phpunit` executable uses a SilverStripe bootstrapper to autoload classes, 
-but handles its own test class retrieval, output formatting and other configuration. 
+The `phpunit` executable uses a SilverStripe bootstrapper to autoload classes,
+but handles its own test class retrieval, output formatting and other configuration.
 It can format output in common structured formats used by "continuous integration" servers.
 If you're using [phpUnderControl](http://phpundercontrol.org/) or a similar tool,
 you will most likely need the `--log-junit` and `--coverage-xml` flags that are not available through `sake`.
@@ -25,15 +25,15 @@ All command-line arguments are documented on [phpunit.de](http://www.phpunit.de/
 ## Usage of "phpunit" executable
 
  * `phpunit`: Runs all tests in all folders
- * `phpunit framework/tests/`: Run all tests of the framework module
- * `phpunit framework/tests/filesystem`: Run all filesystem tests within the framework module
- * `phpunit framework/tests/filesystem/FolderTest.php`: Run a single test
- * `phpunit framework/tests '' flush=all`: Run tests with optional `$_GET` parameters (you need an empty second argument)
+ * `phpunit vendor/silverstripe/framework/tests/`: Run all tests of the framework module
+ * `phpunit vendor/silverstripe/framework/tests/filesystem`: Run all filesystem tests within the framework module
+ * `phpunit vendor/silverstripe/framework/tests/filesystem/FolderTest.php`: Run a single test
+ * `phpunit vendor/silverstripe/framework/tests '' flush=all`: Run tests with optional `$_GET` parameters (you need an empty second argument)
 
 ## Coverage reports
 
- * `phpunit --coverage-html assets/coverage-report`: Generate coverage report for the whole project
- * `phpunit --coverage-html assets/coverage-report mysite/tests/`: Generate coverage report for the "mysite" module
+ * `phpunit --coverage-html public/assets/coverage-report`: Generate coverage report for the whole project
+ * `phpunit --coverage-html public/assets/coverage-report application/tests/`: Generate coverage report for the "application" module
 
 ## Customizing phpunit.xml.dist
 
@@ -61,11 +61,11 @@ for unit and functional tests.
 
 Example `phpunit-unittests-only.xml`:
 
-	<phpunit bootstrap="framework/tests/bootstrap.php" colors="true">
+	<phpunit bootstrap="vendor/silverstripe/framework/tests/bootstrap.php" colors="true">
 		<testsuites>
 			<testsuite>
-				<directory>mysite/tests/unit</directory>
-				<directory>othermodule/tests/unit</directory>
+				<directory>application/tests</directory>
+				<directory>othermodule/tests</directory>
 				<!-- ... -->
 			</testsuite>
 		</testsuites>
@@ -83,12 +83,12 @@ This applies for all thirdparty code
 
 	<filter>
 		<blacklist>
-			<directory suffix=".php">framework/dev/</directory>
-			<directory suffix=".php">framework/thirdparty/</directory>
-			<directory suffix=".php">cms/thirdparty/</directory>
+			<directory suffix=".php">vendor/silverstripe/framework/dev/</directory>
+			<directory suffix=".php">vendor/silverstripe/framework/thirdparty/</directory>
+			<directory suffix=".php">vendor/silverstripe/cms/thirdparty/</directory>
 			
 			<!-- Add your custom rules here -->
-			<directory suffix=".php">mysite/thirdparty/</directory>
+			<directory suffix=".php">application/thirdparty/</directory>
 		</blacklist>
 	</filter>
 
@@ -109,7 +109,7 @@ to a very fast database that requires minimal setup and is fully file-based.
 It should give you up to 4x speed improvements over running tests in MySQL or other
 more "heavy duty" relational databases.
 
-Example `mysite/_config.php`:
+Example `application/_config.php`:
 
 	// Customized configuration for running with different database settings.
 	// Ensure this code comes after ConfigureFromEnv.php

@@ -14,7 +14,7 @@ Your extension will nee to be a subclass of `[api:DataExtension]` or the `[api:E
 	:::php
 	<?php
 	
-	// mysite/code/CustomMember.php
+	// application/src/CustomMember.php
 	
 	class CustomMember extends DataExtension {
 	
@@ -37,7 +37,7 @@ Sometimes you will want to add extension to classes that you didn't make.  For e
 For example above we want to override Member with a Custom Member so we would write the following
 
 	:::php
-	// add to mysite/_config.php	
+	// add to application/_config.php
 	Object::add_extension('Member', 'CustomMember');</code>
 
 ##  Implementation

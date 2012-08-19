@@ -200,7 +200,7 @@ as well as info on the current record. A single link updates both sections indep
 in a single Ajax request.
 
 	:::php
-	// mysite/code/MyAdmin.php
+	// application/src/MyAdmin.php
 	class MyAdmin extends LeftAndMain {
 		static $url_segment = 'myadmin';
 		public function getResponseNegotiator() {

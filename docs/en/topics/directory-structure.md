@@ -2,63 +2,107 @@
 
 ## Introduction
 
-The directory-structure in SilverStripe it built on "convention over configuration", so the placement of some files and
-directories is meaningful to its logic.
- 
-## Core Structure
+This describes the default directory structure of a SilverStripe application when
+installed using [Composer](http://getcomposer.org/). Most of the directory
+structure can be customised by overloading the relevant methods in your application's
+`[api:SilverStripe\Framework\Core\Application]` subclass.
 
-Directory   | Description
----------   | -----------
-`assets/`   | Contains images and other files uploaded via the SilverStripe CMS. You can also place your own content inside it, and link to it from within the content area of the CMS.
-`cms/`      | Contains all the files that form the CMS area of your site. It’s structure is similiar to the mysite/ directory, so if you find something interesting, it should be easy enough to look inside and see how it was built. 
-`framework/` | The framework that builds both your own site and as the CMS that powers it. You’ll be utilizing files in this directory often, both directly and indirectly.
+## Structure
 
-## Custom Code Structure
+`composer.json`
+:   The composer file which lives in the root of your application defines the
+    dependencies for your project, as well as other information.
 
-We're using `<mysite>` as an example - arbitrary directory-names are allowed, as long as they don't collide with
-existing modules or the directories lists in "Core Structure".
+`application`
+:   This contains your application's code and other files.
 
- | Directory           | Description                                                         | 
- | ---------           | -----------                                                         | 
- | `<mysite>/`           | This directory contains all of your code that defines your website. | 
- | `<mysite>/code`       | PHP code for model and controller (subdirectories are optional)     | 
- | `<mysite>/templates`  | HTML [templates](templates) with *.ss-extension                     | 
- | `<mysite>/css `       | CSS files                                                           | 
- | `<mysite>/images `    | Images used in the HTML templates                                   | 
- | `<mysite>/javascript` | Javascript and other script files 
+`public`
+:   This is the web root of the application. This contains both user uploaded
+    and module asset files (CSS, JS, etc). The `assets` directory inside this
+    directory contains user-uploaded files. It also contains the main `index.php`
+    file, which all incoming requests invoke.
+
+`themes`
+:   This directory contains themes, which are the templates and associated
+    asset files bundled up into individual themes.
+
+`vendor`
+:   This directory contains the dependencies installed using Composer. This
+    includes the framework, as well as any modules, widgets or themes you
+    install. See the [Composer](http://getcomposer.org/) documentation for more
+    details on installing dependencies using Composer.
+
+## Application Structure
+
+The `application` folder contains all of your application's code, and associated
+files.
+
+`application`
+:   This contains your application's code and other files.
+
+`application/src`
+:   Contains the PHP classes the make up your application. It is strongly
+    recommended to follow [PSR-0](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-0.md)
+    style file naming conventions.
+
+`application/templates`
+:   Contains the templates used for rendering the application. Most templates
+    contain HTML, and have an `*.ss` extension.
+
+`application/css`,
+`application/images`,
+`application/javascript`
+:   These directories contain the public asset files (CSS, JS and images). These
+    are mirrored across to the webroot directory to provide public access.
 
 ## Themes Structure
 
- | `themes/simple/`      | Standard "simple" theme                                         |
- | ------------------        | ---------------------------                                         | 
- | `themes/yourtheme/`       | The themes folder can contain more than one theme - here's your own |
+The `themes` directory contains the application themes, which contains bundles
+of HTML, CSS, images, and other files used to render your site. Each theme is
+contained within a subfolder in this directory. See the [themes](/topics/themes)
+documentations for more information.
 
+`themes/<theme-name>`
+:   Each theme is contained in its own sub-directory.
 
-See [themes](/topics/themes)
+`themes/<theme-name>/templates`
+:   This directory contains the templates for the theme.
 
-## Module Structure		{#module_structure}
+`themes/<theme-name>/css`
+`themes/<theme-name>/images`
+`themes/<theme-name>/javascript`
+:   Contains the asset files for the theme. These are mirrored across to the
+    webroot.
 
-Modules are currently top-level folders that need to have a *_config.php*-file present.
-They should follow the same conventions as posed in "Custom Site Structure"
+## Module Structure
 
-Example Forum:
+Modules are structured in the same way as the main application directory. Common
+files and directories include:
 
- | Directory  | Description                                                         | 
- | ---------  | -----------                                                         | 
- | `forum/`     | This directory contains all of your code that defines your website. | 
- | `forum/code` | PHP code for model and controller (subdirectories are optional)     | 
- | ...        | ...                                                                 | 
+`composer.json`
+:   SilverStripe uses Composer by default to install modules. Each module should
+    have a composer file. More information is available in the
+    [Composer](/topics/composer) topic.
 
-![](_images/modules_folder.jpg)
+`_config.php`,
+`_config`
+:   Contains the configuration settings that are part of the module, in either
+    PHP or YAML format.
 
+`src`
+:   Contains the module's PHP code. This should preferably be structured using
+    the PSR-0 standard.
 
-## PHP Include Paths
+`css`,
+`images`,
+`javascript`
+:   Contains asset files which are mirrored to the webroot.
 
-Due to the way `[api:ManifestBuilder]` recursively detects php-files and includes them through PHP5's
-*__autoload()*-feature, you don't need to worry about include paths. Feel free to structure your php-code into
-subdirectories inside the *code*-directory.
+`lang`
+:   Contains language definitions in YAML format.
 
-## Best Practices
+`templates`
+:   Contains the `*.ss` templates used for rendering information.
 
-### Making /assets readonly
-See [secure-development#filesystem](/topics/security#filesystem)
+`tests`
+:   Contains unit tests for module.

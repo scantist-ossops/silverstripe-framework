@@ -3,7 +3,7 @@
 ## Introduction
 
 Basic data-object representing all pages within the site tree. 
-The omnipresent *Page* class (located in `mysite/code/Page.php`) is based on this class.
+The omnipresent *Page* class (located in `application/src/Page.php`) is based on this class.
 
 ## Creating, Modifying and Finding Pages
 

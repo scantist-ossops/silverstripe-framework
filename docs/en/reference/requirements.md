@@ -39,14 +39,14 @@ reducing HTTP requests. Note that for debugging purposes combined files is disab
 	Requirements::combine_files(
 		'foobar.js',
 		array(
-			'mysite/javascript/foo.js',
-			'mysite/javascript/bar.js',
+			'application/javascript/foo.js',
+			'application/javascript/bar.js',
 		)
 	);
 
 
-By default it stores the generated file in the assets/ folder but you can configure this by setting
- 
+By default it stores the generated file in the `public/assets/` folder but you
+can configure this by setting
 
 	:::php
 	// relative from the base folder

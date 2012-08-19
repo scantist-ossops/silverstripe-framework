@@ -56,9 +56,9 @@ A more in-depth introduction of Model-View-Controller can be found
 
 To create a news section we'll need two new page types. The first one is obvious: we need an *ArticlePage* page type. The second is a little less obvious: we need an *ArticleHolder* page type to contain our article pages.
 
-We'll start with the *ArticlePage* page type. First we create the model, a class called "ArticlePage". We put the *ArticlePage* class into a file called "ArticlePage.php" inside *mysite/code*. All other classes relating to *ArticlePage* should be placed within "ArticlePage.php", this includes our controller (*ArticlePage_Controller*). 
+We'll start with the *ArticlePage* page type. First we create the model, a class called "ArticlePage". We put the *ArticlePage* class into a file called "ArticlePage.php" inside *application/src*. All other classes relating to *ArticlePage* should be placed within "ArticlePage.php", this includes our controller (*ArticlePage_Controller*).
 
-**mysite/code/ArticlePage.php**
+**application/src/ArticlePage.php**
 
 	:::php
 	<?php
@@ -74,7 +74,7 @@ to specifically create the view for this page type.
 
 Let's create the *ArticleHolder* page type.
 
-**mysite/code/ArticleHolder.php**
+**application/src/ArticleHolder.php**
 
 	:::php
 	<?php
@@ -202,9 +202,9 @@ the date field will have the date format defined by your locale.
 		$fields = parent::getCMSFields();
 		
 		$fields->addFieldToTab('Root.Main', $dateField = new DateField('Date','Article Date (for example: 20/12/2010)'), 'Content');
-        $dateField->setConfig('showcalendar', true);
-        $fields->addFieldToTab('Root.Main', $dateField, 'Content');
-        $fields->addFieldToTab('Root.Main', new TextField('Author'), 'Content');
+		$dateField->setConfig('showcalendar', true);
+		$fields->addFieldToTab('Root.Main', $dateField, 'Content');
+		$fields->addFieldToTab('Root.Main', new TextField('Author'), 'Content');
 
 		return $fields;
 	}
@@ -336,13 +336,13 @@ Let's now make a purely cosmetic change that nevertheless helps to make the info
 Add the following field to the *ArticleHolder* and *ArticlePage* classes:
 
 	:::php
-	static $icon = "framework/docs/en/tutorials/_images/treeicons/news-file.gif";
+	public static $icon = "framework/images/tutorial/treeicons/news-file.gif";
 
 
 And this one to the *HomePage* class:
 
 	:::php
-	static $icon = "framework/docs/en/tutorials/_images/treeicons/home-file.gif";
+	public static $icon = "framework/images/tutorial/treeicons/home-file.gif";
 
 
 This will change the icons for the pages in the CMS.  
@@ -353,7 +353,7 @@ This will change the icons for the pages in the CMS.
 
 It would be nice to greet page visitors with a summary of the latest news when they visit the homepage. This requires a little more code though - the news articles are not direct children of the homepage, so we can't use the *Children* control. We can get the data for news articles by implementing our own function in *HomePage_Controller*.
 
-**mysite/code/HomePage.php**
+**application/src/HomePage.php**
 
 	:::php
 	...
@@ -419,7 +419,7 @@ This automatically generates a link-tag in the header of our template. The *init
 
 Now that we have a complete news section, let's take a look at the staff section. We need to create *StaffHolder* and *StaffPage* page types, for an overview on all staff members and a detail-view for a single member. First let's start with the *StaffHolder* page type.
 
-**mysite/code/StaffHolder.php**
+**application/src/StaffHolder.php**
 
 	:::php
 	<?php
@@ -440,7 +440,7 @@ Now that we have a complete news section, let's take a look at the staff section
 
 Nothing here should be new. The *StaffPage* page type is more interesting though. Each staff member has a portrait image. We want to make a permanent connection between this image and the specific *StaffPage* (otherwise we could simply insert an image in the *$Content* field).
 
-**mysite/code/StaffPage.php**
+**application/src/StaffPage.php**
 
 	:::php
 	<?php

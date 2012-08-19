@@ -114,7 +114,7 @@ and `LastName`
 You can also sort randomly
 
 	:::php
-	$member = Member::get()->sort('RAND()')
+	$member = Member::get()->sort(DB::getConn()->random())
 	
 ### Filter
 

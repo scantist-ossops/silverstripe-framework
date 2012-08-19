@@ -10,7 +10,7 @@ The main entry point for any commandline execution is `cli-script.php`. For exam
 from the commandline, use this command:
 
 	cd your-webroot/
-	php framework/cli-script.php dev/build
+	php vendor/silverstripe/framework/cli-script.php dev/build
 
 Make sure that your commandline php version uses the same configuration as your webserver (run `php -i` to find out more).
 
@@ -20,7 +20,7 @@ You can add parameters to the command by using normal form encoding.
 All parameters will be available in `$_GET` within SilverStripe.
 
 	cd your-webroot/
-	php framework/cli-script.php myurl myparam=1 myotherparam=2
+	php vendor/silverstripe/framework/cli-script.php myurl myparam=1 myotherparam=2
 
 ## SAKE: SilverStripe make
 

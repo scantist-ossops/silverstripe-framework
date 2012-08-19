@@ -13,8 +13,8 @@ site's customised code.
 *  **FATAL ERROR:** There is no way that the system can attempt to continue with the particular operation; it would be
 dangerous to report success to the user.
 
-You should use [user_error](http://www.php.net/user_error) to throw errors where appropriate.  The more information we
-have about what's not right in the system, the better we can make the application.
+You should [exceptions](http://php.net/manual/en/language.exceptions.php) where
+appropriate the throw errors.
 
 *  **E_USER_WARNING:** Err on the side of over-reporting warnings.  The more warnings we have, the less chance there is
 of a developer leaving a bug.  Throwing warnings provides a means of ensuring that developers know whow
@@ -54,7 +54,7 @@ You can indicate a log file relative to the site root. The named file will have 
 (an encoded file containing backtraces and things) will go to a file of a similar name, but with the suffix ".full"
 added.
 
-`<mysite>/_config.php`:
+`application/_config.php`:
 
 	:::php
 	// log errors and warnings
@@ -67,7 +67,7 @@ added.
 In addition to SilverStripe-integrated logging, it is adviseable to fall back to PHPs native logging functionality. A
 script might terminate before it reaches the SilverStripe errorhandling, for example in the case of a fatal error.
 
-`<mysite>/_config.php`:
+`application/_config.php`:
 
 	:::php
 	ini_set("log_errors", "On");
@@ -79,7 +79,7 @@ script might terminate before it reaches the SilverStripe errorhandling, for exa
 
 You can send both fatal errors and warnings in your code to a specified email-address.
 
-`<mysite>/_config.php`:
+`application/_config.php`:
 
 	:::php
 	// log errors and warnings

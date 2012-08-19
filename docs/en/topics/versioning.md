@@ -23,7 +23,7 @@ It accepts two or more arguments denoting the different "stages",
 which map to different database tables.
 
 	:::php
-	// mysite/_config.php
+	// application/_config.php
 	Object::add_extension('MyRecord', 'Versioned("Stage","Live")');
 
 Note: The extension is automatically applied to `SiteTree` class.

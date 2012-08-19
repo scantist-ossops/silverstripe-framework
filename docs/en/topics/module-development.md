@@ -1,58 +1,104 @@
 # Module Development
 
-## Introduction
+Creating a module is a good way to allow re-using code and templates across
+projects, or to separate parts of your application. SilverStripe by default
+comes with two modules - the core "framework" and the "cms" module. If you're
+wanting to add generic functionality that isn't specific to your project, you
+can create a module:
 
-Creating a module is a good way to re-use abstract code and templates across multiple projects. SilverStripe already has
-certain modules included, for example "framework" and "cms". These three modules are the core functionality and
-templating for any initial installation. If you're wanting to add generic functionality that isn't specific to your
-project, like a forum, an ecommerce package or a blog you can do it like this;
-
-1.  Create another directory at the root level (same level as "framework" and "cms")
-2.  You must create an _config.php inside your module directory, else SilverStripe will not include it
-3.  Inside your module directory, follow our [directory structure guidelines](/topics/directory-structure#module_structure)
+1.  Create another directory in your application root directory alongside the
+    main `application` directory.
+2.  Register the module in your application classes `registerModules()` method.
+3.  Inside your new module directory, follow the relevant
+    [directory structure guidelines](/topics/directory-structure)
 
 ## Tips
 
-Try and keep your module as generic as possible - for example if you're making a forum module, your members section
-shouldn't contain fields like 'Games You Play' or 'Your LiveJournal Name' - if people want to add these fields they can
+Try and keep your module as generic as possible - for example if you're making
+a forum module, your members section shouldn't contain fields like 'Games You
+Play' or 'Your LiveJournal Name' - if people want to add these fields they can
 sub-class your class, or extend the fields on to it.
-
-If you're using Requirements to include generic support files for your project like CSS or Javascript, and want to
-override these files to be more specific in your project, the following code is an example of how to do so using the
-init() function on your module controller classes:
-
-	:::php
-	class Forum_Controller extends Page_Controller {
-	
-	   public function init() {
-	      if(Director::fileExists(project() . "/css/forum.css")) {
-	         Requirements::css(project() . "/css/forum.css");
-	      }else{
-	         Requirements::css("forum/css/forum.css");
-	      }
-	      parent::init();	
-	   }
-	
-	}
-
-
-This will use `<projectname>/css/forum.css` if it exists, otherwise it falls back to using `forum/css/forum.css`.
 
 ## Publication
 
-If you wish to submit your module to our public directory, you take responsibility for a certain level of code quality,
-adherence to conventions, writing documentation, and releasing updates. See [contributing](/misc/contributing).
+If you wish to submit your module to our public directory, you take responsibility
+for a certain level of code quality, adherence to conventions, writing
+documentation, and releasing updates. See the [contributing](/misc/contributing)
+page for more information.
 
-## Reference
+SilverStripe's module system is integrated with [Composer](http://getcomposer.org).
+If you wish to submit your module, widget or theme to the
+[SilverStripe Extensions site](http://extensions.silverstripe.org) your must
+create a `composer.json` file in your module's directory. This file describes
+your module, as well as listing the other dependencies it requires.
 
-**How To:**
+More information on `composer.json` files is available in the
+[Composer documentation](http://getcomposer.org/doc/02-libraries.md). There are
+many extra fields available.
 
-*  [Add a link to your module in the main SilverStripe Admin Menu](/reference/leftandmain)
+The "type" of silverstripe extensions must be one of "silverstripe-module",
+"silverstripe-widget" or "silverstripe-theme" to be installed. An example
+`composer.json` file for an example module is:
 
-**Useful Links:**
+	:::js
+	{
+		"name": "example-vendor/example-vendor",
+		"description": "An example SilverStripe module",
+		"type": "silverstripe-module",
+		"keywords": ["example"],
+		"require": {
+			"php": ">=5.3.2",
+			"silverstripe/framework": "dev-composer"
+		},
+		"autoload": {
+			"psr-0": { "SilverStripe\\ExampleModule": "src" }
+		}
+	}
 
-*  [Modules](modules)
-*  [Module Release Process](module-release-process)
-*  [Debugging methods](/topics/debugging)
-*  [URL Variable Tools](/reference/urlvariabletools) - Lists a number of ���page options��� , ���rendering tools��� or ���special
-URL variables��� that you can use to debug your SilverStripe applications
+It is suggested that you use PSR-0 style autoloading inside your module, but
+this is not required.
+
+If you use git, hg or svn for your module, Composer will automatically determine
+version information. See the [Composer documentation](http://getcomposer.org)
+for more details. It is required to use version control to submit your module
+to the extensions site.
+
+### Custom Module Classes
+
+<div class="warning" markdown="1">
+If you provide a custom module, this MUST be loadable using one of the Composer
+autoloading strategies.
+</div>
+
+Internally, each module is represented by an object that implements the
+`[api:SilverStripe\Framework\Core\ModuleInterface]` interface. This provides
+the following information via methods:
+
+`getName()`
+:   Returns the unique alphanumeric name of the module.
+
+`getPath()`
+:   Returns the absolute path to the module.
+
+`getAssetDirs()`
+:   Returns an array on directories within the module that contain
+
+It is strongly recommended to define a custom implementation of this interface
+for your module. This means that the name, path, and asset dirs can be set by
+the module author rather than the user. In order to do this, you first create
+the implementation of the interface, and then declare it in your `composer.json`
+file:
+
+	:::js
+	"extra": {
+		"silverstripe-module-class": "CustomModuleClass"
+	}
+
+An example custom module class is available on the
+[module architecture](modules#module-architecture) page.
+
+## Links
+
+*   [SilverStripe Extensions](http://extensions.silverstripe.org)
+*   [Modules](modules)
+*   [Debugging](/topics/debugging)

@@ -9,7 +9,7 @@ The following example is for a simple `[api:Controller]` class. If you're using
 the cms module and looking at Page_Controller instances you won't need to setup
 your own routes since the cms module handles these routes.
 
-`mysite/code/Controllers/FastFood.php`
+`application/src/Controllers/FastFood.php`
 
 	:::php
 	<?php
@@ -20,7 +20,7 @@ your own routes since the cms module handles these routes.
 	    }
 	}
 
-`mysite/_config/routes.yml`
+`application/_config/routes.yml`
 
 	:::yaml
 	---
@@ -56,7 +56,7 @@ This is useful when you want to subvert the fixed action mapping of `fastfood/or
 to the function **order**. In the case below we also want any orders coming 
 through `/fastfood/drivethrough/` to use the same order function.
 
-`mysite/code/Controllers/FastFood.php`
+`application/src/Controllers/FastFood.php`
 
 	:::php
 	class FastFood_Controller extends Controller {

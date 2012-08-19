@@ -107,10 +107,10 @@ This setup will store the cached content on the same server as the CMS.  This is
 
 ### Setup
 
-Put this in mysite/_config.php.  This will create static content in a "cache/" subdirectory, with an HTML suffix.
+Put this in application/_config.php.  This will create static content in a "cache/" subdirectory, with an HTML suffix.
 
 	:::php
-	Object::add_extension("SiteTree", "FilesystemPublisher('cache/', 'html')");
+	Object::add_extension("SiteTree", "FilesystemPublisher('public/cache/', 'html')");
 
 
 *  Put this into your .htaccess.  It will serve requests from the cache, statically, if the cache file exists.  Replace
@@ -123,16 +123,16 @@ example](http://open.silverstripe.com/browser/modules/cms/trunk/code/staticpubli
 
 Just look for this line:
 
-	RewriteRule .* framework/main.php?url=%1&%{QUERY_STRING} [L]
+	RewriteRule .* framework/main.php [QSA,L]
 
 
 And change the PHP script from main.php to static-main.php:
 
-	RewriteRule .* framework/static-main.php?url=%1&%{QUERY_STRING} [L]
+	RewriteRule .* framework/static-main.php [QSA,L]
 
 ## Using Static Publisher With Subsites Module
 
-Append the following code to mysite/config.php
+Append the following code to `application/_config.php`
 
 	:::php
 	FilesystemPublisher::$domain_based_caching = true;
@@ -206,7 +206,7 @@ away from potential hackers.  It is also good for high-traffic situations.
 
 ### Setup
 
-Add the RsyncMultiHostPublisher extension to your SiteTree objects in mysite/_config.php.  This will create static
+Add the RsyncMultiHostPublisher extension to your SiteTree objects in application/_config.php.  This will create static
 content in a "cache/" subdirectory, with an HTML suffix.
 
 	:::php

@@ -291,15 +291,16 @@ See
 
 ## Casting user input
 
-When working with `$_GET`, `$_POST` or `Director::urlParams` variables, and you know your variable has to be of a
+When working with `$_GET`, `$_POST` or URL parameter variables, and you know your variable has to be of a
 certain type, like an integer, then it's essential to cast it as one. *Why?* To be sure that any processing of your
 given variable is done safely, with the assumption that it's an integer.
 
 To cast the variable as an integer, place `(int)` or `(integer)` before the variable.
 
-For example: a page with the URL paramaters *mysite.com/home/add/1* requires that ''Director::urlParams['ID']'' be an
-integer. We cast it by adding `(int)` - ''(int)Director::urlParams['ID']''. If a value other than an integer is
-passed, such as *mysite.com/home/add/dfsdfdsfd*, then it returns 0.
+For example: a page with the URL paramaters *mysite.com/home/add/1* requires that
+the ID parameter be aninteger. This can be casted to an int by doing
+`(int) $this->request->getParam('ID')`'. If a value other than an integer is
+passed, such as *mysite.com/home/add/non-integer-id*, then it returns 0.
 
 Below is an example with different ways you would use this casting technique:
 
@@ -307,7 +308,7 @@ Below is an example with different ways you would use this casting technique:
 	public function CaseStudies() {
 	
 	   // cast an ID from URL parameters e.g. (mysite.com/home/action/ID)
-	   $anotherID = (int)Director::urlParam['ID'];
+	   $anotherID = (int) $this->request->getParam('ID');
 	
 	   // perform a calculation, the prerequisite being $anotherID must be an integer
 	   $calc = $anotherID + (5 - 2) / 2;
@@ -338,11 +339,12 @@ standard PHP way. See [casting](/topics/datamodel#casting).
 
 ## Filesystem
 
-### Don't allow script-execution in /assets
+### Don't allow script-execution in /public/assets
 
-As all uploaded files are stored by default on the /assets-directory, you should disallow script-execution for this
-folder. This is just an additional security-measure to making sure you avoid directory-traversal, check for filesize and
-disallow certain filetypes.
+As all uploaded files are stored by default on the /public/assets directory, you
+should disallow script-execution for this folder. This is just an additional
+security-measure to making sure you avoid directory-traversal, check for filesize
+and disallow certain filetypes.
 
 Example configuration for Apache2:
 
@@ -358,7 +360,7 @@ Example configuration for Apache2:
 If you are using shared hosting or in a situation where you cannot alter your Vhost definitions, you can use a .htaccess
 file in the assets directory.  This requires PHP to be loaded as an Apache module (not CGI or FastCGI).
 
-**/assets/.htaccess**
+**/public/assets/.htaccess**
 
 	php_flag engine off
 	Options -ExecCGI -Includes -Indexes 

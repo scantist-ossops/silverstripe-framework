@@ -22,7 +22,7 @@ later
 You can create reports for you own data quickly and easily. A general knowledge of SilverStripe's
 [Datamodel](/topics/datamodel) would help before you attempt this. 
 
-Inside the Mysite/Code folder - your projects code, create a file called `CustomSideReport` or `MyProjectSiteReport` and
+Inside the `application/src` folder - your projects code, create a file called `CustomSideReport` or `MyProjectSiteReport` and
 inside this file we can add our site reports.
 
 CustomSideReport.php 

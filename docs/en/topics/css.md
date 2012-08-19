@@ -13,7 +13,7 @@ SilverStripe provides a management layer for javascript and CSS files on top of 
 by adding some simple PHP calls to your controller or template. Some files are automatically included,
 depending on what functionality you are using (e.g. SilverStripe forms automatically include `framework/css/Form.css`).
 
-In your controller (e.g. `mysite/code/Page.php`):
+In your controller (e.g. `application/src/Page.php`):
 
 	:::php
 	class Page_Controller {

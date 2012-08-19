@@ -1,93 +1,183 @@
 # Modules
 
-SilverStripe is designed to be a modular application system - even the CMS is simply a module that plugs into it.  
+The SilverStripe Framework is designed to be a modular system - even the CMS is
+simply a module that plugs into it.
 
-A module is, quite simply, a collection of classes, templates, and other resources that is loaded into a top-level
-directory.  In a default SilverStripe download, even resources in 'framework' and 'mysite' are treated in exactly the
-same as every other module.
+A module is a collection of PHP code, templates, and other resources. In a
+SilverStripe site, the core "framework", "cms", and even your site-specific
+"application" module are modules.
 
-SilverStripe's `[api:ManifestBuilder]` will find any class, css or template files anywhere under the site's main
-directory.  The _config.php file in the module directory can be used to define director rules, calls to
-Object::useCustomClass(), and the like.  So, by unpacking a module into site's main directory and viewing the site with
-?flush=1 on the end of the URL, all the module's new behaviour will be incorporated to your site:
+SilverStripe's `[api:SilverStripe\Framework\Manifest]` system will find any
+classes, configuration or template files in modules.
 
-*  You can create subclasses of base classes such as SiteTree to extend behaviour.
-*  You can use Object::useCustomClass() to replace a built in class with a class of your own.
-*  You can use [an extension](api:DataExtension) to extend or alter the behaviour of a built-in class without replacing
-it.
-*  You can provide additional director rules to define your own controller for particular URLs.
+Modules provide the re-usable building blocks that allow you to quickly build
+functionality, and also allow for separation of concerns. For more information
+on creating modules, see [module-development](/topics/module-development).
 
-For more information on creating modules, see [module-development](/topics/module-development).
+## Installing Modules
 
-## Types of Modules
+Since SilverStripe 3.1 the preferred way to install modules has been with the
+Composer dependency management library.
 
-Because of the broad definition of modules, they can be created for a number of purposes:
+### Composer Installation
 
-*  **Applications:** A module can define a standalone application that may work out of the box, or may get customisation
-from your mysite folder.  "cms" is an example of this.
-*  **CMS Add-ons:** A module can define an extension to the CMS, usually by defining special page types with their own
-templates and behaviour. "blog", "ecommerce", "forum", and "gallery" are examples of this.
-*  **Blog Widgets:** A module can provide 1 or more blog-widget classes.  See [widgets](/topics/widgets) for more information.
-*  **Developer Tools:** A module can provide a number of classes or resource files that do nothing by themselves, but
-instead make it easier for developers to build other applications. 
+Since SilverStripe 3.1 [Composer](http://getcomposer.org) is used to install
+modules, themes, and thirdparty dependencies. Composer is a tool that allows
+you to specify the modules you require for your site, and will automatically
+resolve dependencies and install them.
+
+In order to install a module, all you need to do is add the relevant "require"
+line to the `composer.json` file in the root of your project. As an example,
+the require line for the `dev-master` version of the SQLite3 module would be:
+
+	"require": {
+		"silverstripe-labs/sqlite3": "dev-master"
+	}
+
+Once this has been added you run `composer.phar update` in the root of your
+application, and this will automatically download the module, register it,
+mirror any public asset files and rebuild the database.
+
+You can also install other thirdparty libraries using Composer. More information
+is available in the [Composer documentation](http://getcomposer.org/doc/00-intro.md).
+
+### Alternative Installation
+
+If you do not wish to use composer to install modules, or wish to add a custom
+module, you can also add the module files and explicitly register the module
+in your Application class.
+
+The first step is to place the module files in the root of your application. If
+the module is provided as an archive, extract it to the root of your application.
+In your application root you should have a `<module-name>` folder alongside your
+`application` and other directories.
+
+The next step is to register the module. This is done by adding a register call
+to the `registerModules` method in your custom application class. This is
+normally located in `application/src/Application.php`. If the application you
+installed has a custom `ModuleInterface` implementation, the relevant code
+to add is:
+
+	$this->getModules()->add(new CustomModuleClass());
+
+Otherwise, you need to register the module by supplying the module name and
+path relative to the application root:
+
+	$this->getModules()->addFromDetails('module-name', 'module-path');
+
+Once this is done, you need to rebuild the database. This is done by visiting
+the `/dev/build?flush=all` page on your site in a web browser. Once this is
+done your module should be up and running.
+
+You can also use this method to create custom modules as part of your
+application, by creating a directory alongside your `application` directory and
+registering it.
 
 ## Finding Modules
 
-*  [Official module list on silverstripe.org](http://silverstripe.org/modules)
-*  [Subversion repository on open.silverstripe.org](http://open.silverstripe.org/browser/modules)
-    
+The official source for modules is the extensions site. However, there are
+also modules available from other sources, such as [GitHub](https://github.com).
+It is strongly recommended that module authors submit their modules to the
+extensions site.
 
-## Installation
+*   [Official SilverStripe Extensions Site](http://extensions.silverstripe.org)
+*   [SilverStripe GitHub Page](https://github.com/silverstripe)
 
-Modules should exist in the root folder of your SilverStripe. The root folder being the one that contains the
-*framework*, *cms* and other folders.
+## Module Architecture
 
-The following article explains the generic installation of a module. Individual modules have their own requirements such
-as creating folders or configuring API keys. For information about installing or configuring a specific module see the
-modules *INSTALL* (or *README*) file. Modules should adhere to the [directory-structure](/topics/directory-structure)
-guidelines.
+Each application in SilverStripe has an application class, which registers the
+modules that the application uses, along with their paths and other information.
+This information is contained within an object that implements the
+`[api:SilverStripe\Framework\Core\ModuleInterface]` interface. These are grouped
+together into a `[api:SilverStripe\Framework\Core\ModuleSet]` instance.
 
-### Download
+Each module can define it's own custom implementation of the module class it is
+represented by. In fact, it is recommended to do so, since it means that the
+information does not have to be set by the user. An example implementation could
+be:
 
-To install a module you need to download the tar.gz file from the [modules page](http://www.silverstripe.org/modules) and extract this tar.gz to the root folder mentioned
-above.
+	:::php
+	use SilverStripe\Framework\Core\ModuleInterface;
+	
+	class ExampleModule implements ModuleInterface {
+	
+		/**
+		 * Gets the name of the module - a unique identifier which is used to
+		 * load module assets and refer to the module. Should be composed of
+		 * lowercase letters and dashes.
+		 */
+		public function getName() {
+			return 'example-module';
+		}
+	
+		/**
+		 * Gets the absolute path to where this module is installed. This can
+		 * be determined by reflecting on the current file.
+		 */
+		public function getPath() {
+			return dirname(__DIR__);
+		}
+	
+		/**
+		 * Returns the directory names which contain public assets. These will
+		 * be mirrored across to the webroot.
+		 */
+		public function getAssetDirs() {
+			return array('css', 'images', 'javascript');
+		}
+	
+	}
 
-Note some times the folders extracted from the tar.gz contain the version number or some other folders. You need to make
-sure the folder name is the correct name of the module.
+## Registering Modules
 
-### Subversion
+Each SilverStripe application has a ModuleSet object, which contains a list of
+all the modules used. This information can be loaded in three ways.
 
-#### Option 1: Checkout
+### Application Class
 
-	cd ~/Sites/yourSilverStripeProject/
-	svn co http://svn.silverstripe.com/open/modules/modulename/trunk modulename/
+The most straightforward way is to directly register modules in the overloaded
+`registerModules` in your application's application class:
 
+	:::php
+	protected function registerModules() {
+		parent::registerModules();
+	
+		$this->getModules()->add(new CustomModuleClass());
+		$this->getModules()->addFromDetails('module-name', 'module-path', ModuleSet::TYPE_MODULE);
+	}
 
-Note: Some modules are stored in subfolders.  If you want to use a module that is in a subfolder, such as widgets, put
-an _ between the subfolder name and the module name, like this:
+### YAML File
 
-	cd /your/website/root
-	svn co http://svn.silverstripe.com/open/modules/widgets/twitter/trunk widgets_twitter
+The second way is to load a set of modules from a YAML file. This is the default
+wait of registering modules - the file is regenerated when a module is installed
+using Composer. The `[api:SilverStripe\Framework\Core\ModuleSet::addFromYaml]`
+method.
 
+	:::php
+	protected function registerModules() {
+		// ...
+		$this->getModules()->addFromYaml('modules.yml');
+	}
 
+	:::yaml
+	modules:
+	  -
+	    class: Module\\CustomModuleClass
+	  -
+	    name: module-name
+	    path: path/to/module
+	    type: (module|theme|widget)
 
-#### Option 2: Add to svn:externals
+### Directory Scanning
 
-	cd ~/Sites/yourSilverStripeProject/
-	svn propedit svn:externals .
+The third way is to automatically scan a directory for modules (or themes). This
+is mainly included for backwards compatibility, and is not suggested. Two
+method can be used: `addFromDirectory()` and `addThemesFromDirectory()`. Both
+take an absolute path, or path relative to the application root as an argument.
 
+This will scan all subdirectories for modules or themes. The first method will
+register any directories with a `_config.php` file or `_config` directory as
+a module. The add themes from directory method will register all subdirectories
 
-In the editor add the following line (lines if you want multiple)
-
-	modulename/ http://svn.silverstripe.com/open/modules/modulename/trunk
-
-
-Exit the editor and then run 
-
-	svn up
-
-
-**Useful Links:**
-
-*  [Modules](/topics/module-developement)
-*  [Module Release Process](/misc/module-release-process)
+*   [Modules](/topics/module-developement)
+*   [Module Release Process](/misc/module-release-process)

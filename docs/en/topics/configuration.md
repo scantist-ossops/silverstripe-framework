@@ -19,7 +19,7 @@ In addition to these principle, some settings are
 
 See [environment-management](/topics/environment-management).
 
-## mysite/_config.php
+## application/_config.php
 
 This file is detected in each folder by `[api:ManifestBuilder]`. This way, every toplevel-folder (=module)
 can have independent configuration-rules.

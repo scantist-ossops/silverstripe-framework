@@ -54,7 +54,7 @@ you dont get it now, you will hopefully pick it up over the rest of this.
 So you have 2 blank Page.ss files. What are we going to do with them? How bout we put some HTML in them so we can see
 our theme in action. The code for mine is below.
 
-** yourtheme/templates/Page.ss **
+**yourtheme/templates/Page.ss**
 
 	:::ss
 	<!DOCTYPE html>
@@ -93,7 +93,7 @@ our theme in action. The code for mine is below.
 	</html>
 
 
-** yourtheme/templates/Layout/Page.ss **
+**yourtheme/templates/Layout/Page.ss**
 
 	:::ss
 	<h1>$Title</h1>
@@ -101,7 +101,7 @@ our theme in action. The code for mine is below.
 	$Form
 
 
-All you have to do now is tell your site to use your new theme - This is defined in the **mysite/_config.php** file
+All you have to do now is tell your site to use your new theme - This is defined in the **application/_config.php** file
 
 	:::php
 	SSViewer::set_theme('mythemename');
@@ -125,7 +125,7 @@ You can add more stylesheets using the template tag `<% require themedCSS(filena
 your css directory.
 
 Note: If you're using a default install of Silverstripe and notice that you're getting layout.css, typography.css and
-forms.css included without asking for them, they may be being called on lines 21-23 in mysite/code/Page.php. Remove
+forms.css included without asking for them, they may be being called on lines 21-23 in `application/src/Page.php`. Remove
 these three Requirements::themedCSS lines, and you will be free to add your own styles.
 
 ## Dividing your site the correct way!
@@ -226,27 +226,13 @@ A bunch of resources feel free to use to make your template awesome
 
 ## Reference
 
-### Overriding
-
-The templating system will search for the appropriate files in the following order:
-
-1. mysite (or other name given to site folder)
-2. themes
-3. module (eg blog)
-
-So if, for example, you had a typography.css file for a module in the module folder (eg blog/css/), in the theme module
-directory (eg themes/simple/css/), and in your site folder (eg mysite/css/), the system would use the file
-mysite/css/typography.css
-
-<div class="notice" markdown='1'>
-Note: This only applies for CSS and template files. PHP files **do not** get overridden!
-</div>
-
 ### Requirements
 
-The `[api:Requirements::themedCSS()]` function will
-do the search specified above. This avoids the need to type a full path to the css file, and also provides better
-ambiguity for themes.
+The `[api:Requirements::themedCSS()]` function will automatically search for
+the specified CSS file in the current theme - looking in the `<theme-name>/css`
+directory. You can also provide a module name as the second argument. If the
+requested CSS file is not found in the current theme it will be loaded from the
+module as a fallback.
 
 ### Subthemes
 

@@ -6,7 +6,7 @@ Silverstripe knows three different environment-types (or "debug-levels"). Each o
 and functionality. "dev", "test" and "live". You can either configure the environment of the site in the
 mysite/_config.php file or in your [environment configuration file](/topics/environment-management).
 
-The definition of setting an environment in your mysite/_config.php looks like
+The definition of setting an environment in your `application/_config.php` looks like
 
 	:::php
 	Director::set_environment_type("dev");
@@ -16,7 +16,7 @@ The definition of setting an environment in your mysite/_config.php looks like
 When developing your websites, adding page types or installing modules you should run your site in devmode. In this mode
 you will be able to view full error backtraces and view the development tools without logging in as admin.
 
-To set your site to dev mode set this in your mysite/_config.php file
+To set your site to dev mode set this in your `application/_config.php` file
 
 	:::php
 	Director::set_environment_type("dev");
@@ -35,14 +35,14 @@ not need to use test mode if you do not have a staging environment or a place fo
 In this mode error messages are hidden from the user and it includes `[api:BasicAuth]` integration if you want to password
 protect the site.
 
-To set your site to test mode set this in your `mysite/_config.php` file
+To set your site to test mode set this in your `application/_config.php` file
 
 	:::php
 	Director::set_environment_type("test");
 
 
 A common situation is to enable password protected site viewing on your test site only. You can enable that but adding
-this to your `mysite/_config` file
+this to your `application/_config.php` file
 
 	:::php
 	if(Director::isTest()) BasicAuth::protect_entire_site();
@@ -54,7 +54,7 @@ Live sites should always run in live mode. Error messages are suppressed from th
 to email the developers. This enables near real time reporting of any fatal errors or warnings on the site and can help
 find any bugs users run into.
 
-To set your site to live mode set this in your `mysite/_config.php` file
+To set your site to live mode set this in your `application/_config.php` file
 
 	:::php
 	Director::set_environment_type("live");
@@ -69,6 +69,7 @@ Use the following methods:
 	Director::isDev();
 	Director::isTest();
 	Director::isLive();
+	Director::get_environment_type();
 
 
 This is useful when you have various API keys on your site and separate ones for dev / live or for configuring
@@ -91,7 +92,7 @@ environment settings based on type
 
 ## Customizing Error-Output
 
-You can customize "friendly error messages" in test/live-mode by creating *assets/error-500.html*.
+You can customize "friendly error messages" in test/live-mode by creating *public/assets/error-500.html*.
 
 ## URL Variable Tools
 

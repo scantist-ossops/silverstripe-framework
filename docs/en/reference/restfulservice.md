@@ -148,7 +148,7 @@ If you want to bypass error handling on your sub-classes you could define that i
 `[api:RestfulService]` can be used to easily embed an RSS feed (since it's also an xml response) from a site
 such as del.icio.us
 
-Put something like this code in mysite/code/Page.php inside class Page_Controller
+Put something like this code in application/src/Page.php inside class Page_Controller
 
 	:::php
 		// Accepts an RSS feed URL and outputs a list of links from it

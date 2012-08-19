@@ -29,7 +29,7 @@ But each project can be done by one or more students.
 This is called a **one-to-many** relationship.
 Let's create the `Student` and `Project` objects.
 
-**mysite/code/Student.php**
+**application/src/Student.php**
 
 	:::php
 	<?php
@@ -43,7 +43,7 @@ Let's create the `Student` and `Project` objects.
 		);	
 	}
 
-**mysite/code/Project.php**
+**application/src/Project.php**
 
 	:::php
 	<?php
@@ -85,7 +85,7 @@ are useful for listing their children, and usually restrict these children to a 
 in our case pages of type `Project`.
 The restriction is enforced through the `$allowed_children` directive.
 
-**mysite/code/ProjectsHolder.php**
+**application/src/ProjectsHolder.php**
 
 	:::php
 	<?php
@@ -118,7 +118,7 @@ We do this through a powerful field called `[GridField](/topics/grid-field)`.
 All customization to fields for a page type are managed through a method called
 `getCMSFields()`, so let's add it there:
 
-**mysite/code/Project.php**
+**application/src/Project.php**
 
 	:::php
 	<?php
@@ -194,7 +194,7 @@ This is called a *many-many* relationship.
 
 The first step is to create the `Mentor` object and set the relation with the `Project` page type.
 
-**mysite/code/Mentor.php**
+**application/src/Mentor.php**
 
 	:::php
 	<?php
@@ -207,7 +207,7 @@ The first step is to create the `Mentor` object and set the relation with the `P
 		);
 	}
 
-**mysite/code/Project.php**
+**application/src/Project.php**
 
 	:::php
 	class Project extends Page {
@@ -225,7 +225,7 @@ which will allow you to manage the *many_many* relation.
 Again, GridField will come in handy here, we just have
 to configure it a bit differently.
 
-**mysite/code/Project.php**
+**application/src/Project.php**
 
 	:::php
 	class Project extends Page {

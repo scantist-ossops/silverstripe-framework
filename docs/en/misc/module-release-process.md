@@ -6,53 +6,52 @@ One of the best ways that you can contribute to SilverStripe is by developing a 
 If you do, we would love to host your module and have you become an official module maintainer on our site. 
 Please read our ["Contributing to SilverStripe"](http://silverstripe.org/contributing-to-silverstripe/) overview.
 
-Once you have created a module, login at [silverstripe.org](http://silverstripe.org) and 
-[submit your module](http://silverstripe.org/modules/manage/add)
+Once you have created a module, please submit it to the
+[SilverStripe Extensions](http://extensions.silverstripe.org) site.
 
 It's very important to us that users of SilverStripe can come to expect a level of quality from the core product and any 
 modules running on it. In order to provide this, we require certain things from module maintainers.
 
 <div class="hint" markdown="1">
-The following documentation describes aspects of subversion, you can read about similiar
-strategies for git on a [free online book](http://progit.org/book).
+The following documentation describes aspects of subversion, you can read
+about similiar strategies for git on a [free online book](http://progit.org/book).
 </div>
 
 ### Principles
 
-Strive for features you add to the CMS to be innovatively usable by a content editor rather than a web-developer.
-Think Wordpress and Apple. Most modules should work by merely placing the code in your SilverStripe installation and
-running /dev/build. Provide a default set of configuration options that are easily changed in `_config.php`
-(for instance the `ecommerce` module works out of the box, and you can easily set up a payment provider), aiding a pleasant
-user experience.
+Strive for features you add to the CMS to be innovatively usable by a content
+editor rather than a web-developer. Most modules should work out of the box by
+installing the module and building the database. Provide a default set of
+configuration options that are easily changed.
 
 ### Code
 
-Each line of code you write should be version controlled, in version control systems like 
-[subversion](http://subversion.tigris.org) or [Git](http://gitscm.com). There's lots of services that are freely
-available for opensource projects, including wiki and bugtracker functionality 
-(e.g. [Google Code for Subversion](http://code.google.com) or [Github for Git](http://github.com)).
+Any modules you create should be in version control, using a VCS such as
+[Git](http://gitscm.com) or [Subversion](http://subversion.tigris.org). There are
+several free source control hosting services, such as [GitHub](https://github.com),
+which SilverStripe uses, or [Google Code](http://code.google.com).
 
-* Add your module to [silverstripe.org/modules](http://silverstripe.org/modules) (and keep the version compatibility information current)
-* Follow our [coding-conventions](coding-conventions)
-* Write unit tests and functional tests covering code bundled with the module - see [testing-guide](/topics/testing)
-* Ensure your code is [localizable](/topics/i18n)
+*   Add your module to the [SilverStripe Extensions](http://extensions.silverstripe.org) site.
+*   Follow the [coding-conventions](coding-conventions).
+*   Write unit and functional tests covering the module - see the
+    [testing-guide](/topics/testing) for more details.
+*   Ensure your code is [localizable](/topics/i18n)
 
 ### Maintenance
 
-* Create releases (see ["Module Releases"](#module-releases) below)
-* Ensure that your module is patched to always work with the latest SilverStripe release, and note these compatibilities on 
-your modules page on silverstripe.org
-* Be involved in our community 
-    * Subscripe to our developer mailing list and be available to answer questions on the forum. 
-    * Attend [irc:our weekly core discussions on IRC](irc/our weekly core discussions on IRC) as regularly as you can.
-* Create an **issue tracker** so your users can file bugs and feature requests (see ["Feedback and Bugtracking"](module-release-process#feedback-and-bugtracking) below)
-* Create a **roadmap** and **milestones** outlining future release planning
+*   Create releases (see ["Module Releases"](#module-releases) below)
+*   Ensure your module is compatible with the latest SilverStripe release, and
+    keep the compatibility information in your `composer.json` file current.
+*   Be involved in the community, such as by subscribing to the core developement
+    mailing list, and posting on the forums.
+*   Create an **issue tracker** so users can file bugs, and add this to your
+    `composer.json` file.
+*   Create a **roadmap** and **milestones** outlining future release planning.
 
 ### Feedback and Bugtracking
 
 Both Google Code and github.com provide their own bugtracker - we encourage you to use any built-in tools that come with
-your version control hoster. Most Silverstripe-maintained modules have their bugtracker on 
-[open.silverstripe.org](http://open.silverstripe.org).
+your version control hoster.
 
 Providing bugtracking is a major form of communicating with your users in an efficient way, and will provide a good overview
 of outstanding work and the stability of your code to an interested user.
@@ -65,6 +64,17 @@ release candidate.  If your release candidate is found to be stable, then you ca
 You should have both **developer documentation** and **user documentation**, and keep them updated with your releases.
 See [Producing OSS: "Documentation"](http://producingoss.com/en/getting-started.html#documentation) and our 
 [contributing guide](contributing#writing-documentation).
+
+### Composer.json
+
+Each module is required to have a `composer.json` file in order to be submitted
+to the module directory. This is a metadata file containing information such as
+the module's requirements, the versions of SilverStripe it is compatible with,
+and other information.
+
+For more information on the `composer.json` file for modules, see
+[module development](/topics/module-development) or the
+[Composer documentation](http://getcomposer.org).
 
 ### README file
 
@@ -105,13 +115,13 @@ that you can link from the `README.md` file. Example:
 
 	mymodule/
 		README.md
-		code/
+		src/
 		docs/
 			installation.md
 			tutorial.md
 			howto-search-mymodule.md
 
-The ["sapphiredocs" module](http://open.silverstripe.org/browser/modules/sapphiredocs/trunk) can be used
+The ["docsviewer" module](https://github.com/silverstripe/silverstripe-docsviewer) can be used
 to list and render content inside a `docs/` folder (although it is not required, Markdown is designed
 to be readable in plain text as well).
 
@@ -120,7 +130,6 @@ to be readable in plain text as well).
 In return for all your hard work in putting a high-quality module on the site, the SilverStripe project has the following 
 options to support you:
 
-*  Use of [trac](http://open.silverstripe.org) to keep your bugs and feature requests organised
 *  Advertising of your module on the http://silverstripe.org/modules/ modules page once it has reached a beta stage and shown
 to meet our requirements above.
 *  We might showcase your module on our blog and/or newsletter, when it's first released and/or when a major version with
@@ -239,4 +248,3 @@ trunk.
 * [Documentation Guide](contributing#writing-documentation)
 * [Contributing to SilverStripe](http://silverstripe.org/contributing-to-silverstripe/)
 * [Submit your Module](http://silverstripe.org/modules/manage/add)
-* [subversion](subversion)

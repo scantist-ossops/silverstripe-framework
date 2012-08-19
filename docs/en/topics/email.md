@@ -33,7 +33,7 @@ The default HTML template is located in `framework/templates/email/GenericEmail.
 
 ### Templates
 
-*  Create a SS-template file called, in this example we will use 'MyEmail.ss' inside `mysite/templates/email`.
+*  Create a SS-template file called, in this example we will use 'MyEmail.ss' inside `application/templates/email`.
 *  Fill this out with the body text for your email. You can use any [SS-template syntax](/topics/templates) (e.g. `<% loop %>`,
 `<% if %>`, $FirstName etc)
 *  Choose your template with **setTemplate()**
@@ -69,7 +69,6 @@ Class definition:
 	    $from = 'email@email.com',
 	    $ss_template = 'MyEmail';
 	}
-	?>
 
 
 Usage:
@@ -79,7 +78,6 @@ Usage:
 	$email = new MyEmail();
 	$email->populateTemplate(Member::currentUser()); // This will populate the template, $to, $from etc variables if they exist
 	$email->send(); // Will immediately send an HTML email with appropriate plain-text content
-	?>
 
 
 ### Administrator Emails

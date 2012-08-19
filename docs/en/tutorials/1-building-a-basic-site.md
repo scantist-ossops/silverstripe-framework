@@ -27,17 +27,28 @@ After installation, open up the folder where you installed SilverStripe.
 
 If you installed on windows with WAMP, it will likely be at *c:\wamp\wwww*. On Mac OS X, using the built in webserver, it will be in your sites directory */Sites/* (with MAMP, it will likely be at */Applications/MAMP/htdocs/*)
 
-Let's have a look at the folder structure.
+Let's have a look at the folder structure:
 
- | Directory | | Description  | 
- | --------- | | -----------  | 
- | assets/   | | Contains images and other files uploaded via the SilverStripe CMS. You can also place your own content inside it, and link to it from within the content area of the CMS. | 
- | cms/      | | Contains all the files that form the CMS area of your site. It’s structure is similiar to the mysite/ directory, so if you find something interesting, it should be easy enough to look inside and see how it was built. | 
- | framework/ | | The framework that builds both your own site and as the CMS that powers it. You’ll be utilizing files in this directory often, both directly and indirectly.                                                             | 
- | mysite/   | | Contains all your sites code (mainly PHP)  | 
- | themes/   | | Combines all images, stylesheets, javascript and templates powering your website into a reusable "theme" | 
-      
-When designing your site you should only need to modify the *mysite*, *themes* and *assets* folders. The rest of the folders contain files and data that are not specific to any site.
+`application`
+:   Contains all your site's code (mainly PHP), and also templates, CSS, JS and
+    other files.
+
+`public`
+:   This directory is the publicly accessible part of your site. Any incoming
+    requests to your site will be handled inside this directory. It contains
+    public "assets" such as CSS, JavaScript, and images.
+
+`themes`
+:   Contains themes, which are a combined package of the templates, CSS, images
+    and JavaScript used in your site.
+
+`vendor`
+:   Contains the libraries used to power your site. This contains the SilverStripe
+    Framework and CMS, as well as other thirdparty libraries used.
+
+When designing your site you should only need to modify the `application` and
+`themes` directories. The rest of the folders contain files and data that are
+not specific to your site, and should not be edited directly.
 
 ##  Using the CMS
 
@@ -332,7 +343,7 @@ template, or template layout, corresponding to the page type. Therefore, the fir
 Each page type is represented by two PHP classes: a *data object* and a *controller*. Don't worry about the details of page
 types right now, we will go into much more detail in the [next tutorial](2-extending-a-basic-site).
 
-Create a new file *HomePage.php* in *mysite/code*. Copy the following code into it:
+Create a new file *HomePage.php* in *application/src*. Copy the following code into it:
 
 	:::php
 	<?php
@@ -343,7 +354,7 @@ Create a new file *HomePage.php* in *mysite/code*. Copy the following code into 
 
 
 Every page type also has a database table corresponding to it. Every time we modify the database, we need to rebuild it.
-We can do this by going to [http://localhost/your_site_name/dev/build?flush=all](http://localhost/your_site_name/dev/build?flush=1) (replace *localhost/your_site_name* with your own domain name if applicable). 
+We can do this by going to [http://localhost/your_site_name/dev/build?flush=all](http://localhost/your_site_name/dev/build?flush=all) (replace *localhost/your_site_name* with your own domain name if applicable).
 
 It may take a moment, so be patient. This add tables and fields needed by your site, and modifies any structures that have changed. It
 does this non-destructively - it will never delete your data.

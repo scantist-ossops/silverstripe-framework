@@ -5,6 +5,7 @@ It is where most documentation should live, and is the natural "second step" aft
 
  * [Access Control and Page Security](access-control): Restricting access and setting up permissions on your website
  * [Command line Usage](commandline): Calling controllers via the command line interface using `sake`
+ * [Composer](composer): The dependency management tool used by SilverStripe.
  * [Configuring your website](configuration): How to configure the `_config.php` file
  * [Controller](controller): The intermediate layer between your templates and the data model
  * [Data Types](data-types): Types that properties on `DataObject` can have (e.g. `Text` or `Date`)

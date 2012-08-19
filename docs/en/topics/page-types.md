@@ -26,7 +26,7 @@ we want to do to the CMS for this page type in here.
 
 ![](_images/controllers-and-dataobjects.png)
 
-We put the `Page` class into a file called `Page.php` inside `mysite/code`. 
+We put the `Page` class into a file called `Page.php` inside `application/src`.
 As a convention, we also put the `Page_Controller` class in the same file.
 
 Why do we sub-class `Page` for everything? The easiest way to explain this is to use the example of a search form. If we

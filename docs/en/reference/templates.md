@@ -360,7 +360,7 @@ There are two ways you can extend the template variables you have available. You
 `Page.php` class.
 
 	:::php
-	// mysite/code/Page.php
+	// application/src/Page.php
 	public function MyCustomValue() {
 	 return "Hi, this is my site";
 	}

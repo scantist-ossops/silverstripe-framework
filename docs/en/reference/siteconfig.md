@@ -32,7 +32,7 @@ Or if you want to access variables in the PHP you can do
 
 To extend the options available in the panel you can define your own fields via an Extension.
 
-Create a mysite/code/CustomSiteConfig.php file.
+Create a application/src/CustomSiteConfig.php file.
 
 	:::php
 	<?php

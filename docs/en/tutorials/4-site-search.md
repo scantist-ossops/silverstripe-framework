@@ -12,8 +12,8 @@ We are going to add a search box on the top of the page. When a user types somet
 
 ## Creating the search form
 
-To enable the search engine you need to include the following code in your `mysite/_config.php` file. 
-This will enable fulltext search on page content as well as names of all files in the `/assets` folder.
+To enable the search engine you need to include the following code in your `application/_config.php` file.
+This will enable fulltext search on page content as well as names of all files in the `/public/assets` folder.
 
 	:::php
 	FulltextSearchable::enable();

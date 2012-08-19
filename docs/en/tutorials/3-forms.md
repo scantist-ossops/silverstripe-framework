@@ -17,7 +17,7 @@ We will create a poll on the home page that asks the user their favourite web br
 
 The poll we will be creating on our homepage will ask the user for their name and favourite web browser. It will then collate the results into a bar graph. We create the form in a method on *HomePage_Controller*.
 
-**mysite/code/HomePage.php**
+**application/src/HomePage.php**
 
 	:::php
 	class HomePage_Controller extends Page_Controller {
@@ -168,7 +168,7 @@ Great! We now have a browser poll form, but it doesn't actually do anything. In 
 First, we need some way of saving the poll submissions to the database, so we can retrieve the results later. We can do this by creating a new object that extends from `[api:DataObject]`.
 If you recall, in the [second tutorial](2-extending-a-basic-site) we said that all objects that inherit from DataObject and have their own fields are stored in tables the database. Also recall that all pages extend DataObject indirectly through `[api:SiteTree]`. Here instead of extending SiteTree (or `[api:Page]`) to create a page type, we will extend `[api:DataObject]` directly:
 
-**mysite/code/BrowserPollSubmission.php**
+**application/src/BrowserPollSubmission.php**
 
 	:::php
 	<?php	
@@ -181,7 +181,7 @@ If you recall, in the [second tutorial](2-extending-a-basic-site) we said that a
 
 If we then rebuild the database ([http://localhost/your_site_name/dev/build?flush=all](http://localhost/your_site_name/dev/build?flush=all)), we will see that the *BrowserPollSubmission* table is created. Now we just need to define 'doBrowserPoll' on *HomePage_Controller*:
 
-**mysite/code/HomePage.php**
+**application/src/HomePage.php**
 
 	:::php	
 	class HomePage_Controller extends Page_Controller {
@@ -207,7 +207,7 @@ SilverStripe provides the *RequiredFields* validator, which ensures that the fie
 
 Change the end of the 'BrowserPollForm' function so it looks like this:
 
-**mysite/code/HomePage.php**
+**application/src/HomePage.php**
 
 	:::php
 	public function BrowserPollForm() {
@@ -229,7 +229,7 @@ The first thing to do is make it so a user can only vote once per session. If th
 
 We can do this using a session variable. The `[api:Session]` class handles all session variables in SilverStripe. First modify the 'doBrowserPoll' to set the session variable 'BrowserPollVoted' when a user votes.
 
-**mysite/code/HomePage.php**
+**application/src/HomePage.php**
 
 	:::php
 	// ...
@@ -270,7 +270,7 @@ In the [second tutorial](/tutorials/2-extending-a-basic-site), we got a collecti
 
 Create the function 'BrowserPollResults' on the *HomePage_Controller* class.
 
-**mysite/code/HomePage.php**
+**application/src/HomePage.php**
 
 	:::php
 	public function BrowserPollResults() {
