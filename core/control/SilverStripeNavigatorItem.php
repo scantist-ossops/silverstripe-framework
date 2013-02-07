@@ -94,7 +94,7 @@ class SilverStripeNavigatorItem_StageLink extends SilverStripeNavigatorItem {
 		if(Versioned::current_stage() == 'Stage' && !(ClassInfo::exists('SiteTreeFutureState') && SiteTreeFutureState::get_future_datetime())) {
 			return "<a class=\"current\">". _t('ContentController.DRAFTSITE', 'Draft Site') ."</a>";
 		} else {
-			$draftPage = Versioned::get_one_by_stage('SiteTree', 'Stage', '"SiteTree"."ID" = ' . $page->ID);
+			$draftPage = Versioned::get_one_by_stage('SiteTree', 'Stage', '"SiteTree"."ID" = ' . (int)$page->ID);
 			if($draftPage) {
 				$pageLink = Convert::raw2att(Controller::join_links($draftPage->AbsoluteLink(), "?stage=Stage"));
 				return "<a href=\"$pageLink\" class=\"newWindow\" target=\"site\" style=\"left : -1px;\">". _t('ContentController.DRAFTSITE', 'Draft Site') ."</a>";
@@ -159,8 +159,8 @@ class SilverStripeNavigatorItem_ArchiveLink extends SilverStripeNavigatorItem {
 			return "<a class=\"current\">". _t('ContentController.ARCHIVEDSITE', 'Archived Site') ."</a>";
 		} else {
 			// Display the archive link if the page currently displayed in the CMS is other version than live and draft
-			$currentDraft = Versioned::get_one_by_stage('SiteTree', 'Draft', '"SiteTree"."ID" = ' . $page->ID);
-			$currentLive = Versioned::get_one_by_stage('SiteTree', 'Live', '"SiteTree"."ID" = ' . $page->ID);
+			$currentDraft = Versioned::get_one_by_stage('SiteTree', 'Draft', '"SiteTree"."ID" = ' . (int)$page->ID);
+			$currentLive = Versioned::get_one_by_stage('SiteTree', 'Live', '"SiteTree"."ID" = ' . (int)$page->ID);
 			if(
 				(!$currentDraft || ($currentDraft && $page->Version != $currentDraft->Version)) 
 				&& (!$currentLive || ($currentLive && $page->Version != $currentLive->Version))

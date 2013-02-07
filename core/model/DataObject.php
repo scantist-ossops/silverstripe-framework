@@ -1031,7 +1031,7 @@ class DataObject extends ViewableData implements DataObjectInterface, i18nEntity
 						// In cases where there are no fields, this 'stub' will get picked up on
 						if(self::has_own_table($class)) {
 							$manipulation[$class]['command'] = $dbCommand;
-							$manipulation[$class]['id'] = $this->record['ID'];
+							$manipulation[$class]['id'] = (int)$this->record['ID'];
 						} else {
 							unset($manipulation[$class]);
 						}
@@ -1130,7 +1130,7 @@ class DataObject extends ViewableData implements DataObjectInterface, i18nEntity
 				$sql = new SQLQuery();
 				$sql->delete = true;
 				$sql->from[$ancestor] = "\"$ancestor\"";
-				$sql->where[] = "\"ID\" = $this->ID";
+				$sql->where[] = "\"ID\" = " . (int)$this->ID;
 				$this->extend('augmentSQL', $sql);
 				$sql->execute();
 			}
@@ -1303,7 +1303,7 @@ class DataObject extends ViewableData implements DataObjectInterface, i18nEntity
 
 		$joinField = $this->getRemoteJoinField($componentName, 'has_many');
 
-		$id = $this->getField("ID");
+		$id = (int)$this->getField("ID");
 			
 		// get filter
 		$combinedFilter = "\"$joinField\" = '$id'";
@@ -1427,7 +1427,7 @@ class DataObject extends ViewableData implements DataObjectInterface, i18nEntity
 
 
 		$query = $componentObj->extendedSQL(
-			"\"$table\".\"$parentField\" = $this->ID", // filter 
+			"\"$table\".\"$parentField\" = " . (int)$this->ID, // filter 
 			$sort,
 			$limit,
 			"INNER JOIN \"$table\" ON \"$table\".\"$componentField\" = \"$componentBaseClass\".\"ID\"" // join
@@ -1461,16 +1461,22 @@ class DataObject extends ViewableData implements DataObjectInterface, i18nEntity
 
 		$baseComponentClass = ClassInfo::baseDataClass($componentClass);
 		if($baseTable == $parentClass) {
-			return "LEFT JOIN \"$table\" ON (\"$table\".\"$parentField\" = \"$parentClass\".\"ID\" AND \"$table\".\"$componentField\" = '{$this->ID}')";
+			return sprintf(
+				"LEFT JOIN \"$table\" ON (\"$table\".\"$parentField\" = \"$parentClass\".\"ID\" AND \"$table\".\"$componentField\" = '%d')",
+				(int)$this->ID
+			);
 		} else {
-			return "LEFT JOIN \"$table\" ON (\"$table\".\"$componentField\" = \"$baseComponentClass\".\"ID\" AND \"$table\".\"$parentField\" = '{$this->ID}')";
+			return sprintf(
+				"LEFT JOIN \"$table\" ON (\"$table\".\"$componentField\" = \"$baseComponentClass\".\"ID\" AND \"$table\".\"$parentField\" = '%d')",
+				(int)$this->ID
+			);
 		}
 	}
 
 	function getManyManyFilter($componentName, $baseTable) {
 		list($parentClass, $componentClass, $parentField, $componentField, $table) = $this->many_many($componentName);
 
-		return "\"$table\".\"$parentField\" = '{$this->ID}'";
+		return sprintf("\"$table\".\"$parentField\" = '%d'", (int)$this->ID);
 	}
 
 	/**
@@ -2914,11 +2920,11 @@ class DataObject extends ViewableData implements DataObjectInterface, i18nEntity
 			if(is_subclass_of($callerClass, 'DataObject')) {
 				$tableClasses = ClassInfo::dataClassesFor($callerClass);
 				$baseClass = array_shift($tableClasses);
-				return DataObject::get_one($callerClass,"\"$baseClass\".\"ID\" = $id", $cache);
+				return DataObject::get_one($callerClass,"\"$baseClass\".\"ID\" = " . (int)$id, $cache);
 
 				// This simpler code will be used by non-DataObject classes that implement DataObjectInterface
 			} else {
-				return DataObject::get_one($callerClass,"\"ID\" = $id", $cache);
+				return DataObject::get_one($callerClass,"\"ID\" = " . (int)$id, $cache);
 			}
 		} else {
 			user_error("DataObject::get_by_id passed a non-numeric ID #$id", E_USER_WARNING);

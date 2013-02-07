@@ -498,7 +498,7 @@ class Hierarchy extends DataObjectDecorator {
 			$query = new SQLQuery(
 				"COUNT(*)",
 				"\"$baseClass\"", 
-				sprintf('"ParentID" = %d', $this->owner->ID)
+				sprintf('"ParentID" = %d', (int)$this->owner->ID)
 			);
 			$this->owner->extend('augmentSQL', $query);
 			$this->owner->extend('augmentNumChildrenCountQuery', $query);
