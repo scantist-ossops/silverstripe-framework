@@ -6,24 +6,10 @@
  */
 class RestfulServiceTest extends SapphireTest {
 	
-	protected $member_unique_identifier_field = ''; 
-	
 	public function setUp() {
-		// backup the project unique identifier field
-		$this->member_unique_identifier_field = Member::config()->unique_identifier_field;
+		parent::setUp(); 
 
 		Member::config()->unique_identifier_field = 'Email';
-
-		parent::setUp(); 
-	} 
-
-	public function tearDown() {
-		parent::tearDown(); 
-
-		// set old Member::config()->unique_identifier_field value 
-		if ($this->member_unique_identifier_field) { 
-			Member::config()->unique_identifier_field = $this->member_unique_identifier_field; 
-		}
 	} 
 
 	public function testSpecialCharacters() {

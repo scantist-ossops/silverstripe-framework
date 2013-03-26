@@ -406,12 +406,12 @@ class Versioned extends DataExtension {
 				if($isRootClass) {
 					// Create table for all versions
 					$versionFields = array_merge(
-						Config::inst()->get('Versioned', 'db_for_versions_table'),
+						(array)Config::inst()->get('Versioned', 'db_for_versions_table'),
 						(array)$fields
 					);
 				
 					$versionIndexes = array_merge(
-						Config::inst()->get('Versioned', 'indexes_for_versions_table'),
+						(array)Config::inst()->get('Versioned', 'indexes_for_versions_table'),
 						(array)$indexes
 					);
 				} else {

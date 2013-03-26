@@ -65,7 +65,6 @@ class RSSFeedTest extends SapphireTest {
 
 	public function tearDown() {
 		parent::tearDown();
-		Config::inst()->update('Director', 'alternate_base_url', null);
 		$_SERVER['HTTP_HOST'] = self::$original_host;
 	}
 }

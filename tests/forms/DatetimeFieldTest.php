@@ -10,8 +10,6 @@ class DatetimeFieldTest extends SapphireTest {
 		
 		$this->originalLocale = i18n::get_locale();
 		i18n::set_locale('en_NZ');
-		$this->origDateConfig = Config::inst()->get('DateField', 'default_config');
-		$this->origTimeConfig = Config::inst()->get('TimeField', 'default_config');
 		Config::inst()->update('DateField', 'default_config', array('dateformat' => 'dd/MM/yyyy'));
 		Config::inst()->update('TimeField', 'default_config', array('timeformat' => 'HH:mm:ss'));
 	}
@@ -20,10 +18,6 @@ class DatetimeFieldTest extends SapphireTest {
 		parent::tearDown();
 		
 		i18n::set_locale($this->originalLocale);
-		Config::inst()->remove('DateField', 'default_config');
-		Config::inst()->update('DateField', 'default_config', $this->origDateConfig);
-		Config::inst()->remove('TimeField', 'default_config');
-		Config::inst()->update('TimeField', 'default_config', $this->origTimeConfig);
 	}
 
 	public function testFormSaveInto() {

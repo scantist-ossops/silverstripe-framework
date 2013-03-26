@@ -114,9 +114,9 @@ class SapphireTest extends PHPUnit_Framework_TestCase {
 	protected $backupGlobals = FALSE;
 
 	/** 
-	 * Helper arrays for illegalExtensions/requiredExtensions code
+	 * Helper for illegalExtensions/requiredExtensions
 	 */
-	private $extensionsToReapply = array(), $extensionsToRemove = array();
+	private $hasAlteredExtensions = false;
 
 	
 	/**
@@ -176,6 +176,8 @@ class SapphireTest extends PHPUnit_Framework_TestCase {
 			
 			return;
 		}
+
+		Config::nest();
 		
 		// Mark test as being run
 		$this->originalIsRunningTest = self::$is_running_test;
@@ -285,35 +287,30 @@ class SapphireTest extends PHPUnit_Framework_TestCase {
 	 * for tearing down the state again.
 	 */
 	public function setUpOnce() {
-		$isAltered = false;
+		Config::nest();
 
 		// Remove any illegal extensions that are present
 		foreach($this->illegalExtensions as $class => $extensions) {
 			foreach($extensions as $extension) {
 				if ($class::has_extension($extension)) {
-					if(!isset($this->extensionsToReapply[$class])) $this->extensionsToReapply[$class] = array();
-					$this->extensionsToReapply[$class][] = $extension;
 					$class::remove_extension($extension);
-					$isAltered = true;
+					$this->hasAlteredExtensions = true;
 				}
 			}
 		}
 
 		// Add any required extensions that aren't present
 		foreach($this->requiredExtensions as $class => $extensions) {
-			$this->extensionsToRemove[$class] = array();
 			foreach($extensions as $extension) {
 				if(!$class::has_extension($extension)) {
-					if(!isset($this->extensionsToRemove[$class])) $this->extensionsToReapply[$class] = array();
-					$this->extensionsToRemove[$class][] = $extension;
 					$class::add_extension($extension);
-					$isAltered = true;
+					$this->hasAlteredExtensions = true;
 				}
 			}
 		}
 		
 		// If we have made changes to the extensions present, then migrate the database schema.
-		if($isAltered || $this->extensionsToReapply || $this->extensionsToRemove || $this->extraDataObjects) {
+		if($this->hasAlteredExtensions || $this->extraDataObjects) {
 			if(!self::using_temp_db()) self::create_temp_db();
 			$this->resetDBSchema(true);
 		}
@@ -329,24 +326,9 @@ class SapphireTest extends PHPUnit_Framework_TestCase {
 	 * tearDown method that's called once per test class rather once per test method.
 	 */
 	public function tearDownOnce() {
-		// If we have made changes to the extensions present, then migrate the database schema.
-		if($this->extensionsToReapply || $this->extensionsToRemove) {
-			// Remove extensions added for testing
-			foreach($this->extensionsToRemove as $class => $extensions) {
-				foreach($extensions as $extension) {
-					$class::remove_extension($extension);
-				}
-			}
+		Config::unnest();
 
-			// Reapply ones removed
-			foreach($this->extensionsToReapply as $class => $extensions) {
-				foreach($extensions as $extension) {
-					$class::add_extension($extension);
-				}
-			}
-		}
-
-		if($this->extensionsToReapply || $this->extensionsToRemove || $this->extraDataObjects) {
+		if($this->hasAlteredExtensions || $this->extraDataObjects) {
 			$this->resetDBSchema();
 		}
 	}
@@ -460,6 +442,8 @@ class SapphireTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	public function tearDown() {
+		Config::unnest();
+
 		// Preserve memory settings
 		ini_set('memory_limit', ($this->originalMemoryLimit) ? $this->originalMemoryLimit : -1);
 

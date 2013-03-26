@@ -10,7 +10,6 @@ class TimeFieldTest extends SapphireTest {
 		
 		$this->originalLocale = i18n::get_locale();
 		i18n::set_locale('en_NZ');
-		$this->origTimeConfig = Config::inst()->get('TimeField', 'default_config');
 		Config::inst()->update('TimeField', 'default_config', array('timeformat' => 'HH:mm:ss'));
 	}
 	
@@ -18,8 +17,6 @@ class TimeFieldTest extends SapphireTest {
 		parent::tearDown();
 		
 		i18n::set_locale($this->originalLocale);
-		Config::inst()->remove('TimeField', 'default_config');
-		Config::inst()->update('TimeField', 'default_config', $this->origTimeConfig);
 	}
 	
 	public function testConstructorWithoutArgs() {

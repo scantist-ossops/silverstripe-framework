@@ -35,17 +35,10 @@ class MemberTest extends FunctionalTest {
 	public function setUp() {
 		parent::setUp();
 		
-		$this->orig['Member_unique_identifier_field'] = Member::config()->unique_identifier_field;
 		Member::config()->unique_identifier_field = 'Email';
 		Member::set_password_validator(null);
 	}
 	
-	public function tearDown() {
-		Member::config()->unique_identifier_field = $this->orig['Member_unique_identifier_field'];
-
-		parent::tearDown();
-	}
-
 	/**
 	 * @expectedException ValidationException
 	 */
