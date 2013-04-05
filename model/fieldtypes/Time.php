@@ -26,33 +26,38 @@ class Time extends DBField {
 	}
 
 	/**
-	 * Return a user friendly format for time
-	 * in a 12 hour format.
+	 * Return a user friendly format for time depending
+	 * on the current {@link i18n::get_time_format()} setting.
+	 * It is localized by default depending on {@link i18n::get_locale()}.
+	 * Example (for en_US): 23:59
 	 * 
-	 * @return string Time in 12 hour format
+	 * @return string
 	 */
 	public function Nice() {
-		if($this->value) return date('g:ia', strtotime($this->value));
+		if($this->value) return $this->Format(i18n::get_time_format());
 	}
 
 	/**
-	 * Return a user friendly format for time
-	 * in a 24 hour format.
+	 * Return a user friendly format for time in a 24 hour format.
 	 * 
-	 * @return string Time in 24 hour format
+	 * @return string
 	 */
 	public function Nice24() {
-		if($this->value) return date('H:i', strtotime($this->value));
+		if($this->value) return $this->Format('HH:mm');
 	}
 	
 	/**
 	 * Return the time using a particular formatting string.
-	 * 
-	 * @param string $format Format code string. e.g. "g:ia"
+	 *
+	 * @see http://framework.zend.com/manual/1.12/en/zend.date.constants.html
+	 * @param string $format Format ISO string. Example: "HH:mm"
 	 * @return string The date in the requested format
 	 */
 	public function Format($format) {
-		if($this->value) return date($format, strtotime($this->value));
+		if($this->value){
+			$date = new Zend_Date($this->value,'HH:mm:ss');
+			return $date->toString($format);
+		}
 	}
 	
 	public function TwelveHour( $parts ) {

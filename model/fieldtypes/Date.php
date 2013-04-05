@@ -1,10 +1,6 @@
 <?php
 /**
  * Represents a date field.
- * The field currently supports New Zealand date format (DD/MM/YYYY),
- * or an ISO 8601 formatted date (YYYY-MM-DD).
- * Alternatively you can set a timestamp that is evaluated through
- * PHP's built-in date() function according to your system locale.
  * 
  * Example definition via {@link DataObject::$db}:
  * <code>
@@ -13,11 +9,10 @@
  * );
  * </code>
  * 
- * @todo Add localization support, see http://open.silverstripe.com/ticket/2931
- * 
  * @package framework
  * @subpackage model
  */
+require_once 'Zend/Date.php';
 class Date extends DBField {
 	
 	public function setValue($value, $record = null) {
@@ -49,7 +44,7 @@ class Date extends DBField {
 		} elseif(is_string($value)) {
 			try{
 				$date = new DateTime($value);
-				$this->value = $date->Format('Y-m-d');
+				$this->value = $date->Format('Y-M-d');
 				return;
 			}catch(Exception $e){
 				$this->value = null;
@@ -59,45 +54,53 @@ class Date extends DBField {
 	}
 
 	/**
-	 * Returns the date in the format dd/mm/yy 
+	 * Returns the date in the format declared by {@link i18n::get_date_format()}.
 	 */	 
 	public function Nice() {
-		if($this->value) return $this->Format('d/m/Y');
+		if($this->value) return $this->Format(i18n::get_date_format());
+	}
+	
+	/**
+	 * Returns the date in localized short format.
+	 * Example (for en_US): 31.03.2008
+	 */	 
+	public function Short() {
+		if($this->value) return $this->Format(Zend_Date::DATE_SHORT);
 	}
 	
 	/**
 	 * Returns the date in US format: “01/18/2006”
 	 */
 	public function NiceUS() {
-		if($this->value) return $this->Format('m/d/Y');
+		if($this->value) return $this->Format('MM/dd/YYYY');
 	}
 	
 	/** 
 	 * Returns the year from the given date
 	 */
 	public function Year() {
-		if($this->value) return $this->Format('Y');
+		if($this->value) return $this->Format(Zend_Date::YEAR);
 	}
 	
 	/**
 	 * Returns the Full day, of the given date.
 	 */
 	public function Day(){
-		if($this->value) return $this->Format('l');
+		if($this->value) return $this->Format(Zend_Date::WEEKDAY);
 	}
 	
 	/**
 	 * Returns a full textual representation of a month, such as January.
 	 */
 	public function Month() {
-		if($this->value) return $this->Format('F');
+		if($this->value) return $this->Format(Zend_Date::MONTH_NAME);
 	}
 	
 	/**
 	 * Returns the short version of the month such as Jan
 	 */
 	public function ShortMonth() {
-		if($this->value) return $this->Format('M');
+		if($this->value) return $this->Format(Zend_Date::MONTH_NAME_SHORT);
 	}
 
 	/**
@@ -107,36 +110,37 @@ class Date extends DBField {
 	 */
 	public function DayOfMonth($includeOrdinal = false) {
 		if($this->value) {
-			$format = 'j';
-			if ($includeOrdinal) $format .= 'S';
+			$format = Zend_Date::DAY;
+			if ($includeOrdinal) $format .= Zend_Date::DAY_SUFFIX;
 			return $this->Format($format);
 		}
 	}
 	
 	/**
-	 * Returns the date in the format 24 December 2006
+	 * Returns the date in the format 13. February 2009
 	 */
 	public function Long() {
-		if($this->value) return $this->Format('j F Y');
+		if($this->value) return $this->Format(Zend_Date::DATE_LONG);
 	}
 	
 	/**
-	 * Returns the date in the format 24 Dec 2006
+	 * Returns the date in the format Monday, March 31, 2008
 	 */
 	public function Full() {
-		if($this->value) return $this->Format('j M Y');
+		if($this->value) return $this->Format(Zend_Date::DATE_FULL);
 	}
 	
 	/**
 	 * Return the date using a particular formatting string.
-	 * 
-	 * @param string $format Format code string. e.g. "d M Y" (see http://php.net/date)
+	 *
+	 * @see http://framework.zend.com/manual/1.12/en/zend.date.constants.html
+	 * @param string $format Format ISO string. Example: 'YYYY-MM-dd'
 	 * @return string The date in the requested format
 	 */
 	public function Format($format) {
 		if($this->value){
-			$date = new DateTime($this->value);
-			return $date->Format($format);
+			$date = new Zend_Date($this->value,'YYYY-MM-dd HH:mm:ss');
+			return $date->toString($format);
 		}
 	}
 	
@@ -144,9 +148,12 @@ class Date extends DBField {
 	 * Return the date formatted using the given strftime formatting string.
 	 *
 	 * strftime obeys the current LC_TIME/LC_ALL when printing lexical values
-	 * like day- and month-names
+	 * like day- and month-names.
+	 *
+	 * @deprecated 3.2 Use Format() instead
 	 */
 	public function FormatI18N($formattingString) {
+		Deprecation::notice('3.2', 'Use Format() instead');
 		if($this->value) {
 			return strftime($formattingString, strtotime($this->value));
 		}
