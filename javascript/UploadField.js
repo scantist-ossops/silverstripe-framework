@@ -1,24 +1,29 @@
 (function($) {
-	$.widget('blueimpUIX.fileupload', $.blueimpUI.fileupload, {
-		_initTemplates: function() {
-			this.options.templateContainer = document.createElement(
-					this._files.prop('nodeName')
-			);
-			this.options.uploadTemplate = window.tmpl(this.options.uploadTemplateName);
-			this.options.downloadTemplate = window.tmpl(this.options.downloadTemplateName);
-		},
+	$.widget('blueimpX.fileupload', $.blueimp.fileupload, {
+
+		// options: {
+		// 	getFilesFromResponse: function (data) {
+		// 		// backwards compat with server response, now data.result.files
+		// 		if (data.result && $.isArray(data.result)) {
+		// 			return data.result; 
+		// 		}
+		// 		return [];
+		// 	}
+		// },
+
 		_enableFileInputButton: function() {
-			$.blueimpUI.fileupload.prototype._enableFileInputButton.call(this);
+			$.blueimp.fileupload.prototype._enableFileInputButton.call(this);
 			this.element.find('.ss-uploadfield-addfile').show();
 		},
 		_disableFileInputButton: function() {
-			$.blueimpUI.fileupload.prototype._disableFileInputButton.call(this);
+			$.blueimp.fileupload.prototype._disableFileInputButton.call(this);
 			this.element.find('.ss-uploadfield-addfile').hide();
 		},
 		_onAdd: function(e, data) {
 			// use _onAdd instead of add since we only want it called once for a file set, not for each file
-			var result = $.blueimpUI.fileupload.prototype._onAdd.call(this, e, data);
-			var firstNewFile = this._files.find('.ss-uploadfield-item').slice(data.files.length*-1).first();
+			var result = $.blueimp.fileupload.prototype._onAdd.call(this, e, data);
+			
+			var firstNewFile = this.options.filesContainer.find('.ss-uploadfield-item').slice(data.files.length*-1).first();
 			var top = '+=' + (firstNewFile.position().top - parseInt(firstNewFile.css('marginTop'), 10) || 0 - parseInt(firstNewFile.css('borderTopWidth'), 10) || 0);
 			firstNewFile.offsetParent().animate({scrollTop: top}, 1000);
 			
@@ -37,7 +42,7 @@
 			}		
 
 			//Fixes case where someone uploads a single erroring file
-			if(data.files.length == 1 && data.files[0].error !== null){
+			if(data.files.length == 1 && data.files[0].error){
 				$('.fileOverview .uploadStatus .state').text(ss.i18n._t('AssetUploadField.UploadField.UPLOADFAIL', 'Sorry your upload failed'));
 				$('.fileOverview .uploadStatus').addClass("bad").removeClass("good").removeClass("notice");
 			}else{
@@ -70,32 +75,19 @@
 								data.context.find('.ss-uploadfield-item-status')
 									.removeClass('ui-state-warning-text');
 								//upload only if the "overwrite" button is clicked
-								$.blueimpUI.fileupload.prototype._onSend.call(that, e, data);
+								$.blueimp.fileupload.prototype._onSend.call(that, e, data);
 								
 								e.preventDefault(); // Avoid a form submit
 								return false;
 							});
 						} else {    //regular file upload
-							return $.blueimpUI.fileupload.prototype._onSend.call(that, e, data);
+							return $.blueimp.fileupload.prototype._onSend.call(that, e, data);
 						}
 					}
 				);
 			} else {
-				return $.blueimpUI.fileupload.prototype._onSend.call(that, e, data);
+				return $.blueimp.fileupload.prototype._onSend.call(that, e, data);
 			}
-		},
-		_onAlways: function (jqXHRorResult, textStatus, jqXHRorError, options) {
-			$.blueimpUI.fileupload.prototype._onAlways.call(this, jqXHRorResult, textStatus, jqXHRorError, options);
-			if (this._active === 0) {
-				$('.fileOverview .uploadStatus .state').text(ss.i18n._t('AssetUploadField.FILEUPLOADCOMPLETED', 'File upload completed!'));//.hide();
-				$('.ss-uploadfield-item-edit-all').show();
-				$('.fileOverview .uploadStatus').addClass("good").removeClass("notice").removeClass("bad");
-			}
-		},
-		_create: function() {
-			$.blueimpUI.fileupload.prototype._create.call(this);
-			// Ensures that the visibility of the fileupload dialog is set correctly at initialisation
-			this._adjustMaxNumberOfFiles(0);
 		},
 		attach: function(data) {
 
@@ -108,17 +100,11 @@
 			// If replacing an element (and it exists), adjust max number of files at this point
 			var replacedElement = null;
 			if(replaceFileID) {
-				replacedElement = $(".ss-uploadfield-item[data-fileid='"+replaceFileID+"']");
-				if(replacedElement.length === 0) {
-					replacedElement = null;
-				} else {
-					self._adjustMaxNumberOfFiles(1);
-				}
+				replacedElement = $(".ss-uploadfield-item[data-fileid='"+replaceFileID+"']").get(0);
 			}
 
 			// Validate each file
 			$.each(files, function (index, file) {
-				self._adjustMaxNumberOfFiles(-1);
 				error = self._validate([file]);
 				valid = error && valid;
 			});
@@ -131,7 +117,7 @@
 			if(replacedElement) {
 				replacedElement.replaceWith(data.context);
 			} else {
-				data.context.appendTo(this._files);
+				data.context.appendTo(this.options.filesContainer);
 			}
 			data.context.data('data', data);
 			// Force reflow:
@@ -228,7 +214,12 @@
 										data.context.find('.ss-uploadfield-item-status').html((data.total == 1)?ss.i18n._t('UploadField.LOADING'):value);
 										data.context.find('.ss-uploadfield-item-progressbarvalue').css('width', value);
 									}
-							}
+						},
+						stop: function(e) {
+							$(this).find('.fileOverview .uploadStatus .state').text(ss.i18n._t('AssetUploadField.FILEUPLOADCOMPLETED', 'File upload completed!'));//.hide();
+							$(this).find('.ss-uploadfield-item-edit-all').show();
+							$(this).find('.fileOverview .uploadStatus').addClass("good").removeClass("notice").removeClass("bad");
+						}
 					}, 
 					config, 
 					{

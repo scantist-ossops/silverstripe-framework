@@ -136,14 +136,14 @@ class UploadField extends FileField {
 		 * @see javascript/UploadField_uploadtemplate.js
 		 * @var string
 		 */
-		'uploadTemplateName' => 'ss-uploadfield-uploadtemplate',
+		'uploadTemplateId' => 'ss-uploadfield-uploadtemplate',
 		/**
 		 * javascript template used to display already uploaded files
 		 * 
 		 * @see javascript/UploadField_downloadtemplate.js
 		 * @var string
 		 */
-		'downloadTemplateName' => 'ss-uploadfield-downloadtemplate',
+		'downloadTemplateId' => 'ss-uploadfield-downloadtemplate',
 		/**
 		 * Show a warning when overwriting a file.
 		 * This requires Upload->replaceFile config to be set to true, otherwise
@@ -738,18 +738,18 @@ class UploadField extends FileField {
 	 * @see javascript/UploadField_uploadtemplate.js
 	 * @var string
 	 */
-	public function getUploadTemplateName() {
-		return $this->getConfig('uploadTemplateName');
+	public function getUploadTemplateId() {
+		return $this->getConfig('uploadTemplateId');
 	}
 
 	/**
-	 * @see UploadField::getUploadTemplateName()
+	 * @see UploadField::getUploadTemplateId()
 	 * 
-	 * @param string $uploadTemplateName
+	 * @param string $uploadTemplateId
 	 * @return UploadField Self reference
 	 */
-	public function setUploadTemplateName($uploadTemplateName) {
-		return $this->setConfig('uploadTemplateName', $uploadTemplateName);
+	public function setUploadTemplateId($uploadTemplateId) {
+		return $this->setConfig('uploadTemplateId', $uploadTemplateId);
 	}
 
 	/**
@@ -759,18 +759,18 @@ class UploadField extends FileField {
 	 * @see javascript/DownloadField_downloadtemplate.js
 	 * @var string
 	 */
-	public function getDownloadTemplateName() {
-		return $this->getConfig('downloadTemplateName');
+	public function getDownloadTemplateId() {
+		return $this->getConfig('downloadTemplateId');
 	}
 
 	/**
-	 * @see Uploadfield::getDownloadTemplateName()
+	 * @see Uploadfield::getDownloadTemplateId()
 	 * 
-	 * @param string $downloadTemplateName
+	 * @param string $downloadTemplateId
 	 * @return Uploadfield Self reference
 	 */
-	public function setDownloadTemplateName($downloadTemplateName) {
-		return $this->setConfig('downloadTemplateName', $downloadTemplateName);
+	public function setDownloadTemplateId($downloadTemplateId) {
+		return $this->setConfig('downloadTemplateId', $downloadTemplateId);
 	}
 
 	/**
@@ -933,10 +933,12 @@ class UploadField extends FileField {
 			// @todo jquery templates is a project no longer maintained and should be retired at some point.
 			THIRDPARTY_DIR . '/javascript-templates/tmpl.js', 
 			THIRDPARTY_DIR . '/javascript-loadimage/load-image.js',
-			THIRDPARTY_DIR . '/jquery-fileupload/jquery.iframe-transport.js',
-			THIRDPARTY_DIR . '/jquery-fileupload/cors/jquery.xdr-transport.js',
-			THIRDPARTY_DIR . '/jquery-fileupload/jquery.fileupload.js',
-			THIRDPARTY_DIR . '/jquery-fileupload/jquery.fileupload-ui.js',
+			THIRDPARTY_DIR . '/jquery-fileupload/js/jquery.iframe-transport.js',
+			THIRDPARTY_DIR . '/jquery-fileupload/js/cors/jquery.xdr-transport.js',
+			THIRDPARTY_DIR . '/jquery-fileupload/js/jquery.fileupload.js',
+			THIRDPARTY_DIR . '/jquery-fileupload/js/jquery.fileupload-process.js',
+			THIRDPARTY_DIR . '/jquery-fileupload/js/jquery.fileupload-validate.js',
+			THIRDPARTY_DIR . '/jquery-fileupload/js/jquery.fileupload-ui.js',
 			FRAMEWORK_DIR . '/javascript/UploadField_uploadtemplate.js',
 			FRAMEWORK_DIR . '/javascript/UploadField_downloadtemplate.js',
 			FRAMEWORK_DIR . '/javascript/UploadField.js',
@@ -1220,7 +1222,7 @@ class UploadField extends FileField {
 		}
 		
 		// Format response with json
-		$response = new SS_HTTPResponse(Convert::raw2json(array($return)));
+		$response = new SS_HTTPResponse(Convert::raw2json(array('files' => array($return))));
 		$response->addHeader('Content-Type', 'text/plain');
 		return $response;
 	}
@@ -1242,7 +1244,7 @@ class UploadField extends FileField {
 		foreach($files as $file) {
 			$return[] = $this->encodeFileAttributes($file);
 		}
-		$response = new SS_HTTPResponse(Convert::raw2json($return));
+		$response = new SS_HTTPResponse(Convert::raw2json(array('files' => $return)));
 		$response->addHeader('Content-Type', 'application/json');
 		return $response;
 	}
