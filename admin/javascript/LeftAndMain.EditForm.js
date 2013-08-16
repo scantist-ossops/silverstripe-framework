@@ -200,11 +200,31 @@
 			 * Function: onclick
 			 */
 			onclick: function(e) {
+				// Confirmation on delete. 
+				if(
+					this.hasClass('gridfield-button-delete')
+					&& !confirm(ss.i18n._t('TABLEFIELD.DELETECONFIRMMESSAGE'))
+				) {
+					e.preventDefault();
+					return false;
+				}
+
 				if(!this.is(':disabled')) {
 					this.parents('form').trigger('submit', [this]);
 				}
 				e.preventDefault();
 				return false;
+			}
+		});
+
+		$('.cms-edit-form .Actions button.action.gridfield-button-delete, .cms-edit-form .Actions button.action.ss-ui-action-destructive').entwine({
+			onclick: function(e){
+				if(!confirm(ss.i18n._t('TABLEFIELD.DELETECONFIRMMESSAGE'))) {
+					e.preventDefault();
+					return false;
+				} else {
+					this._super(e);
+				}
 			}
 		});
 
