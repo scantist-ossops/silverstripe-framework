@@ -1402,5 +1402,18 @@ function sapphiremce_cleanup(type, value) {
 		});
 	}
 
+	// If we are inserting from a popup back into the editor
+	// add the changed class and update the Content value.
+	// IE8 has trouble with equality of these strings (see #2628), so don't run the check there.
+	var isIE8 = navigator.userAgent.match(/MSIE 8\.0/i);
+	if(!isIE8 && type == 'insert_to_editor' && typeof tinyMCE.selectedInstance.editorId !== 'undefined') {
+		var field = jQuery('#' + tinyMCE.selectedInstance.editorId);
+		var original = field.val();
+		if (original != value) {
+			field.val(value).addClass('changed');
+			field.closest('form').addClass('changed');
+		}
+	}
+
 	return value;
 }
