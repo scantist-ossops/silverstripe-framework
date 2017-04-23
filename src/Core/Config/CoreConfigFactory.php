@@ -119,7 +119,13 @@ class CoreConfigFactory
     {
         return new PrivateStaticTransformer(function () {
             $classes = ClassLoader::instance()->getManifest()->getClasses();
-            return array_keys($classes);
+            // Don't include classes that rely on dev dependencies (which might not be installed)
+            $ignoredClasses = [
+                'SilverStripe\\Dev\\SapphireTest',
+                'SilverStripe\\Dev\\FunctionalTest'
+            ];
+            $ignoredClasses = array_map('strtolower', $ignoredClasses);
+            return array_diff(array_keys($classes), $ignoredClasses);
         });
     }
 

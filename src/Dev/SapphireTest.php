@@ -12,14 +12,9 @@ use SilverStripe\Control\Director;
 use SilverStripe\Control\Tests\FakeController;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Core\ClassInfo;
-use SilverStripe\Core\Config\ConfigLoader;
-use SilverStripe\Core\Config\CoreConfigFactory;
 use SilverStripe\Core\Config\DefaultConfig;
-use SilverStripe\Core\Config\Middleware\ExtensionMiddleware;
 use SilverStripe\Core\Flushable;
 use SilverStripe\Core\Injector\Injector;
-use SilverStripe\Core\Manifest\ClassManifest;
-use SilverStripe\Core\Manifest\ClassLoader;
 use SilverStripe\Core\Resettable;
 use SilverStripe\i18n\i18n;
 use SilverStripe\ORM\SS_List;
@@ -35,10 +30,7 @@ use SilverStripe\Security\Group;
 use SilverStripe\Security\Permission;
 use SilverStripe\View\Requirements;
 use SilverStripe\View\SSViewer;
-use SilverStripe\View\ThemeResourceLoader;
-use SilverStripe\View\ThemeManifest;
 use PHPUnit_Framework_TestCase;
-use Translatable;
 use LogicException;
 use Exception;
 
@@ -46,14 +38,12 @@ use Exception;
  * Test case class for the Sapphire framework.
  * Sapphire unit testing is based on PHPUnit, but provides a number of hooks into our data model that make it easier
  * to work with.
+ *
+ * Caution: This class is excluded from private static parsing to avoid including the PHPUnit dev dependency
+ * in standard code execution paths.
  */
 class SapphireTest extends PHPUnit_Framework_TestCase
 {
-
-    /** @config */
-    private static $dependencies = array(
-        'fixtureFactory' => '%$FixtureFactory',
-    );
 
     /**
      * Path to fixture data for this test run.
@@ -86,21 +76,6 @@ class SapphireTest extends PHPUnit_Framework_TestCase
      * @var TestMailer
      */
     protected $mailer;
-
-    /**
-     * Pointer to the manifest that isn't a test manifest
-     */
-    protected static $regular_manifest;
-
-    /**
-     * @var boolean
-     */
-    protected static $is_running_test = false;
-
-    /**
-     * @var ClassManifest
-     */
-    protected static $test_class_manifest;
 
     /**
      * By default, setUp() does not require default records. Pass
@@ -169,45 +144,6 @@ class SapphireTest extends PHPUnit_Framework_TestCase
      * @var bool
      */
     protected static $flushedFlushables = false;
-
-    /**
-     * Determines if unit tests are currently run, flag set during test bootstrap.
-     * This is used as a cheap replacement for fully mockable state
-     * in certain contiditions (e.g. access checks).
-     * Caution: When set to FALSE, certain controllers might bypass
-     * access checks, so this is a very security sensitive setting.
-     *
-     * @return boolean
-     */
-    public static function is_running_test()
-    {
-        return self::$is_running_test;
-    }
-
-    public static function set_is_running_test($bool)
-    {
-        self::$is_running_test = $bool;
-    }
-
-    /**
-     * Set the manifest to be used to look up test classes by helper functions
-     *
-     * @param ClassManifest $manifest
-     */
-    public static function set_test_class_manifest($manifest)
-    {
-        self::$test_class_manifest = $manifest;
-    }
-
-    /**
-     * Return the manifest being used to look up test classes by helper functions
-     *
-     * @return ClassManifest
-     */
-    public static function get_test_class_manifest()
-    {
-        return self::$test_class_manifest;
-    }
 
     /**
      * @return String
@@ -1016,179 +952,6 @@ class SapphireTest extends PHPUnit_Framework_TestCase
         if (!static::is_running_test()) {
             new FakeController();
             static::use_test_manifest();
-            static::set_is_running_test(true);
-        }
-    }
-
-    /**
-     * Pushes a class and template manifest instance that include tests onto the
-     * top of the loader stacks.
-     */
-    protected static function use_test_manifest()
-    {
-        $flush = !empty($_GET['flush']);
-        $classManifest = new ClassManifest(
-            BASE_PATH,
-            true,
-            $flush
-        );
-
-        ClassLoader::instance()->pushManifest($classManifest, false);
-        static::set_test_class_manifest($classManifest);
-
-        ThemeResourceLoader::instance()->addSet('$default', new ThemeManifest(
-            BASE_PATH,
-            project(),
-            true,
-            $flush
-        ));
-
-        // Once new class loader is registered, push a new uncached config
-        $config = CoreConfigFactory::inst()->createCore();
-        ConfigLoader::instance()->pushManifest($config);
-
-        // Invalidate classname spec since the test manifest will now pull out new subclasses for each internal class
-        // (e.g. Member will now have various subclasses of DataObjects that implement TestOnly)
-        DataObject::reset();
-    }
-
-    /**
-     * Returns true if we are currently using a temporary database
-     */
-    public static function using_temp_db()
-    {
-        $dbConn = DB::get_conn();
-        $prefix = getenv('SS_DATABASE_PREFIX') ?: 'ss_';
-        return $dbConn && (substr($dbConn->getSelectedDatabase(), 0, strlen($prefix) + 5)
-            == strtolower(sprintf('%stmpdb', $prefix)));
-    }
-
-    public static function kill_temp_db()
-    {
-        // Delete our temporary database
-        if (self::using_temp_db()) {
-            $dbConn = DB::get_conn();
-            $dbName = $dbConn->getSelectedDatabase();
-            if ($dbName && DB::get_conn()->databaseExists($dbName)) {
-                // Some DataExtensions keep a static cache of information that needs to
-                // be reset whenever the database is killed
-                foreach (ClassInfo::subclassesFor('SilverStripe\\ORM\\DataExtension') as $class) {
-                    $toCall = array($class, 'on_db_reset');
-                    if (is_callable($toCall)) {
-                        call_user_func($toCall);
-                    }
-                }
-
-                // echo "Deleted temp database " . $dbConn->currentDatabase() . "\n";
-                $dbConn->dropSelectedDatabase();
-            }
-        }
-    }
-
-    /**
-     * Remove all content from the temporary database.
-     */
-    public static function empty_temp_db()
-    {
-        if (self::using_temp_db()) {
-            DB::get_conn()->clearAllData();
-
-            // Some DataExtensions keep a static cache of information that needs to
-            // be reset whenever the database is cleaned out
-            $classes = array_merge(ClassInfo::subclassesFor('SilverStripe\\ORM\\DataExtension'), ClassInfo::subclassesFor('SilverStripe\\ORM\\DataObject'));
-            foreach ($classes as $class) {
-                $toCall = array($class, 'on_db_reset');
-                if (is_callable($toCall)) {
-                    call_user_func($toCall);
-                }
-            }
-        }
-    }
-
-    public static function create_temp_db()
-    {
-        // Disable PHPUnit error handling
-        restore_error_handler();
-
-        // Create a temporary database, and force the connection to use UTC for time
-        global $databaseConfig;
-        $databaseConfig['timezone'] = '+0:00';
-        DB::connect($databaseConfig);
-        $dbConn = DB::get_conn();
-        $prefix = getenv('SS_DATABASE_PREFIX') ?: 'ss_';
-        $dbname = strtolower(sprintf('%stmpdb', $prefix)) . rand(1000000, 9999999);
-        while (!$dbname || $dbConn->databaseExists($dbname)) {
-            $dbname = strtolower(sprintf('%stmpdb', $prefix)) . rand(1000000, 9999999);
-        }
-
-        $dbConn->selectDatabase($dbname, true);
-
-        static::resetDBSchema();
-
-        // Reinstate PHPUnit error handling
-        set_error_handler(array('PHPUnit_Util_ErrorHandler', 'handleError'));
-
-        return $dbname;
-    }
-
-    public static function delete_all_temp_dbs()
-    {
-        $prefix = getenv('SS_DATABASE_PREFIX') ?: 'ss_';
-        foreach (DB::get_schema()->databaseList() as $dbName) {
-            if (preg_match(sprintf('/^%stmpdb[0-9]+$/', $prefix), $dbName)) {
-                DB::get_schema()->dropDatabase($dbName);
-                if (Director::is_cli()) {
-                    echo "Dropped database \"$dbName\"" . PHP_EOL;
-                } else {
-                    echo "<li>Dropped database \"$dbName\"</li>" . PHP_EOL;
-                }
-                flush();
-            }
-        }
-    }
-
-    /**
-     * Reset the testing database's schema.
-     * @param bool $includeExtraDataObjects If true, the extraDataObjects tables will also be included
-     */
-    public static function resetDBSchema($includeExtraDataObjects = false)
-    {
-        if (self::using_temp_db()) {
-            DataObject::reset();
-
-            // clear singletons, they're caching old extension info which is used in DatabaseAdmin->doBuild()
-            Injector::inst()->unregisterAllObjects();
-
-            $dataClasses = ClassInfo::subclassesFor(DataObject::class);
-            array_shift($dataClasses);
-
-            DB::quiet();
-            $schema = DB::get_schema();
-            $extraDataObjects = $includeExtraDataObjects ? static::getExtraDataObjects() : null;
-            $schema->schemaUpdate(function () use ($dataClasses, $extraDataObjects) {
-                foreach ($dataClasses as $dataClass) {
-                    // Check if class exists before trying to instantiate - this sidesteps any manifest weirdness
-                    if (class_exists($dataClass)) {
-                        $SNG = singleton($dataClass);
-                        if (!($SNG instanceof TestOnly)) {
-                            $SNG->requireTable();
-                        }
-                    }
-                }
-
-                // If we have additional dataobjects which need schema, do so here:
-                if ($extraDataObjects) {
-                    foreach ($extraDataObjects as $dataClass) {
-                        $SNG = singleton($dataClass);
-                        if (singleton($dataClass) instanceof DataObject) {
-                            $SNG->requireTable();
-                        }
-                    }
-                }
-            });
-
-            ClassInfo::reset_db_cache();
-            DataObject::singleton()->flushCache();
         }
     }
 

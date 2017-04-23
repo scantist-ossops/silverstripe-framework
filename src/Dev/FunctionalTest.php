@@ -30,6 +30,9 @@ use SimpleXMLElement;
  *   $this->assertExactMatchBySelector("#MyForm_ID p.error", array("That email address is invalid."));
  *  }
  * </code>
+ *
+ * Caution: This class is excluded from private static parsing to avoid including the PHPUnit dev dependency
+ * in standard code execution paths.
  */
 class FunctionalTest extends SapphireTest
 {

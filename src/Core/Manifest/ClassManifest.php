@@ -483,6 +483,18 @@ class ClassManifest
     }
 
     /**
+     * Determines if files in "test" folders are loaded,
+     * in order to execute these tests. Can be used to determine
+     * if the system is currently under test.
+     *
+     * @return bool
+     */
+    public function getIncludeTests()
+    {
+        return $this->tests;
+    }
+
+    /**
      * Recursively coalesces direct child information into full descendant
      * information.
      *
